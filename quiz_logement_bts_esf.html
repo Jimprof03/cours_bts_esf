@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz BTS ESF – Logement</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0D1B2A;
+    --blue: #1A3A5C;
+    --teal: #1B6CA8;
+    --accent: #E63946;
+    --gold: #F4A261;
+    --green: #2A9D8F;
+    --light: #F8F5F0;
+    --gray: #8A9BB0;
+    --white: #FFFFFF;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 10%, #1A3A5C44, transparent),
+      radial-gradient(ellipse 40% 60% at 10% 80%, #E6394611, transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 0 24px 60px; }
+
+  /* HEADER */
+  .header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid #ffffff18;
+    margin-bottom: 40px;
+  }
+  .header-tag {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--white);
+  }
+  .header h1 span { color: var(--gold); }
+  .header-sub {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    background: #ffffff15;
+    border-radius: 100px;
+    height: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--gray);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  /* SCORE DISPLAY */
+  .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff10;
+    border: 1px solid #ffffff20;
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 32px;
+  }
+  .score-badge span { color: var(--gold); font-weight: 700; }
+
+  /* SECTION TAG */
+  .section-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .tag-general { background: #1B6CA822; color: var(--teal); border: 1px solid var(--teal); }
+    .tag-logement { background: #E6394622; color: #ff6b78; border: 1px solid var(--accent); }
+  .tag-causes { background: #F4A26122; color: var(--gold); border: 1px solid var(--gold); }
+  .tag-consequences { background: #2A9D8F22; color: var(--green); border: 1px solid var(--green); }
+  .tag-aides { background: #9B5DE522; color: #c77dff; border: 1px solid #9B5DE5; }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: #ffffff0A;
+    border: 1px solid #ffffff15;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+  }
+  .question-card.answered-correct { border-color: var(--green); background: #2A9D8F0D; }
+  .question-card.answered-wrong { border-color: var(--accent); background: #E639460D; }
+
+  .question-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+  .question-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 20px;
+    color: var(--white);
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #ffffff20;
+    background: #ffffff06;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--white);
+    text-align: left;
+    width: 100%;
+  }
+  .option:hover:not(:disabled) { border-color: var(--teal); background: #1B6CA815; }
+  .option:disabled { cursor: default; }
+  .option.selected-correct { border-color: var(--green); background: #2A9D8F20; color: #7ae8df; }
+  .option.selected-wrong { border-color: var(--accent); background: #E6394620; color: #ff8a94; }
+  .option.show-correct { border-color: var(--green); background: #2A9D8F15; color: #7ae8df; }
+
+  .option-letter {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #ffffff15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .option.selected-correct .option-letter { background: var(--green); color: white; }
+  .option.selected-wrong .option-letter { background: var(--accent); color: white; }
+  .option.show-correct .option-letter { background: var(--green); color: white; }
+
+  /* TRUE/FALSE */
+  .tf-options { display: flex; gap: 12px; }
+  .tf-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1.5px solid #ffffff20;
+    background: #ffffff06;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--white);
+    transition: all 0.2s;
+  }
+  .tf-btn:hover:not(:disabled) { border-color: var(--teal); background: #1B6CA815; }
+  .tf-btn:disabled { cursor: default; }
+  .tf-btn.selected-correct { border-color: var(--green); background: #2A9D8F20; color: #7ae8df; }
+  .tf-btn.selected-wrong { border-color: var(--accent); background: #E6394620; color: #ff8a94; }
+  .tf-btn.show-correct { border-color: var(--green); background: #2A9D8F15; color: #7ae8df; }
+
+  /* MATCH */
+  .match-container { display: flex; flex-direction: column; gap: 10px; }
+  .match-row { display: flex; align-items: center; gap: 10px; }
+  .match-left {
+    flex: 1;
+    padding: 10px 14px;
+    background: #ffffff0A;
+    border: 1px solid #ffffff20;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .match-select {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--navy);
+    border: 1.5px solid #ffffff20;
+    border-radius: 8px;
+    color: var(--white);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .match-select:focus { outline: none; border-color: var(--teal); }
+  .match-select:disabled { opacity: 0.7; cursor: default; }
+  .match-select.correct { border-color: var(--green); color: #7ae8df; }
+  .match-select.wrong { border-color: var(--accent); color: #ff8a94; }
+  .match-check-btn {
+    margin-top: 14px;
+    padding: 12px 24px;
+    background: var(--teal);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .match-check-btn:hover { opacity: 0.85; }
+  .match-check-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #2A9D8F20; border: 1px solid var(--green); color: #7ae8df; }
+  .feedback.wrong { background: #E6394618; border: 1px solid var(--accent); color: #ff8a94; }
+
+  /* RESULTS */
+  .results {
+    display: none;
+    text-align: center;
+    padding: 60px 40px;
+    background: #ffffff08;
+    border: 1px solid #ffffff15;
+    border-radius: 20px;
+    margin-top: 40px;
+  }
+  .results.show { display: block; }
+  .results-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 80px;
+    font-weight: 800;
+    line-height: 1;
+    margin: 20px 0 10px;
+  }
+  .results-score.excellent { color: var(--green); }
+  .results-score.good { color: var(--gold); }
+  .results-score.average { color: #F4A261; }
+  .results-score.poor { color: var(--accent); }
+  .results-label { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .results-sub { color: var(--gray); font-size: 15px; margin-bottom: 32px; }
+  .results-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .breakdown-item { text-align: center; }
+  .breakdown-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+  .breakdown-num.correct { color: var(--green); }
+  .breakdown-num.wrong { color: var(--accent); }
+  .breakdown-label { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+
+  .restart-btn {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    border: none;
+    border-radius: 100px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .restart-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  /* DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 36px 0 24px;
+  }
+  .section-divider-line { flex: 1; height: 1px; background: #ffffff15; }
+  .section-divider-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .question-card { padding: 20px; }
+    .tf-options { flex-direction: column; }
+    .match-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-tag">BTS ESF · Révisions</div>
+    <h1>Quiz <span>Logement</span><br>& Habitat Indigne</h1>
+    <p class="header-sub">50 questions · QCM · Vrai/Faux · Association · Logement indécent, causes, conséquences, aides</p>
+  </div>
+
+  <div id="quiz-body">
+    <div class="score-badge">Score en cours : <span id="score-display">0</span> / <span id="total-display">50</span></div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-text"><span id="progress-label">0 réponse(s) donnée(s)</span><span id="progress-pct">0%</span></div>
+
+    <div id="questions-container"></div>
+
+    <div class="results" id="results">
+      <div class="header-tag">Résultats finaux</div>
+      <div class="results-score" id="final-score"></div>
+      <div class="results-label" id="final-label"></div>
+      <div class="results-sub" id="final-sub"></div>
+      <div class="results-breakdown">
+        <div class="breakdown-item"><div class="breakdown-num correct" id="correct-count"></div><div class="breakdown-label">Correctes</div></div>
+        <div class="breakdown-item"><div class="breakdown-num wrong" id="wrong-count"></div><div class="breakdown-label">Incorrectes</div></div>
+        <div class="breakdown-item"><div class="breakdown-num" style="color:var(--gray)" id="skip-count"></div><div class="breakdown-label">Non répondues</div></div>
+      </div>
+      <button class="restart-btn" onclick="restart()">Recommencer le quiz</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ─── GÉNÉRAL (10) ───────────────────────────────────────────────────────
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "qcm",
+    q: "Quelle loi définit pour la première fois l'habitat indigne en France ?",
+    options: ["La loi SRU du 13 décembre 2000", "La loi MOLLE du 25 mars 2009", "La loi DALO du 5 mars 2007", "La loi du 6 juillet 1989"],
+    answer: 1,
+    explanation: "L'article 84 de la loi MOLLE du 25 mars 2009 définit pour la première fois l'habitat indigne en modifiant l'article 4 de la loi du 31 mai 1990."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "tf",
+    q: "Vrai ou Faux : Un logement insalubre est obligatoirement indécent.",
+    answer: true,
+    explanation: "Vrai. Comme le précise le décret du 30 janvier 2002, un logement insalubre est obligatoirement indécent. En revanche, l'inverse n'est pas automatique."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "qcm",
+    q: "Selon l'OMS (1946), la santé est définie comme :",
+    options: [
+      "L'absence de maladie ou d'infirmité",
+      "Un état de complet bien-être physique uniquement",
+      "Un état de complet bien-être physique, mental et social",
+      "La capacité à travailler et à vivre normalement"
+    ],
+    answer: 2,
+    explanation: "L'OMS définit la santé en 1946 comme un état de complet bien-être physique, mental et social, ne consistant pas seulement en une absence de maladie ou d'infirmité."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "tf",
+    q: "Vrai ou Faux : La procédure de péril relève des pouvoirs de police du Préfet.",
+    answer: false,
+    explanation: "Faux. La procédure de péril relève des pouvoirs de police du Maire (articles L.511-1 et suivants du CCH), et non du Préfet."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "qcm",
+    q: "Quelle institution est compétente en cas de contentieux lié à l'insalubrité ou au péril ?",
+    options: ["Le Tribunal judiciaire", "Le Tribunal administratif", "Le Conseil de Prud'hommes", "La Commission de conciliation"],
+    answer: 1,
+    explanation: "L'insalubrité et le péril étant des procédures administratives, le contentieux relève du Tribunal administratif."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "qcm",
+    q: "Quel article du Code pénal punit les conditions d'hébergement incompatibles avec la dignité humaine ?",
+    options: ["Article L.225-14", "Article L.1331-22", "Article L.521-1", "Article L.300-1"],
+    answer: 0,
+    explanation: "L'article L.225-14 du code pénal punit de 5 ans d'emprisonnement et 150 000 € d'amende le fait de soumettre une personne vulnérable à des conditions d'hébergement incompatibles avec la dignité humaine."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "tf",
+    q: "Vrai ou Faux : La loi DALO garantit le droit à un logement décent et indépendant.",
+    answer: true,
+    explanation: "Vrai. La loi DALO du 5 mars 2007 garantit le droit de toute personne à un logement décent et indépendant (article L300-1 CCH)."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "qcm",
+    q: "Quelle est la première cause de mortalité par gaz toxique en France ?",
+    options: ["Le radon", "Les vapeurs de solvant", "Le monoxyde de carbone", "Le dioxyde d'azote"],
+    answer: 2,
+    explanation: "Le monoxyde de carbone (CO) est la première cause de mortalité par gaz toxique en France, causant chaque année environ 5 000 victimes dont 100 décès."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "qcm",
+    q: "Parmi les acteurs suivants, lequel coordonne la lutte contre l'habitat indigne au niveau départemental ?",
+    options: ["L'ANAH", "Le sous-préfet référent via le pôle départemental", "Le maire de la commune", "La CAF"],
+    answer: 1,
+    explanation: "Un sous-préfet référent est désigné pour piloter le pôle départemental qui regroupe DDTM, ARS, DDETS, ADIL, SCHS et délégataires des aides à la pierre."
+  },
+  {
+    section: "Généralités sur le logement",
+    sectionTag: "tag-general",
+    type: "tf",
+    q: "Vrai ou Faux : L'ADIL est un organisme payant spécialisé dans le droit du logement.",
+    answer: false,
+    explanation: "Faux. L'ADIL (Agence Départementale d'Information sur le Logement) est un organisme de conseil neutre et entièrement gratuit, présent dans chaque département."
+  },
+
+  // ─── LOGEMENT INDÉCENT (12) ──────────────────────────────────────────────
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "Quel texte définit les caractéristiques du logement décent ?",
+    options: ["La loi du 6 juillet 1989", "Le décret du 30 janvier 2002", "La loi DALO du 5 mars 2007", "Le règlement sanitaire départemental"],
+    answer: 1,
+    explanation: "Les contours de la notion de décence sont délimités par le décret du 30 janvier 2002 (décret n°2002-120)."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "L'obligation de fournir un logement décent est inscrite dans quel article du Code civil ?",
+    options: ["Article 1719", "Article 6", "Article 20-1", "Article 300-1"],
+    answer: 0,
+    explanation: "L'obligation de fournir un logement décent est prévue par l'article 1719 du Code civil, et intégrée à l'article 6 de la loi du 6 juillet 1989."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "tf",
+    q: "Vrai ou Faux : Le traitement de l'indécence relève du champ administratif.",
+    answer: false,
+    explanation: "Faux. Le traitement de l'indécence relève du champ contractuel et des rapports de droit privé entre le locataire et le bailleur. C'est le Tribunal judiciaire qui est compétent."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "En cas de logement indécent, qui peut diminuer ou suspendre le loyer ?",
+    options: ["Le Préfet", "Le Maire", "Le bailleur spontanément", "Uniquement le juge"],
+    answer: 3,
+    explanation: "À la différence de l'insalubrité, aucune obligation de relogement ne pèse sur le bailleur et seul le juge peut diminuer ou suspendre le loyer en cas d'indécence."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "tf",
+    q: "Vrai ou Faux : L'obligation de décence s'applique uniquement au secteur privé.",
+    answer: false,
+    explanation: "Faux. L'obligation de décence s'applique à tout type de réglementation, que le logement dépende du secteur privé ou public."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "Quel article de la loi du 6 juillet 1989 traite de l'indécence du logement ?",
+    options: ["Article 6", "Article 20-1", "Article 1719", "Article 84"],
+    answer: 1,
+    explanation: "L'article 20-1 de la loi du 6 juillet 1989 permet au locataire de saisir le juge pour obtenir la mise en conformité d'un logement indécent, sans obligation préalable de saisir la commission de conciliation."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "tf",
+    q: "Vrai ou Faux : La saisine préalable de la commission de conciliation est obligatoire avant de saisir le juge pour indécence.",
+    answer: false,
+    explanation: "Faux. L'article 20-1 de la loi du 6 juillet 1989 n'impose pas de saisir la commission de conciliation en préalable à celle du juge."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "Un logement décent doit notamment garantir :",
+    options: [
+      "Un loyer modéré et des équipements neufs",
+      "La sécurité physique et la santé des locataires (clos, couvert, électricité, ventilation, surface minimale)",
+      "La présence d'un ascenseur et d'un digicode",
+      "Une connexion internet et un parking"
+    ],
+    answer: 1,
+    explanation: "Selon le décret du 30 janvier 2002, le logement décent garantit sécurité et santé des locataires : clos et couvert, réseaux d'électricité, dispositifs d'ouverture et de ventilation, surface minimum habitable."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "Dans quel cas un logement humide relève-t-il de la responsabilité du bailleur ?",
+    options: [
+      "Toujours, quelle que soit la cause",
+      "Uniquement si le locataire en fait la demande",
+      "Lorsque l'humidité est due au mauvais état du logement (et non à l'usage du locataire)",
+      "Jamais, l'humidité est toujours liée à l'usage"
+    ],
+    answer: 2,
+    explanation: "Le juge doit déterminer la provenance des désordres. Un logement humide en raison d'un mauvais état du logement engage la responsabilité du bailleur, pas si c'est dû à l'utilisation du locataire."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "tf",
+    q: "Vrai ou Faux : Un logement indécent entraîne automatiquement la suspension des loyers.",
+    answer: false,
+    explanation: "Faux. La suspension automatique des loyers concerne uniquement les procédures d'insalubrité et de péril (art. L.521-2 CCH). En cas d'indécence, seul le juge peut suspendre ou diminuer le loyer."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "qcm",
+    q: "La notion d'indécence est considérée comme :",
+    options: [
+      "Une simple recommandation sans force juridique",
+      "Une notion d'ordre public intégrée à l'article 6 de la loi du 6 juillet 1989",
+      "Une obligation uniquement pour les HLM",
+      "Un critère facultatif apprécié librement par le bailleur"
+    ],
+    answer: 1,
+    explanation: "L'obligation de fournir un logement décent est d'ordre public, intégrée à l'article 6 de la loi du 6 juillet 1989, et s'étend à toute la durée du bail."
+  },
+  {
+    section: "Logement indécent",
+    sectionTag: "tag-logement",
+    type: "tf",
+    q: "Vrai ou Faux : Le bailleur peut s'exonérer de l'obligation de décence si le locataire connaissait l'état du logement lors de la signature du bail.",
+    answer: false,
+    explanation: "Faux. Selon la Cour de Cassation (3ème chambre civile, 20 septembre 2006), le bailleur ne peut s'exonérer de l'obligation de décence en arguant que le locataire connaissait la situation."
+  },
+
+  // ─── CAUSES (10) ────────────────────────────────────────────────────────
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "qcm",
+    q: "Quel champignon microscopique est principalement associé au risque de maladies pulmonaires dans un logement humide ?",
+    options: ["Salmonella", "Aspergillus / Penicillium / Cladosporium", "Listeria", "Staphylocoque"],
+    answer: 1,
+    explanation: "Les moisissures de types Aspergillus, Penicillium et Cladosporium, liées aux infiltrations d'eau et à l'humidité, sont responsables de maladies pulmonaires, d'asthme et d'allergies."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "tf",
+    q: "Vrai ou Faux : Le saturnisme est principalement lié aux peintures anciennes dégradées contenant du plomb, dans des immeubles généralement construits avant 1949.",
+    answer: true,
+    explanation: "Vrai. Le saturnisme est causé par l'ingestion ou l'inhalation de plomb, présent dans les peintures anciennes dégradées, surtout dans les immeubles construits avant 1949."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "qcm",
+    q: "Le monoxyde de carbone (CO) est produit par :",
+    options: [
+      "Une mauvaise isolation thermique",
+      "Une mauvaise combustion des appareils (défectueux, non entretenus) et une ventilation défectueuse",
+      "La présence de moisissures dans les murs",
+      "Un réseau d'eau chaude vétuste"
+    ],
+    answer: 1,
+    explanation: "Le CO résulte d'une mauvaise combustion : appareils défectueux, vétustes, non entretenus, ventilation défectueuse, mauvaise évacuation des gaz brûlés."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "qcm",
+    q: "Lequel de ces éléments constitue un risque de maladies infectieuses ou parasitaires ?",
+    options: [
+      "L'absence d'isolation phonique",
+      "La présence de peintures au plomb",
+      "La mauvaise évacuation des eaux usées et l'absence d'eau potable",
+      "L'insuffisance de ventilation"
+    ],
+    answer: 2,
+    explanation: "La mauvaise évacuation des eaux usées, l'absence d'eau potable, l'accumulation de déchets putrescibles et la présence d'animaux nuisibles favorisent les maladies infectieuses ou parasitaires."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "tf",
+    q: "Vrai ou Faux : L'absence d'isolation et l'insuffisance de chauffage peuvent provoquer des maladies pulmonaires.",
+    answer: true,
+    explanation: "Vrai. L'absence d'isolation, l'insuffisance de chauffage, les problèmes de ventilation et les infiltrations d'eau favorisent le développement de moisissures et donc des maladies pulmonaires."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "qcm",
+    q: "L'absence de garde-corps, de mains courantes ou des marches d'escaliers irrégulières constituent un risque de :",
+    options: ["Saturnisme", "Intoxication au CO", "Chute et accident corporel", "Maladie pulmonaire"],
+    answer: 2,
+    explanation: "Ces éléments structurels défectueux constituent un risque de chute et donc d'accidents corporels (blessures, fractures...)."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "tf",
+    q: "Vrai ou Faux : Une installation électrique sans disjoncteur différentiel peut provoquer une électrocution.",
+    answer: true,
+    explanation: "Vrai. L'absence de disjoncteurs différentiels, les surtensions, les équipements endommagés constituent des risques d'électrisation et d'électrocution."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "qcm",
+    q: "La sur-occupation d'un logement peut engendrer :",
+    options: [
+      "Uniquement des risques physiques",
+      "Un mal-être lié à l'exiguïté, l'absence d'éclairement naturel, et des risques pour la santé mentale",
+      "Des risques d'incendie uniquement",
+      "Aucun impact sur la santé"
+    ],
+    answer: 1,
+    explanation: "La sur-occupation engendre un mal-être lié à l'exiguïté, l'absence d'éclairement naturel, et peut affecter la santé psychosociale et mentale des occupants."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "qcm",
+    q: "Lequel de ces défauts entraîne un risque d'atteinte à la santé mentale ?",
+    options: [
+      "La présence de peintures au plomb",
+      "L'insuffisance d'isolation phonique générant des nuisances sonores",
+      "Un réseau d'eau vétuste",
+      "L'absence de parking"
+    ],
+    answer: 1,
+    explanation: "L'insuffisance d'isolation phonique peut entraîner des nuisances sonores génératrices de stress et de perturbation du sommeil, affectant la santé mentale."
+  },
+  {
+    section: "Causes de l'habitat indigne",
+    sectionTag: "tag-causes",
+    type: "tf",
+    q: "Vrai ou Faux : Les mauvaises installations de gaz (tuyaux en mauvais état, absence de système d'arrêt) peuvent provoquer des explosions.",
+    answer: true,
+    explanation: "Vrai. Les installations de gaz non sécurisées (mauvais état des tuyaux, absence de système d'arrêt) constituent un risque d'explosion et d'accidents corporels graves."
+  },
+
+  // ─── CONSÉQUENCES (10) ──────────────────────────────────────────────────
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "Le saturnisme peut provoquer chez l'enfant :",
+    options: [
+      "Uniquement de la fièvre",
+      "Des retards intellectuel et de croissance, agitation, anémie, encéphalopathie, décès",
+      "Des problèmes respiratoires uniquement",
+      "Des troubles de la vue"
+    ],
+    answer: 1,
+    explanation: "Le saturnisme peut causer chez l'enfant : retard intellectuel, retard de croissance, agitation, irritabilité, troubles du sommeil, anémie, atteinte du rein, encéphalopathie et même le décès."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "tf",
+    q: "Vrai ou Faux : Le monoxyde de carbone est un gaz visible et malodorant.",
+    answer: false,
+    explanation: "Faux. Le monoxyde de carbone (CO) est un gaz toxique invisible et inodore, ce qui le rend particulièrement dangereux."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "Combien de victimes le monoxyde de carbone cause-t-il environ chaque année en France ?",
+    options: ["500 victimes dont 10 décès", "5 000 victimes dont 100 décès", "50 000 victimes dont 1 000 décès", "500 victimes dont 100 décès"],
+    answer: 1,
+    explanation: "Le monoxyde de carbone cause environ 5 000 victimes par an en France, dont 1 000 hospitalisées et 100 décès."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "Quelles pathologies sont liées à la présence de moisissures dans un logement ?",
+    options: [
+      "Saturnisme et intoxication au plomb",
+      "Maladies pulmonaires, asthme, allergies",
+      "Maladies infectieuses parasitaires uniquement",
+      "Troubles cardiovasculaires"
+    ],
+    answer: 1,
+    explanation: "Les moisissures (Aspergillus, Penicillium, Cladosporium) liées à l'humidité provoquent des maladies pulmonaires, de l'asthme et des allergies."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "tf",
+    q: "Vrai ou Faux : L'habitat indigne peut avoir des conséquences sur la santé psychosociale des occupants.",
+    answer: true,
+    explanation: "Vrai. L'habitat indigne peut causer stress, dépression, fatigue, perturbation du sommeil et d'autres atteintes à la santé mentale et psychosociale."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "En cas d'arrêté d'insalubrité ou de péril, qui est obligé de reloger le locataire ?",
+    options: ["L'État", "La CAF", "Le propriétaire (obligation prévue à l'art. L.521-1 CCH)", "La mairie"],
+    answer: 2,
+    explanation: "L'article L.521-1 du CCH prévoit une obligation de relogement qui pèse sur le propriétaire dans le cadre des procédures d'insalubrité et de péril."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "Quel est l'effet automatique d'une décision administrative d'insalubrité sur les loyers ?",
+    options: [
+      "Les loyers sont augmentés pour compenser les travaux",
+      "Les loyers sont automatiquement suspendus (art. L.521-2 CCH)",
+      "Les loyers sont divisés par deux",
+      "Aucun effet sur les loyers"
+    ],
+    answer: 1,
+    explanation: "L'article L.521-2 du CCH prévoit une suspension automatique des loyers dès lors qu'intervient la décision administrative d'insalubrité ou de péril."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "tf",
+    q: "Vrai ou Faux : L'absence d'éclairement naturel direct peut contribuer à des troubles dépressifs.",
+    answer: true,
+    explanation: "Vrai. L'insuffisance voire l'absence d'éclairement naturel direct est identifiée comme un facteur de risque d'atteinte à la santé mentale."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "Les effondrements et chutes d'éléments bâtis constituent un risque pour :",
+    options: ["La santé pulmonaire uniquement", "L'intégrité physique des personnes (sécurité)", "La santé mentale uniquement", "Le risque de saturnisme"],
+    answer: 1,
+    explanation: "Les effondrements et chutes d'éléments bâtis constituent un risque pour la sécurité, c'est-à-dire l'intégrité physique des personnes."
+  },
+  {
+    section: "Conséquences de l'habitat indigne",
+    sectionTag: "tag-consequences",
+    type: "qcm",
+    q: "Quel organisme intervient en cas de signalement d'un habitat insalubre pour évaluation sanitaire ?",
+    options: ["La CAF", "L'ADIL", "L'ARS (Agence Régionale de Santé)", "La DDTM"],
+    answer: 2,
+    explanation: "L'ARS intervient suite à un signalement pour visiter le logement, évaluer la situation sanitaire et engager la procédure CCH/CSP appropriée."
+  },
+
+  // ─── AIDES ET RECOURS (18) ───────────────────────────────────────────────
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Quelle aide permet de couvrir totalement ou partiellement les frais de justice et d'avocat pour un locataire aux revenus modestes ?",
+    options: ["Le FSL", "L'aide juridictionnelle", "L'APL", "L'avance LOCA-PASS"],
+    answer: 1,
+    explanation: "L'aide juridictionnelle, accordée par le greffe du tribunal selon le niveau de ressources, prend en charge tout ou partie des frais de justice et d'avocat."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "L'avance LOCA-PASS est une aide proposée par :",
+    options: ["La CAF", "Le Conseil Départemental", "Action Logement", "L'ANAH"],
+    answer: 2,
+    explanation: "L'avance LOCA-PASS est proposée par Action Logement. Il s'agit d'un prêt sans intérêt pour financer le dépôt de garantie, remboursable sur 3 ans maximum."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "tf",
+    q: "Vrai ou Faux : Le FSL (Fonds de Solidarité pour le Logement) est géré par la CAF.",
+    answer: false,
+    explanation: "Faux. Le FSL est géré par le Conseil Départemental. Il propose subventions, prêts à 0% ou garanties pour couvrir les frais liés au logement."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "L'ANAH (Agence Nationale de l'Habitat) propose principalement :",
+    options: [
+      "Des prêts bancaires à taux préférentiel",
+      "Des subventions pour financer de gros travaux de réhabilitation",
+      "Des aides au paiement du loyer",
+      "Un accompagnement juridique gratuit"
+    ],
+    answer: 1,
+    explanation: "L'ANAH propose des subventions pour financer de gros travaux de réhabilitation : sortie d'insalubrité, rénovation thermique, adaptation au handicap."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "L'APL (Aide Personnalisée au Logement) est versée uniquement pour :",
+    options: ["Tout type de logement", "Les logements conventionnés avec l'État", "Les logements sociaux HLM uniquement", "Les propriétaires occupants"],
+    answer: 1,
+    explanation: "L'APL est réservée aux logements conventionnés avec l'État. Elle réduit directement le montant du loyer versé au bailleur."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "tf",
+    q: "Vrai ou Faux : La médiation et conciliation est une procédure payante obligatoire avant tout recours judiciaire en cas de litige locatif.",
+    answer: false,
+    explanation: "Faux. La médiation/conciliation est une procédure amiable et gratuite, mais elle n'est pas obligatoire avant de saisir le juge en cas d'indécence."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Le PAH (Prêt à l'Amélioration de l'Habitat) est proposé par :",
+    options: ["L'ANAH", "Action Logement", "La CAF ou la MSA", "Le Conseil Départemental"],
+    answer: 2,
+    explanation: "Le PAH est un prêt à taux réduit proposé par la CAF ou la MSA pour financer des travaux de rénovation ou de mise aux normes du logement."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "En cas de logement indécent, quelle est la première étape à engager ?",
+    options: [
+      "Saisir directement le tribunal judiciaire",
+      "Informer le bailleur et engager une phase amiable",
+      "Contacter la préfecture pour un arrêté d'insalubrité",
+      "Arrêter de payer le loyer immédiatement"
+    ],
+    answer: 1,
+    explanation: "Le traitement de l'indécence commence par une phase amiable : information du bailleur sur le mauvais état du logement, la conciliation étant souhaitable avant tout recours judiciaire."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "tf",
+    q: "Vrai ou Faux : Les allocations logement (AL) peuvent être maintenues même si le logement est déclaré insalubre.",
+    answer: false,
+    explanation: "Faux. Les allocations de logement sont suspendues si le logement est insalubre. Elles sont versées sous conditions de ressources pour les logements décents."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Quelle procédure permet au locataire de demander une diminution ou suspension de loyer en cas de logement indécent ?",
+    options: [
+      "La procédure administrative devant le Préfet",
+      "Le recours devant le Tribunal judiciaire (article 20-1 loi 1989)",
+      "La saisine de la commission de conciliation uniquement",
+      "La demande directe auprès de la CAF"
+    ],
+    answer: 1,
+    explanation: "Le locataire peut saisir le Tribunal judiciaire sur la base de l'article 20-1 de la loi du 6 juillet 1989 pour obtenir la mise en conformité et la diminution ou suspension du loyer."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "match",
+    q: "Associez chaque organisme à sa mission principale :",
+    pairs: [
+      { left: "ADIL", right: "Conseil juridique gratuit sur le logement" },
+      { left: "ANAH", right: "Subventions pour travaux de réhabilitation" },
+      { left: "FSL", right: "Aides financières en cas de difficultés de logement" },
+      { left: "Action Logement", right: "Avance LOCA-PASS pour dépôt de garantie" },
+    ],
+    shuffled: ["Conseil juridique gratuit sur le logement", "Subventions pour travaux de réhabilitation", "Aides financières en cas de difficultés de logement", "Avance LOCA-PASS pour dépôt de garantie"]
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Quel organisme peut être saisi pour une évaluation sanitaire d'un logement insalubre ?",
+    options: ["Le Tribunal administratif", "La CAF", "L'ARS (Agence Régionale de Santé)", "L'ADIL"],
+    answer: 2,
+    explanation: "L'ARS peut être saisie via signalement pour évaluer la situation sanitaire d'un logement, engager la procédure appropriée et prescrire des travaux ou un relogement."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "tf",
+    q: "Vrai ou Faux : En cas d'arrêté d'insalubrité, le locataire peut continuer à payer son loyer normalement.",
+    answer: false,
+    explanation: "Faux. L'article L.521-2 du CCH prévoit la suspension automatique des loyers dès lors qu'intervient la décision administrative (arrêté d'insalubrité ou de péril)."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Le FSL peut prendre en charge :",
+    options: [
+      "Uniquement les impayés de loyer",
+      "Les impayés de loyer, les factures d'eau et d'énergie, et d'autres frais liés au logement",
+      "Uniquement les travaux de rénovation",
+      "Le remboursement du dépôt de garantie"
+    ],
+    answer: 1,
+    explanation: "Le FSL peut couvrir les impayés de loyer, les factures d'eau et d'énergie, et autres frais liés au logement pour les personnes en grande difficulté financière."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Le règlement sanitaire départemental (RSD) est vérifié sous la compétence de :",
+    options: ["L'ARS uniquement", "Le Maire (pouvoirs de police générale)", "Le Préfet uniquement", "Le Tribunal judiciaire"],
+    answer: 1,
+    explanation: "Le Maire, dans le cadre de ses pouvoirs de police générale (art. L.2212-1 et suivants du CGCT), est chargé de veiller à la salubrité publique et peut faire vérifier le logement au regard du RSD."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "tf",
+    q: "Vrai ou Faux : L'ADIL propose ses services contre rémunération selon un tarif fixé par le Conseil Départemental.",
+    answer: false,
+    explanation: "Faux. L'ADIL est un organisme de conseil neutre et entièrement gratuit pour les particuliers. Elle peut être contactée au 0 806 000 515 (numéro gratuit)."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "qcm",
+    q: "Parmi ces recours, lequel est qualifié de 'traitement judiciaire' du mal logement ?",
+    options: [
+      "La procédure d'insalubrité",
+      "La procédure de péril",
+      "Le traitement de l'indécence via le Tribunal judiciaire",
+      "L'arrêté préfectoral"
+    ],
+    answer: 2,
+    explanation: "Le traitement de l'indécence est qualifié de 'traitement judiciaire' car il relève des rapports de droit privé entre bailleur et locataire, et du Tribunal judiciaire, contrairement à l'insalubrité et au péril qui sont des procédures administratives."
+  },
+  {
+    section: "Aides et recours",
+    sectionTag: "tag-aides",
+    type: "match",
+    q: "Associez chaque aide à l'organisme qui la délivre :",
+    pairs: [
+      { left: "APL", right: "CAF ou MSA" },
+      { left: "FSL", right: "Conseil Départemental" },
+      { left: "Avance LOCA-PASS", right: "Action Logement" },
+      { left: "Subventions travaux", right: "ANAH" },
+    ],
+    shuffled: ["CAF ou MSA", "Conseil Départemental", "Action Logement", "ANAH"]
+  },
+];
+
+let score = 0;
+let answered = 0;
+let correctCount = 0;
+let wrongCount = 0;
+
+function buildQuiz() {
+  const container = document.getElementById('questions-container');
+  let lastSection = '';
+  questions.forEach((q, i) => {
+    if (q.section !== lastSection) {
+      if (lastSection !== '') {
+        const div = document.createElement('div');
+        div.className = 'section-divider';
+        div.innerHTML = `<div class="section-divider-line"></div><div class="section-divider-label">${q.section}</div><div class="section-divider-line"></div>`;
+        container.appendChild(div);
+      }
+      lastSection = q.section;
+    }
+    const card = createCard(q, i);
+    container.appendChild(card);
+  });
+}
+
+function createCard(q, i) {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = `card-${i}`;
+
+  let inner = `
+    <div class="section-tag ${q.sectionTag}">${q.section}</div>
+    <div class="question-num">Question ${i+1} / ${questions.length}</div>
+    <div class="question-text">${q.q}</div>
+  `;
+
+  if (q.type === 'qcm') {
+    inner += `<div class="options">`;
+    q.options.forEach((opt, j) => {
+      inner += `<button class="option" id="opt-${i}-${j}" onclick="answerQCM(${i}, ${j})" data-q="${i}" data-opt="${j}">
+        <span class="option-letter">${String.fromCharCode(65+j)}</span>${opt}
+      </button>`;
+    });
+    inner += `</div>`;
+  } else if (q.type === 'tf') {
+    inner += `<div class="tf-options">
+      <button class="tf-btn" id="tf-${i}-true" onclick="answerTF(${i}, true)">✓ Vrai</button>
+      <button class="tf-btn" id="tf-${i}-false" onclick="answerTF(${i}, false)">✗ Faux</button>
+    </div>`;
+  } else if (q.type === 'match') {
+    inner += `<div class="match-container">`;
+    q.pairs.forEach((pair, j) => {
+      const opts = q.shuffled.map(s => `<option value="${s}">${s}</option>`).join('');
+      inner += `<div class="match-row">
+        <div class="match-left">${pair.left}</div>
+        <select class="match-select" id="match-${i}-${j}">
+          <option value="">-- Choisir --</option>
+          ${opts}
+        </select>
+      </div>`;
+    });
+    inner += `</div>`;
+    inner += `<button class="match-check-btn" id="match-check-${i}" onclick="checkMatch(${i})">Valider l'association</button>`;
+  }
+
+  inner += `<div class="feedback" id="feedback-${i}"></div>`;
+  card.innerHTML = inner;
+  return card;
+}
+
+function answerQCM(qi, selected) {
+  const q = questions[qi];
+  const card = document.getElementById(`card-${qi}`);
+  const feedback = document.getElementById(`feedback-${qi}`);
+  const correct = q.answer;
+
+  // Disable all options
+  q.options.forEach((_, j) => {
+    const btn = document.getElementById(`opt-${qi}-${j}`);
+    btn.disabled = true;
+    if (j === correct) btn.classList.add('show-correct');
+    if (j === selected && selected !== correct) btn.classList.add('selected-wrong');
+    if (j === selected && selected === correct) btn.classList.add('selected-correct');
+  });
+
+  const isCorrect = selected === correct;
+  updateScore(isCorrect);
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  feedback.className = `feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+  feedback.innerHTML = `${isCorrect ? '✓ Bonne réponse !' : '✗ Mauvaise réponse.'} ${q.explanation}`;
+}
+
+function answerTF(qi, selected) {
+  const q = questions[qi];
+  const card = document.getElementById(`card-${qi}`);
+  const feedback = document.getElementById(`feedback-${qi}`);
+  const correct = q.answer;
+
+  const trueBtn = document.getElementById(`tf-${qi}-true`);
+  const falseBtn = document.getElementById(`tf-${qi}-false`);
+  trueBtn.disabled = true;
+  falseBtn.disabled = true;
+
+  const isCorrect = selected === correct;
+  if (correct) trueBtn.classList.add('show-correct'); else falseBtn.classList.add('show-correct');
+  if (!isCorrect) (selected ? trueBtn : falseBtn).classList.add('selected-wrong');
+  if (isCorrect) (selected ? trueBtn : falseBtn).classList.add('selected-correct');
+
+  updateScore(isCorrect);
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  feedback.className = `feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+  feedback.innerHTML = `${isCorrect ? '✓ Bonne réponse !' : '✗ Mauvaise réponse.'} ${q.explanation}`;
+}
+
+function checkMatch(qi) {
+  const q = questions[qi];
+  const card = document.getElementById(`card-${qi}`);
+  const feedback = document.getElementById(`feedback-${qi}`);
+  const btn = document.getElementById(`match-check-${qi}`);
+
+  let allCorrect = true;
+  q.pairs.forEach((pair, j) => {
+    const sel = document.getElementById(`match-${qi}-${j}`);
+    sel.disabled = true;
+    if (sel.value === pair.right) {
+      sel.classList.add('correct');
+    } else {
+      sel.classList.add('wrong');
+      allCorrect = false;
+    }
+  });
+
+  btn.disabled = true;
+  updateScore(allCorrect);
+  card.classList.add(allCorrect ? 'answered-correct' : 'answered-wrong');
+  feedback.className = `feedback show ${allCorrect ? 'correct' : 'wrong'}`;
+  const correctAnswers = q.pairs.map(p => `${p.left} → ${p.right}`).join(' | ');
+  feedback.innerHTML = `${allCorrect ? '✓ Toutes les associations sont correctes !' : '✗ Certaines associations sont incorrectes.'}<br><small>Réponses : ${correctAnswers}</small>`;
+}
+
+function updateScore(isCorrect) {
+  answered++;
+  if (isCorrect) { score++; correctCount++; } else { wrongCount++; }
+  document.getElementById('score-display').textContent = score;
+  const pct = Math.round(answered / questions.length * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${answered} réponse(s) donnée(s)`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  if (answered === questions.length) setTimeout(showResults, 800);
+}
+
+function showResults() {
+  const results = document.getElementById('results');
+  const pct = Math.round(score / questions.length * 100);
+  const scoreEl = document.getElementById('final-score');
+  scoreEl.textContent = `${score}/${questions.length}`;
+  scoreEl.className = 'results-score ' + (pct >= 80 ? 'excellent' : pct >= 60 ? 'good' : pct >= 40 ? 'average' : 'poor');
+  document.getElementById('final-label').textContent = pct >= 80 ? '🏆 Excellent !' : pct >= 60 ? '👍 Bien !' : pct >= 40 ? '📚 À revoir' : '⚠️ À travailler';
+  document.getElementById('final-sub').textContent = `Vous avez obtenu ${pct}% de bonnes réponses.`;
+  document.getElementById('correct-count').textContent = correctCount;
+  document.getElementById('wrong-count').textContent = wrongCount;
+  document.getElementById('skip-count').textContent = questions.length - answered;
+  results.classList.add('show');
+  results.scrollIntoView({ behavior: 'smooth' });
+}
+
+function restart() {
+  score = 0; answered = 0; correctCount = 0; wrongCount = 0;
+  document.getElementById('score-display').textContent = 0;
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-label').textContent = '0 réponse(s) donnée(s)';
+  document.getElementById('progress-pct').textContent = '0%';
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('questions-container').innerHTML = '';
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>

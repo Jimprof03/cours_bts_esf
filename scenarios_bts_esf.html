@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scénarios cas pratiques – Logement BTS ESF</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0D1B2A; --blue: #1A3A5C; --teal: #1B6CA8;
+    --accent: #E63946; --gold: #F4A261; --green: #2A9D8F;
+    --purple: #7B5EA7; --light: #F8F5F0; --gray: #8A9BB0; --white: #FFFFFF;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; padding: 0 20px 80px; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 40% at 80% 5%, #1A3A5C55, transparent), radial-gradient(ellipse 40% 50% at 5% 90%, #2A9D8F15, transparent); pointer-events: none; z-index: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+
+  .header { padding: 44px 0 32px; text-align: center; }
+  .header-tag { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+  .header h1 span { color: var(--gold); }
+  .header p { font-size: 14px; color: var(--gray); font-weight: 300; }
+
+  /* SCENARIO SELECTOR */
+  .sc-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+  .sc-tab {
+    padding: 16px 14px;
+    border-radius: 14px;
+    border: 1px solid #ffffff20;
+    background: #ffffff08;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .sc-tab:hover { background: #ffffff15; border-color: #ffffff35; }
+  .sc-tab.active { border-color: var(--gold); background: #F4A26115; }
+  .sc-tab-num { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .sc-tab.active .sc-tab-num { color: var(--gold); }
+  .sc-tab:not(.active) .sc-tab-num { color: var(--gray); }
+  .sc-tab-title { font-size: 13px; font-weight: 500; line-height: 1.35; }
+  .sc-tab.active .sc-tab-title { color: var(--white); }
+  .sc-tab:not(.active) .sc-tab-title { color: var(--gray); }
+  .sc-tab-badge {
+    margin-top: 8px;
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 100px;
+  }
+
+  /* SCENARIO PANEL */
+  .sc-panel { display: none; }
+  .sc-panel.active { display: block; }
+
+  .sc-hero {
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+    border: 1px solid;
+  }
+  .sc-hero.indecent { background: #1B6CA812; border-color: #1B6CA855; }
+  .sc-hero.insalubre { background: #E6394612; border-color: #E6394655; }
+  .sc-hero.aides { background: #2A9D8F12; border-color: #2A9D8F55; }
+
+  .hero-tag { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .indecent .hero-tag { color: var(--teal); }
+  .insalubre .hero-tag { color: #ff8a94; }
+  .aides .hero-tag { color: var(--green); }
+
+  .hero-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+  .hero-situation { font-size: 14px; color: rgba(255,255,255,0.82); line-height: 1.65; font-weight: 300; }
+  .hero-situation strong { color: var(--white); font-weight: 500; }
+
+  /* STEPS */
+  .sc-progress-wrap { margin-bottom: 20px; }
+  .sc-progress-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+  .sc-bar { height: 5px; background: #ffffff15; border-radius: 100px; overflow: hidden; }
+  .sc-fill { height: 100%; border-radius: 100px; transition: width 0.4s; }
+  .indecent-fill { background: var(--teal); }
+  .insalubre-fill { background: var(--accent); }
+  .aides-fill { background: var(--green); }
+
+  .sc-step { margin-bottom: 20px; }
+  .sc-question { font-size: 16px; font-weight: 500; line-height: 1.5; margin-bottom: 14px; color: var(--white); }
+  .sc-choices { display: flex; flex-direction: column; gap: 9px; }
+  .sc-choice {
+    padding: 13px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #ffffff20;
+    background: #ffffff06;
+    color: var(--white);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.45;
+    transition: all 0.15s;
+    width: 100%;
+  }
+  .sc-choice:hover:not(:disabled) { border-color: #ffffff40; background: #ffffff10; }
+  .sc-choice:disabled { cursor: default; }
+  .sc-choice.correct { border-color: var(--green); background: #2A9D8F20; color: #7ae8df; }
+  .sc-choice.wrong { border-color: var(--accent); background: #E6394620; color: #ff8a94; }
+  .sc-choice.show-correct { border-color: var(--green); background: #2A9D8F15; color: #7ae8df; }
+
+  .sc-feedback {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.55;
+    display: none;
+  }
+  .sc-feedback.ok { background: #2A9D8F20; border: 1px solid var(--green); color: #7ae8df; }
+  .sc-feedback.ko { background: #E6394618; border: 1px solid var(--accent); color: #ff8a94; }
+
+  .sc-next-btn {
+    display: none;
+    margin-top: 14px;
+    padding: 11px 24px;
+    border-radius: 100px;
+    border: none;
+    background: var(--teal);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .sc-next-btn:hover { opacity: 0.85; }
+  .insalubre-btn { background: var(--accent); }
+  .aides-btn { background: var(--green); }
+
+  /* SCORE */
+  .sc-score {
+    display: none;
+    text-align: center;
+    padding: 40px 32px;
+    background: #ffffff08;
+    border: 1px solid #ffffff15;
+    border-radius: 16px;
+  }
+  .sc-score-num { font-family: 'Syne', sans-serif; font-size: 56px; font-weight: 800; line-height: 1; margin: 10px 0 8px; }
+  .sc-score-label { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+  .sc-score-bilan {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.65;
+    margin-bottom: 24px;
+    background: #ffffff08;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: left;
+  }
+  .sc-score-bilan strong { color: var(--white); }
+  .restart-btn {
+    padding: 13px 32px;
+    border-radius: 100px;
+    border: none;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .restart-btn:hover { opacity: 0.85; }
+
+  @media (max-width: 560px) {
+    .sc-selector { grid-template-columns: 1fr; }
+    .sc-question { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-tag">BTS ESF · Cas pratiques</div>
+    <h1>Scénarios <span>interactifs</span></h1>
+    <p>Logement indécent · Insalubrité · Aides financières</p>
+  </div>
+
+  <div class="sc-selector">
+    <div class="sc-tab active" onclick="showScenario(0)">
+      <div class="sc-tab-num">Scénario 1</div>
+      <div class="sc-tab-title">Logement indécent</div>
+      <div class="sc-tab-badge" style="background:#1B6CA825;color:var(--teal);border:1px solid var(--teal)">Droit privé</div>
+    </div>
+    <div class="sc-tab" onclick="showScenario(1)">
+      <div class="sc-tab-num">Scénario 2</div>
+      <div class="sc-tab-title">Logement insalubre</div>
+      <div class="sc-tab-badge" style="background:#E6394625;color:#ff8a94;border:1px solid var(--accent)">Droit public</div>
+    </div>
+    <div class="sc-tab" onclick="showScenario(2)">
+      <div class="sc-tab-num">Scénario 3</div>
+      <div class="sc-tab-title">Aides financières</div>
+      <div class="sc-tab-badge" style="background:#2A9D8F25;color:var(--green);border:1px solid var(--green)">Dispositifs</div>
+    </div>
+  </div>
+
+  <!-- SCÉNARIO 1 : Indécence -->
+  <div class="sc-panel active" id="panel-0">
+    <div class="sc-hero indecent">
+      <div class="hero-tag">Scénario 1 · Logement indécent</div>
+      <div class="hero-name">Madame K., 42 ans</div>
+      <div class="hero-situation">
+        Madame K. vous contacte en tant que TESF. Elle loue un appartement depuis 3 ans. Son logement présente <strong>des moisissures importantes dans la chambre</strong>, <strong>une fenêtre qui ne ferme plus</strong> et <strong>un chauffe-eau qui fuit</strong>. Elle a signalé verbalement les problèmes au propriétaire, sans réponse. Elle craint d'être expulsée si elle se plaint officiellement.
+      </div>
+    </div>
+
+    <div class="sc-progress-wrap">
+      <div class="sc-progress-top"><span id="prog-label-0">Étape 1 / 5</span><span id="prog-pct-0">20%</span></div>
+      <div class="sc-bar"><div class="sc-fill indecent-fill" id="fill-0" style="width:20%"></div></div>
+    </div>
+
+    <div id="steps-0">
+      <div class="sc-step" id="s0-0">
+        <div class="sc-question">De quel type de situation s'agit-il ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,0,0)">Un logement indigne relevant d'un arrêté préfectoral</button>
+          <button class="sc-choice" onclick="ans(0,0,1)">Un logement indécent relevant du droit privé bailleur/locataire</button>
+          <button class="sc-choice" onclick="ans(0,0,2)">Un péril imminent nécessitant l'évacuation immédiate</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-0"></div>
+        <button class="sc-next-btn" id="next-0-0" onclick="showSt(0,1)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-1" style="display:none">
+        <div class="sc-question">Madame K. craint d'être expulsée si elle se plaint. Que lui expliquez-vous ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,1,0)">Elle a raison, le propriétaire peut l'expulser pour trouble de jouissance</button>
+          <button class="sc-choice" onclick="ans(0,1,1)">La loi protège le locataire : le bailleur ne peut pas expulser quelqu'un qui signale un logement indécent</button>
+          <button class="sc-choice" onclick="ans(0,1,2)">Elle doit déménager avant de se plaindre pour éviter tout risque</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-1"></div>
+        <button class="sc-next-btn" id="next-0-1" onclick="showSt(0,2)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-2" style="display:none">
+        <div class="sc-question">Quelle est la première démarche concrète à conseiller ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,2,0)">Arrêter de payer le loyer immédiatement</button>
+          <button class="sc-choice" onclick="ans(0,2,1)">Envoyer une lettre recommandée avec AR au propriétaire pour le mettre en demeure</button>
+          <button class="sc-choice" onclick="ans(0,2,2)">Saisir directement le Tribunal judiciaire sans prévenir le propriétaire</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-2"></div>
+        <button class="sc-next-btn" id="next-0-2" onclick="showSt(0,3)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-3" style="display:none">
+        <div class="sc-question">Après 1 mois sans réponse, vers quel organisme orienter Madame K. pour un conseil juridique gratuit ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,3,0)">La mairie pour un arrêté d'insalubrité</button>
+          <button class="sc-choice" onclick="ans(0,3,1)">L'ADIL pour un conseil juridique gratuit et neutre</button>
+          <button class="sc-choice" onclick="ans(0,3,2)">L'ANAH pour financer les travaux du propriétaire</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-3"></div>
+        <button class="sc-next-btn" id="next-0-3" onclick="showSt(0,4)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-4" style="display:none">
+        <div class="sc-question">Le juge constate l'indécence. Que peut-il décider ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,4,0)">Expulser Madame K. pour non-entretien du logement</button>
+          <button class="sc-choice" onclick="ans(0,4,1)">Ordonner les travaux au propriétaire sous astreinte et réduire ou suspendre le loyer</button>
+          <button class="sc-choice" onclick="ans(0,4,2)">Rembourser automatiquement 3 ans de loyers à Madame K.</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-4"></div>
+        <button class="sc-next-btn insalubre-btn" id="next-0-4" onclick="showScore(0)">Voir le bilan →</button>
+      </div>
+    </div>
+
+    <div class="sc-score" id="score-0">
+      <div class="hero-tag" style="color:var(--teal)">Bilan · Scénario 1</div>
+      <div class="sc-score-num" id="num-0" style="color:var(--teal)"></div>
+      <div class="sc-score-label" id="label-0"></div>
+      <div class="sc-score-bilan">
+        <strong>La bonne démarche :</strong> Logement indécent = droit privé → LRAR au propriétaire → attendre 1 mois → ADIL pour conseil gratuit → Commission de Conciliation → Tribunal judiciaire → Le juge ordonne les travaux et peut suspendre le loyer.
+      </div>
+      <button class="restart-btn" style="background:var(--teal)" onclick="restart(0)">Recommencer ce scénario</button>
+    </div>
+  </div>
+
+  <!-- SCÉNARIO 2 : Insalubrité -->
+  <div class="sc-panel" id="panel-1">
+    <div class="sc-hero insalubre">
+      <div class="hero-tag">Scénario 2 · Logement insalubre</div>
+      <div class="hero-name">Monsieur D., 58 ans</div>
+      <div class="hero-situation">
+        Monsieur D., retraité, vous est signalé par son médecin. Il habite depuis 10 ans un immeuble des années 1940. On constate : <strong>des peintures écaillées contenant du plomb</strong>, <strong>une installation électrique vétuste avec fils dénudés accessibles</strong>, <strong>des infiltrations massives par le toit</strong> et <strong>un plancher menaçant de s'effondrer</strong>. Son propriétaire refuse toute intervention.
+      </div>
+    </div>
+
+    <div class="sc-progress-wrap">
+      <div class="sc-progress-top"><span id="prog-label-1">Étape 1 / 5</span><span id="prog-pct-1">20%</span></div>
+      <div class="sc-bar"><div class="sc-fill insalubre-fill" id="fill-1" style="width:20%"></div></div>
+    </div>
+
+    <div id="steps-1">
+      <div class="sc-step" id="s1-0">
+        <div class="sc-question">Quelle qualification juridique correspond à la situation de M. D. ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,0,0)">Un logement simplement indécent relevant du Tribunal judiciaire</button>
+          <button class="sc-choice" onclick="ans(1,0,1)">Un habitat indigne (insalubrité + péril) relevant d'une procédure administrative</button>
+          <button class="sc-choice" onclick="ans(1,0,2)">Une situation normale pour un immeuble ancien, sans recours possible</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-0"></div>
+        <button class="sc-next-btn insalubre-btn" id="next-1-0" onclick="showSt(1,1)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-1" style="display:none">
+        <div class="sc-question">Les peintures au plomb écaillées font craindre un saturnisme. Quel organisme doit être contacté en priorité pour une évaluation sanitaire ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,1,0)">L'ADIL pour un conseil juridique</button>
+          <button class="sc-choice" onclick="ans(1,1,1)">L'ARS (Agence Régionale de Santé) pour une enquête sanitaire sur place</button>
+          <button class="sc-choice" onclick="ans(1,1,2)">La CAF pour suspendre les aides au logement</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-1"></div>
+        <button class="sc-next-btn insalubre-btn" id="next-1-1" onclick="showSt(1,2)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-2" style="display:none">
+        <div class="sc-question">Suite à l'enquête, un arrêté d'insalubrité est pris. Que se passe-t-il automatiquement pour les loyers ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,2,0)">Rien ne change, M. D. continue à payer normalement</button>
+          <button class="sc-choice" onclick="ans(1,2,1)">Le loyer est automatiquement suspendu dès la notification de l'arrêté (art. L.521-2 CCH)</button>
+          <button class="sc-choice" onclick="ans(1,2,2)">Le loyer est doublé pour financer les travaux obligatoires</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-2"></div>
+        <button class="sc-next-btn insalubre-btn" id="next-1-2" onclick="showSt(1,3)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-3" style="display:none">
+        <div class="sc-question">Le propriétaire refuse de reloger M. D. malgré l'arrêté d'interdiction d'habiter. Que dit la loi ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,3,0)">M. D. doit trouver lui-même un hébergement d'urgence à ses frais</button>
+          <button class="sc-choice" onclick="ans(1,3,1)">L'obligation de relogement pèse sur le propriétaire (art. L.521-1 CCH). En cas de refus, la puissance publique s'en charge aux frais du bailleur</button>
+          <button class="sc-choice" onclick="ans(1,3,2)">Le propriétaire a 6 mois pour trouver une solution, M. D. doit attendre</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-3"></div>
+        <button class="sc-next-btn insalubre-btn" id="next-1-3" onclick="showSt(1,4)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-4" style="display:none">
+        <div class="sc-question">Le propriétaire (modeste) souhaite finalement réhabiliter le logement. Quel organisme peut l'aider à financer les travaux ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,4,0)">L'ADIL qui finance directement les travaux de réhabilitation</button>
+          <button class="sc-choice" onclick="ans(1,4,1)">L'ANAH (Agence Nationale de l'Habitat) qui propose des subventions pour les travaux de sortie d'insalubrité</button>
+          <button class="sc-choice" onclick="ans(1,4,2)">La CAF qui prend en charge tous les travaux liés au logement</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-4"></div>
+        <button class="sc-next-btn insalubre-btn" id="next-1-4" onclick="showScore(1)">Voir le bilan →</button>
+      </div>
+    </div>
+
+    <div class="sc-score" id="score-1">
+      <div class="hero-tag" style="color:#ff8a94">Bilan · Scénario 2</div>
+      <div class="sc-score-num" id="num-1" style="color:var(--accent)"></div>
+      <div class="sc-score-label" id="label-1"></div>
+      <div class="sc-score-bilan">
+        <strong>La bonne démarche :</strong> Habitat indigne = procédure administrative → Signalement ARS → Enquête sanitaire → Arrêté d'insalubrité (Préfet) → Suspension automatique des loyers → Obligation de relogement sur le propriétaire → ANAH pour financer la réhabilitation.
+      </div>
+      <button class="restart-btn" style="background:var(--accent)" onclick="restart(1)">Recommencer ce scénario</button>
+    </div>
+  </div>
+
+  <!-- SCÉNARIO 3 : Aides financières -->
+  <div class="sc-panel" id="panel-2">
+    <div class="sc-hero aides">
+      <div class="hero-tag">Scénario 3 · Aides financières</div>
+      <div class="hero-name">Famille B., 3 enfants</div>
+      <div class="hero-situation">
+        La famille B. vous est orientée par la mairie. Monsieur et Madame B. ont 3 enfants (8, 12 et 16 ans). Ils occupent un logement non conventionné dans le secteur privé. Ils ont des <strong>impayés de loyer depuis 3 mois</strong>, une <strong>facture d'énergie impayée de 800 €</strong>, et souhaitent <strong>changer de logement mais n'ont pas de dépôt de garantie</strong>. Leurs revenus sont modestes (RSA + petit emploi partiel).
+      </div>
+    </div>
+
+    <div class="sc-progress-wrap">
+      <div class="sc-progress-top"><span id="prog-label-2">Étape 1 / 5</span><span id="prog-pct-2">20%</span></div>
+      <div class="sc-bar"><div class="sc-fill aides-fill" id="fill-2" style="width:20%"></div></div>
+    </div>
+
+    <div id="steps-2">
+      <div class="sc-step" id="s2-0">
+        <div class="sc-question">La famille perçoit des aides au logement. Leur logement actuel est non conventionné. Quelle aide au logement peuvent-ils percevoir ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(2,0,0)">L'APL (Aide Personnalisée au Logement), réservée aux logements conventionnés</button>
+          <button class="sc-choice" onclick="ans(2,0,1)">L'AL (Allocation de Logement), accessible aux logements non conventionnés sous conditions de ressources</button>
+          <button class="sc-choice" onclick="ans(2,0,2)">Aucune aide, car ils ont des impayés de loyer</button>
+        </div>
+        <div class="sc-feedback" id="fb-2-0"></div>
+        <button class="sc-next-btn aides-btn" id="next-2-0" onclick="showSt(2,1)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s2-1" style="display:none">
+        <div class="sc-question">Pour les impayés de loyer ET la facture d'énergie impayée, vers quelle aide orienter la famille B. ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(2,1,0)">L'ANAH qui finance les travaux d'isolation pour réduire les factures</button>
+          <button class="sc-choice" onclick="ans(2,1,1)">Le FSL (Fonds de Solidarité pour le Logement, Conseil Départemental) qui peut couvrir impayés de loyer et factures d'énergie</button>
+          <button class="sc-choice" onclick="ans(2,1,2)">L'ADIL qui peut rembourser directement les dettes locatives</button>
+        </div>
+        <div class="sc-feedback" id="fb-2-1"></div>
+        <button class="sc-next-btn aides-btn" id="next-2-1" onclick="showSt(2,2)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s2-2" style="display:none">
+        <div class="sc-question">Pour financer le dépôt de garantie du nouveau logement, quelle aide existe ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(2,2,0)">L'avance LOCA-PASS d'Action Logement : prêt sans intérêt pour le dépôt de garantie, remboursable sur 3 ans</button>
+          <button class="sc-choice" onclick="ans(2,2,1)">Une subvention de la CAF couvrant automatiquement tout dépôt de garantie</button>
+          <button class="sc-choice" onclick="ans(2,2,2)">Le FSL peut uniquement aider pour les factures, pas le dépôt de garantie</button>
+        </div>
+        <div class="sc-feedback" id="fb-2-2"></div>
+        <button class="sc-next-btn aides-btn" id="next-2-2" onclick="showSt(2,3)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s2-3" style="display:none">
+        <div class="sc-question">Le nouveau logement envisagé est conventionné. À quelle aide au logement la famille pourra-t-elle prétendre ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(2,3,0)">L'AL uniquement, car l'APL est réservée aux propriétaires</button>
+          <button class="sc-choice" onclick="ans(2,3,1)">L'APL (Aide Personnalisée au Logement), versée par la CAF pour les logements conventionnés, réduisant directement le loyer</button>
+          <button class="sc-choice" onclick="ans(2,3,2)">Aucune aide supplémentaire, ils ne peuvent pas cumuler les aides</button>
+        </div>
+        <div class="sc-feedback" id="fb-2-3"></div>
+        <button class="sc-next-btn aides-btn" id="next-2-3" onclick="showSt(2,4)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s2-4" style="display:none">
+        <div class="sc-question">La famille veut aussi réaliser des travaux d'isolation dans leur nouveau logement (propriétaire modeste d'une maison). Quel dispositif peut les aider ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(2,4,0)">Le FSL qui finance tous types de travaux dans le logement</button>
+          <button class="sc-choice" onclick="ans(2,4,1)">L'ANAH qui propose des subventions pour la rénovation thermique et l'amélioration de l'habitat pour les propriétaires modestes</button>
+          <button class="sc-choice" onclick="ans(2,4,2)">L'ADIL qui finance directement les travaux d'isolation</button>
+        </div>
+        <div class="sc-feedback" id="fb-2-4"></div>
+        <button class="sc-next-btn aides-btn" id="next-2-4" onclick="showScore(2)">Voir le bilan →</button>
+      </div>
+    </div>
+
+    <div class="sc-score" id="score-2">
+      <div class="hero-tag" style="color:var(--green)">Bilan · Scénario 3</div>
+      <div class="sc-score-num" id="num-2" style="color:var(--green)"></div>
+      <div class="sc-score-label" id="label-2"></div>
+      <div class="sc-score-bilan">
+        <strong>Les aides clés à retenir :</strong> AL (logement non conventionné, CAF) · APL (logement conventionné, CAF) · FSL (impayés loyer/énergie, Conseil Départemental) · LOCA-PASS (dépôt de garantie, Action Logement) · ANAH (travaux réhabilitation, propriétaires modestes) · PAH (prêt amélioration habitat, CAF).
+      </div>
+      <button class="restart-btn" style="background:var(--green)" onclick="restart(2)">Recommencer ce scénario</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const scenarios = [
+  {
+    steps: 5,
+    answers: [1, 1, 1, 1, 1],
+    feedbacks: [
+      [
+        "Non. Les désordres (moisissures, menuiseries défectueuses, fuite) ne justifient pas un arrêté préfectoral. Il s'agit de défauts de décence relevant du droit privé.",
+        "Oui ! Ces désordres relèvent bien de l'indécence : droit privé entre bailleur et locataire, compétence du Tribunal judiciaire. Ce n'est pas de l'habitat indigne au sens administratif.",
+        "Non. Un péril imminent concerne une menace structurelle grave. La situation de Mme K. ne justifie pas une évacuation d'urgence."
+      ],
+      [
+        "Non. La loi protège le locataire contre les représailles. Un propriétaire ne peut pas expulser quelqu'un qui signale légitimement un logement indécent.",
+        "Exactement ! L'article 6 de la loi du 6 juillet 1989 protège Mme K. Le bailleur est dans l'illégalité s'il tente de l'expulser pour avoir signalé l'indécence.",
+        "Non. Mme K. n'a pas à fuir. La loi la protège. C'est au contraire en restant et en agissant par les voies légales qu'elle obtiendra satisfaction."
+      ],
+      [
+        "Surtout pas ! Arrêter de payer sans décision judiciaire expose Mme K. à une procédure d'expulsion. La démarche amiable doit venir en premier.",
+        "Exactement. La LRAR est indispensable : elle formalise la demande, déclenche le délai légal et constitue une preuve en cas de recours judiciaire.",
+        "Non. Sans mise en demeure préalable, le juge pourrait rejeter la demande. La phase amiable est obligatoire avant tout recours."
+      ],
+      [
+        "Non. La mairie peut agir pour des problèmes de sécurité publique (péril), mais ce n'est pas l'interlocuteur pour un conseil juridique sur les droits du locataire.",
+        "Parfait ! L'ADIL offre un conseil juridique gratuit et neutre, aide à rédiger les courriers, informe sur les droits et oriente vers les bons recours.",
+        "L'ANAH finance les travaux pour les propriétaires, ce n'est pas son rôle de conseiller le locataire sur ses droits."
+      ],
+      [
+        "Non. L'indécence est une faute du bailleur, pas du locataire. Mme K. ne peut pas être expulsée pour avoir signalé un problème.",
+        "Oui ! Le juge peut ordonner au propriétaire de réaliser les travaux sous astreinte (pénalité par jour de retard) et réduire ou suspendre le loyer pendant l'indécence.",
+        "Non. Le remboursement rétroactif automatique n'existe pas. Le juge peut agir à partir de sa décision, pas sur les 3 années passées."
+      ]
+    ]
+  },
+  {
+    steps: 5,
+    answers: [1, 1, 1, 1, 1],
+    feedbacks: [
+      [
+        "Non. Les peintures au plomb, l'électricité vétuste, les infiltrations massives et le plancher menaçant dépassent largement l'indécence. Il s'agit d'un habitat indigne relevant du droit public.",
+        "Exactement ! Peintures au plomb (saturnisme), installation électrique dangereuse, infiltrations massives et péril structurel = habitat indigne relevant d'une procédure administrative (Préfet/Maire).",
+        "Non. La situation de M. D. est grave et il existe des recours légaux. Un immeuble ancien ne justifie pas l'absence d'action."
+      ],
+      [
+        "L'ADIL est utile pour le conseil juridique, mais pas pour l'évaluation sanitaire. Il faut un organisme technique spécialisé.",
+        "Oui ! L'ARS réalise les enquêtes sanitaires sur place, évalue l'insalubrité et le risque de saturnisme, et rédige les rapports techniques pour le Préfet.",
+        "La CAF peut intervenir sur les aides, mais ce n'est pas son rôle d'évaluer l'insalubrité d'un logement."
+      ],
+      [
+        "Non. C'est une différence fondamentale avec l'indécence. En cas d'arrêté d'insalubrité ou de péril, les loyers sont AUTOMATIQUEMENT suspendus.",
+        "Exactement ! L'article L.521-2 du CCH prévoit la suspension automatique des loyers dès la notification de l'arrêté. C'est une protection immédiate pour le locataire.",
+        "Non. Le loyer ne peut pas être augmenté. Au contraire, il est suspendu automatiquement dès l'arrêté."
+      ],
+      [
+        "Non. L'obligation de relogement pèse légalement sur le propriétaire, pas sur le locataire. M. D. ne doit pas être laissé sans solution.",
+        "Parfait ! L'article L.521-1 du CCH impose au propriétaire de reloger le locataire. Si le bailleur refuse, la puissance publique s'en charge et récupère les frais auprès du bailleur.",
+        "Non. Il n'y a pas de délai de 6 mois accordé au propriétaire pour trouver une solution une fois l'interdiction d'habiter prononcée."
+      ],
+      [
+        "Non. L'ADIL conseille les locataires et propriétaires sur leurs droits, mais elle ne finance pas les travaux.",
+        "Oui ! L'ANAH propose des subventions spécifiques pour la sortie d'insalubrité et la rénovation thermique, ciblant notamment les propriétaires modestes ou bailleurs engagés dans la mise en conformité.",
+        "Non. La CAF gère les aides au logement des locataires, pas le financement des travaux de réhabilitation."
+      ]
+    ]
+  },
+  {
+    steps: 5,
+    answers: [1, 1, 0, 1, 1],
+    feedbacks: [
+      [
+        "Non. L'APL est réservée aux logements conventionnés avec l'État. Le logement de la famille B. étant non conventionné, ils ne peuvent pas y prétendre.",
+        "Exactement ! L'AL (Allocation de Logement) est accessible aux locataires de logements non conventionnés, sous conditions de ressources. C'est bien cette aide que perçoit la famille B.",
+        "Non. Les impayés de loyer n'entraînent pas automatiquement la suppression des aides. La CAF peut même continuer à verser l'aide directement au bailleur dans certains cas."
+      ],
+      [
+        "L'ANAH finance les travaux du logement, ce n'est pas son rôle d'intervenir sur les impayés de loyer ou d'énergie.",
+        "Parfait ! Le FSL (Fonds de Solidarité pour le Logement), géré par le Conseil Départemental, peut prendre en charge les impayés de loyer, les factures d'eau, d'énergie, et d'autres frais liés au logement.",
+        "Non. L'ADIL est un organisme de conseil juridique gratuit, elle ne rembourse pas les dettes locatives."
+      ],
+      [
+        "Exactement ! L'avance LOCA-PASS d'Action Logement est un prêt sans intérêt pour financer le dépôt de garantie. Elle est remboursable sur 3 ans maximum avec des mensualités minimum de 20 €.",
+        "Non. La CAF ne couvre pas automatiquement le dépôt de garantie. Il faut se tourner vers Action Logement (LOCA-PASS) ou parfois le FSL.",
+        "Non. Le FSL peut aussi aider pour le dépôt de garantie dans certains cas, en complément de la LOCA-PASS."
+      ],
+      [
+        "Non. L'AL est pour les logements non conventionnés. Dans un logement conventionné, c'est l'APL qui s'applique, pas l'AL. Et l'APL n'est pas réservée aux propriétaires.",
+        "Oui ! Dans un logement conventionné avec l'État, la famille B. pourra bénéficier de l'APL versée par la CAF, qui réduit directement le montant du loyer à payer.",
+        "Non. Il est possible de bénéficier de plusieurs aides différentes (APL + FSL + LOCA-PASS) car elles couvrent des besoins distincts."
+      ],
+      [
+        "Non. Le FSL couvre les impayés de loyer, d'énergie et d'eau, mais n'est pas conçu pour financer des travaux d'isolation.",
+        "Exactement ! L'ANAH propose des subventions pour la rénovation thermique et l'adaptation du logement, ciblant notamment les propriétaires modestes. C'est le bon interlocuteur pour des travaux d'isolation.",
+        "Non. L'ADIL est un organisme de conseil juridique gratuit, elle ne finance pas les travaux."
+      ]
+    ]
+  }
+];
+
+let state = [
+  { answered: [false,false,false,false,false], scores: [false,false,false,false,false], current: 0 },
+  { answered: [false,false,false,false,false], scores: [false,false,false,false,false], current: 0 },
+  { answered: [false,false,false,false,false], scores: [false,false,false,false,false], current: 0 },
+];
+
+function showScenario(i) {
+  document.querySelectorAll('.sc-panel').forEach((p,j) => p.classList.toggle('active', j===i));
+  document.querySelectorAll('.sc-tab').forEach((t,j) => t.classList.toggle('active', j===i));
+}
+
+function ans(sc, step, choice) {
+  if (state[sc].answered[step]) return;
+  state[sc].answered[step] = true;
+  const correct = scenarios[sc].answers[step];
+  const btns = document.querySelectorAll(`#s${sc}-${step} .sc-choice`);
+  btns.forEach((b,i) => {
+    b.disabled = true;
+    if (i === correct) b.classList.add('show-correct');
+    if (i === choice && choice !== correct) b.classList.add('wrong');
+    if (i === choice && choice === correct) b.classList.add('correct');
+  });
+  const isCorrect = choice === correct;
+  state[sc].scores[step] = isCorrect;
+  const fb = document.getElementById(`fb-${sc}-${step}`);
+  fb.style.display = 'block';
+  fb.className = `sc-feedback ${isCorrect ? 'ok' : 'ko'}`;
+  fb.textContent = (isCorrect ? '✓ ' : '✗ ') + scenarios[sc].feedbacks[step][choice];
+  document.getElementById(`next-${sc}-${step}`).style.display = 'inline-block';
+}
+
+function showSt(sc, step) {
+  document.getElementById(`s${sc}-${step}`).style.display = 'block';
+  const pct = Math.round((step+1) / scenarios[sc].steps * 100);
+  document.getElementById(`prog-label-${sc}`).textContent = `Étape ${step+1} / ${scenarios[sc].steps}`;
+  document.getElementById(`prog-pct-${sc}`).textContent = pct + '%';
+  document.getElementById(`fill-${sc}`).style.width = pct + '%';
+  document.getElementById(`s${sc}-${step}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showScore(sc) {
+  document.getElementById(`steps-${sc}`).style.display = 'none';
+  const total = state[sc].scores.filter(Boolean).length;
+  const max = scenarios[sc].steps;
+  document.getElementById(`score-${sc}`).style.display = 'block';
+  document.getElementById(`num-${sc}`).textContent = `${total}/${max}`;
+  document.getElementById(`label-${sc}`).textContent = total === max ? 'Parfait ! Vous maîtrisez ce scénario.' : total >= 3 ? 'Bien ! Quelques points à consolider.' : 'À retravailler — relisez le cours sur ce thème.';
+}
+
+function restart(sc) {
+  state[sc] = { answered: [false,false,false,false,false], scores: [false,false,false,false,false], current: 0 };
+  document.getElementById(`steps-${sc}`).style.display = 'block';
+  document.getElementById(`score-${sc}`).style.display = 'none';
+  document.getElementById(`fill-${sc}`).style.width = '20%';
+  document.getElementById(`prog-label-${sc}`).textContent = 'Étape 1 / 5';
+  document.getElementById(`prog-pct-${sc}`).textContent = '20%';
+  for (let i = 0; i < 5; i++) {
+    const step = document.getElementById(`s${sc}-${i}`);
+    if (!step) continue;
+    step.style.display = i === 0 ? 'block' : 'none';
+    step.querySelectorAll('.sc-choice').forEach(b => { b.disabled = false; b.className = 'sc-choice'; });
+    const fb = document.getElementById(`fb-${sc}-${i}`);
+    if (fb) fb.style.display = 'none';
+    const nx = document.getElementById(`next-${sc}-${i}`);
+    if (nx) nx.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

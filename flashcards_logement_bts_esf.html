@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards – Logement BTS ESF</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0D1B2A;
+    --blue: #1A3A5C;
+    --teal: #1B6CA8;
+    --accent: #E63946;
+    --gold: #F4A261;
+    --green: #2A9D8F;
+    --purple: #7B5EA7;
+    --light: #F8F5F0;
+    --gray: #8A9BB0;
+    --white: #FFFFFF;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px 60px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 5%, #1A3A5C55, transparent),
+                radial-gradient(ellipse 40% 50% at 5% 90%, #2A9D8F15, transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; width: 100%; max-width: 680px; }
+
+  /* HEADER */
+  .header { padding: 44px 0 32px; text-align: center; }
+  .header-tag { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+  .header h1 span { color: var(--gold); }
+  .header p { font-size: 14px; color: var(--gray); font-weight: 300; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+  .progress-bar { height: 5px; background: #ffffff15; border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--gold)); border-radius: 100px; transition: width 0.4s ease; }
+
+  /* DOTS */
+  .dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #ffffff20; cursor: pointer; transition: all 0.2s; }
+  .dot.active { background: var(--gold); transform: scale(1.3); }
+  .dot.seen { background: #ffffff50; }
+
+  /* CARD SCENE */
+  .card-scene { width: 100%; height: 280px; perspective: 1200px; cursor: pointer; margin-bottom: 24px; }
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+    border-radius: 18px;
+  }
+  .card-inner.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card-front {
+    background: #ffffff0D;
+    border: 1px solid #ffffff18;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Category colors */
+  .cat-diff .card-back { background: linear-gradient(145deg, #1A3A5C, #0D2640); border: 1px solid #1B6CA866; }
+  .cat-cause .card-back { background: linear-gradient(145deg, #3D1A00, #5C2A00); border: 1px solid #F4A26166; }
+  .cat-consequence .card-back { background: linear-gradient(145deg, #1A0D26, #2D1545); border: 1px solid #7B5EA766; }
+  .cat-aide .card-back { background: linear-gradient(145deg, #0D2620, #0D3028); border: 1px solid #2A9D8F66; }
+  .cat-procedure .card-back { background: linear-gradient(145deg, #260D0D, #3A1515); border: 1px solid #E6394666; }
+
+  .cat-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  .cat-diff .cat-tag-front { background: #1B6CA825; color: var(--teal); border: 1px solid var(--teal); }
+  .cat-cause .cat-tag-front { background: #F4A26125; color: var(--gold); border: 1px solid var(--gold); }
+  .cat-consequence .cat-tag-front { background: #7B5EA725; color: #c39bd3; border: 1px solid var(--purple); }
+  .cat-aide .cat-tag-front { background: #2A9D8F25; color: var(--green); border: 1px solid var(--green); }
+  .cat-procedure .cat-tag-front { background: #E6394625; color: #ff8a94; border: 1px solid var(--accent); }
+
+  .cat-diff .cat-tag-back { background: #1B6CA830; color: #7DBFE8; border: 1px solid #1B6CA8; }
+  .cat-cause .cat-tag-back { background: #F4A26130; color: #F4C99A; border: 1px solid #F4A261; }
+  .cat-consequence .cat-tag-back { background: #7B5EA730; color: #c39bd3; border: 1px solid var(--purple); }
+  .cat-aide .cat-tag-back { background: #2A9D8F30; color: #6ECEC5; border: 1px solid #2A9D8F; }
+  .cat-procedure .cat-tag-back { background: #E6394630; color: #ff8a94; border: 1px solid var(--accent); }
+
+  .card-num { font-size: 12px; color: var(--gray); margin-bottom: 14px; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 1px; }
+  .card-question { font-size: 18px; font-weight: 500; line-height: 1.5; color: var(--white); }
+  .card-hint { font-size: 12px; color: #ffffff40; margin-top: 18px; }
+  .card-answer { font-size: 14px; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.92); }
+  .card-answer strong { font-weight: 500; color: var(--white); }
+
+  /* CONTROLS */
+  .controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 32px; }
+  .ctrl-btn {
+    padding: 12px 28px;
+    border-radius: 100px;
+    border: 1px solid #ffffff25;
+    background: #ffffff0A;
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .ctrl-btn:hover { background: #ffffff18; border-color: #ffffff40; }
+  .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+  .flip-btn {
+    padding: 12px 32px;
+    background: var(--teal);
+    border: none;
+    border-radius: 100px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .flip-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* SHUFFLE */
+  .bottom-bar { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; }
+  .shuffle-btn {
+    padding: 10px 22px;
+    border-radius: 100px;
+    border: 1px solid #ffffff20;
+    background: transparent;
+    color: var(--gray);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shuffle-btn:hover { color: var(--white); border-color: #ffffff40; }
+
+  /* CATEGORY FILTER */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid #ffffff20;
+    background: transparent;
+    color: var(--gray);
+    font-size: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { color: var(--white); border-color: #ffffff40; }
+  .filter-btn.active { background: var(--teal); border-color: var(--teal); color: white; }
+
+  /* COMPLETE */
+  .complete {
+    display: none;
+    text-align: center;
+    padding: 48px 32px;
+    background: #ffffff08;
+    border: 1px solid #ffffff15;
+    border-radius: 18px;
+    margin-top: 16px;
+  }
+  .complete.show { display: block; }
+  .complete-score { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; color: var(--green); margin: 12px 0 8px; }
+  .complete-label { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+  .complete-sub { color: var(--gray); font-size: 14px; margin-bottom: 28px; }
+  .restart-btn {
+    padding: 14px 36px;
+    background: var(--teal);
+    border: none;
+    border-radius: 100px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .restart-btn:hover { opacity: 0.85; }
+
+  @media (max-width: 480px) {
+    .card-question { font-size: 16px; }
+    .ctrl-btn, .flip-btn { padding: 10px 18px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-tag">BTS ESF · Révisions</div>
+    <h1>Flash<span>cards</span></h1>
+    <p>Logement indécent · Causes & conséquences · Aides · Procédures</p>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterCat('all')">Toutes (20)</button>
+    <button class="filter-btn" onclick="filterCat('diff')">Indécent vs Indigne</button>
+    <button class="filter-btn" onclick="filterCat('cause')">Causes</button>
+    <button class="filter-btn" onclick="filterCat('consequence')">Conséquences</button>
+    <button class="filter-btn" onclick="filterCat('aide')">Aides</button>
+    <button class="filter-btn" onclick="filterCat('procedure')">Procédures</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span id="progress-label">Carte 1 / 20</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:5%"></div></div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+
+  <div class="card-scene" onclick="flip()">
+    <div class="card-inner" id="card-inner">
+      <div class="card-face card-front">
+        <div class="cat-tag cat-tag-front" id="front-tag"></div>
+        <div class="card-num" id="card-num"></div>
+        <div class="card-question" id="card-question"></div>
+        <div class="card-hint">Cliquez pour voir la réponse ↓</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="cat-tag cat-tag-back" id="back-tag"></div>
+        <div class="card-answer" id="card-answer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="prev-btn" onclick="prevCard()" disabled>← Précédent</button>
+    <button class="flip-btn" onclick="flip()">Retourner</button>
+    <button class="ctrl-btn" id="next-btn" onclick="nextCard()">Suivant →</button>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="shuffle-btn" onclick="shuffleCards()">🔀 Mélanger</button>
+    <button class="shuffle-btn" onclick="restart()">↩ Recommencer</button>
+  </div>
+
+  <div class="complete" id="complete">
+    <div class="header-tag">Terminé !</div>
+    <div class="complete-score">20/20</div>
+    <div class="complete-label">Toutes les cartes vues !</div>
+    <div class="complete-sub">Recommencez pour consolider vos révisions.</div>
+    <button class="restart-btn" onclick="restart()">Recommencer</button>
+  </div>
+
+</div>
+
+<script>
+const allCards = [
+  // DIFF (5)
+  { cat: 'diff', label: 'Indécent vs Indigne', q: "Quelle est la grande différence entre un logement indécent et un logement indigne ?", a: "Le logement <strong>indécent</strong> relève du droit privé (relation bailleur/locataire, Tribunal judiciaire). Le logement <strong>indigne</strong> relève du droit public (sécurité/santé publique, Maire ou Préfet). Tout logement insalubre est indécent, mais un logement indécent n'est pas forcément indigne." },
+  { cat: 'diff', label: 'Indécent vs Indigne', q: "Qu'est-ce qu'un logement décent selon le décret du 30 janvier 2002 ?", a: "Un logement décent doit garantir la <strong>sécurité physique et la santé</strong> des locataires : clos et couvert, réseau électrique aux normes, ventilation, surface minimale de <strong>9 m²</strong> (ou 20 m³), hauteur sous plafond d'au moins <strong>2,20 m</strong>." },
+  { cat: 'diff', label: 'Indécent vs Indigne', q: "En cas de logement indigne (insalubrité ou péril), que se passe-t-il automatiquement pour les loyers ?", a: "Les loyers sont <strong>automatiquement suspendus</strong> dès la notification de l'arrêté (art. L.521-2 CCH). C'est une différence majeure avec l'indécence, où seul le juge peut suspendre le loyer." },
+  { cat: 'diff', label: 'Indécent vs Indigne', q: "Qui est obligé de reloger le locataire en cas d'arrêté d'insalubrité ou de péril ?", a: "L'obligation de relogement pèse sur le <strong>propriétaire</strong> (art. L.521-1 CCH). En cas de défaillance, la puissance publique s'en charge, puis récupère les frais auprès du bailleur. Cette obligation n'existe pas automatiquement en cas de simple indécence." },
+  { cat: 'diff', label: 'Indécent vs Indigne', q: "Qu'est-ce que l'habitat indigne selon la loi MOLLE du 25 mars 2009 ?", a: "L'habitat indigne regroupe les locaux <strong>impropres par nature à l'habitation</strong> (caves, combles, garages) et les logements dont l'état expose les occupants à des <strong>risques manifestes pour leur sécurité ou leur santé</strong>. Il inclut : insalubrité, péril, saturnisme, habitats précaires." },
+
+  // CAUSE (5)
+  { cat: 'cause', label: 'Causes', q: "Quels défauts du logement provoquent des maladies pulmonaires, de l'asthme et des allergies ?", a: "La présence de <strong>moisissures</strong> (Aspergillus, Penicillium, Cladosporium) liées aux <strong>infiltrations d'eau</strong>, aux <strong>fuites</strong>, à l'<strong>absence ou insuffisance de ventilation</strong>, et à l'<strong>absence d'isolation</strong> ou de chauffage suffisant." },
+  { cat: 'cause', label: 'Causes', q: "Qu'est-ce que le saturnisme et quelle en est la cause dans le logement ?", a: "Le saturnisme est une intoxication au <strong>plomb</strong>, causée par la présence de <strong>peintures anciennes dégradées</strong> dans des immeubles généralement construits <strong>avant 1949</strong>. L'ingestion ou l'inhalation de poussières de plomb provoque des effets graves sur la santé." },
+  { cat: 'cause', label: 'Causes', q: "Quelles situations favorisent une intoxication au monoxyde de carbone (CO) ?", a: "Des <strong>appareils à combustion défectueux, vétustes ou mal entretenus</strong>, une <strong>ventilation défectueuse</strong>, une mauvaise <strong>évacuation des gaz brûlés</strong> et une utilisation inappropriée des appareils de chauffage." },
+  { cat: 'cause', label: 'Causes', q: "Quels défauts structurels provoquent des risques de chute dans un logement ?", a: "L'absence de <strong>garde-corps</strong>, de <strong>mains courantes ou rambardes</strong>, des <strong>marches d'escaliers irrégulières</strong>, un <strong>défaut de planéité du plancher</strong>, ou des éléments bâtis menaçant de s'effondrer." },
+  { cat: 'cause', label: 'Causes', q: "Comment la sur-occupation d'un logement affecte-t-elle la santé des occupants ?", a: "La sur-occupation génère un <strong>mal-être lié à l'exiguïté</strong>, l'<strong>absence d'éclairement naturel</strong>, l'<strong>insuffisance d'isolation phonique</strong> (stress, troubles du sommeil), et augmente les risques d'infections. C'est un facteur de dégradation de la <strong>santé mentale et psychosociale</strong>." },
+
+  // CONSEQUENCE (4)
+  { cat: 'consequence', label: 'Conséquences', q: "Quels sont les effets du saturnisme sur la santé, notamment chez l'enfant ?", a: "<strong>Retard intellectuel</strong>, retard de croissance, agitation, irritabilité, <strong>troubles du sommeil</strong>, anémie, atteinte du rein, encéphalopathie et dans les cas graves : <strong>décès</strong>. Les enfants sont particulièrement vulnérables car ils portent souvent les objets à la bouche." },
+  { cat: 'consequence', label: 'Conséquences', q: "Pourquoi le monoxyde de carbone (CO) est-il particulièrement dangereux ?", a: "Parce qu'il est <strong>invisible, inodore et indétectable</strong> sans détecteur. Il est la <strong>première cause de mortalité par gaz toxique en France</strong>, avec environ <strong>5 000 victimes/an</strong> dont 1 000 hospitalisées et <strong>100 décès</strong>." },
+  { cat: 'consequence', label: 'Conséquences', q: "Quels sont les risques pour la santé mentale liés à un logement indigne ?", a: "<strong>Stress chronique</strong>, dépression, <strong>fatigue</strong>, perturbation du sommeil, liés à l'exiguïté, au bruit (mauvaise isolation phonique), à l'absence d'éclairement naturel, à l'absence de vue horizontale ou à la sur-occupation." },
+  { cat: 'consequence', label: 'Conséquences', q: "Quels accidents physiques peut provoquer un logement indigne ?", a: "<strong>Électrocution</strong> (installation électrique vétuste), <strong>brûlures et explosions</strong> (installation gaz non sécurisée), <strong>chutes</strong> (garde-corps manquant, escaliers défectueux), <strong>blessures</strong> par chute d'éléments bâtis ou d'effondrement." },
+
+  // AIDE (4)
+  { cat: 'aide', label: 'Aides disponibles', q: "Quel est le rôle de l'ADIL et comment peut-elle aider un locataire ?", a: "L'<strong>ADIL (Agence Départementale d'Information sur le Logement)</strong> est une structure <strong>gratuite et neutre</strong>, présente dans chaque département. Elle conseille sur les droits et recours, oriente vers les aides, fournit des modèles de mise en demeure. Contact : <strong>0 806 000 515</strong> (gratuit)." },
+  { cat: 'aide', label: 'Aides disponibles', q: "Que propose l'ANAH et à qui s'adresse-t-elle ?", a: "L'<strong>ANAH (Agence Nationale de l'Habitat)</strong> propose des <strong>subventions pour financer de gros travaux de réhabilitation</strong> : sortie d'insalubrité, rénovation thermique, adaptation au handicap. Elle cible notamment les <strong>propriétaires modestes</strong> et les bailleurs engagés dans la mise en conformité." },
+  { cat: 'aide', label: 'Aides disponibles', q: "Comment la CAF intervient-elle face à un logement indécent ?", a: "La CAF (ou MSA) peut <strong>suspendre le versement direct de l'aide au logement au propriétaire</strong> (tiers-payant) si le logement est non décent. Le locataire ne paie alors que le loyer résiduel, privant le bailleur d'une partie de ses revenus tant que les travaux ne sont pas réalisés." },
+  { cat: 'aide', label: 'Aides disponibles', q: "Quelles aides financières directes existent pour un locataire en difficulté de logement ?", a: "<strong>APL</strong> (logement conventionné, CAF/MSA) · <strong>AL</strong> (allocation logement, sous conditions de ressources) · <strong>FSL</strong> (Fonds de Solidarité pour le Logement – Conseil Départemental : impayés loyer, eau, énergie) · <strong>PAH</strong> (Prêt à l'Amélioration de l'Habitat, CAF) · <strong>Avance LOCA-PASS</strong> (Action Logement, dépôt de garantie)" },
+
+  // PROCEDURE (2)
+  { cat: 'procedure', label: 'Procédures', q: "Quelles sont les étapes à suivre pour un locataire face à un logement indécent ?", a: "<strong>1. Identifier</strong> les désordres · <strong>2. Informer le bailleur</strong> par LRAR (lettre recommandée avec AR) · <strong>3. Attendre 1 mois</strong> sans réponse · <strong>4. Signaler</strong> à la Mairie ou à la CAF · <strong>5. Saisir la Commission de Conciliation</strong> (CDC) · <strong>6. Saisir le Tribunal judiciaire</strong> en dernier recours." },
+  { cat: 'procedure', label: 'Procédures', q: "Quel est le rôle de l'ARS dans la lutte contre l'habitat indigne ?", a: "L'<strong>ARS (Agence Régionale de Santé)</strong> réalise des <strong>enquêtes sanitaires sur place</strong> après signalement, évalue l'insalubrité ou le risque de saturnisme, rédige les rapports techniques pour le Préfet, et déclenche les procédures CCH/CSP appropriées (prescriptions de travaux, hébergement, relogement)." },
+];
+
+let cards = [...allCards];
+let current = 0;
+let flipped = false;
+let seenSet = new Set();
+
+function getCatClass(cat) {
+  return 'cat-' + cat;
+}
+
+function renderCard() {
+  const c = cards[current];
+  document.getElementById('front-tag').textContent = c.label;
+  document.getElementById('back-tag').textContent = c.label;
+  document.getElementById('card-num').textContent = `Carte ${current + 1} sur ${cards.length}`;
+  document.getElementById('card-question').textContent = c.q;
+  document.getElementById('card-answer').innerHTML = c.a;
+
+  const inner = document.getElementById('card-inner');
+  inner.className = 'card-inner ' + getCatClass(c.cat);
+  inner.classList.remove('flipped');
+  flipped = false;
+
+  seenSet.add(current);
+  updateProgress();
+  updateDots();
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = current === cards.length - 1;
+
+  if (seenSet.size === cards.length) {
+    setTimeout(() => document.getElementById('complete').classList.add('show'), 400);
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((current + 1) / cards.length * 100);
+  document.getElementById('progress-label').textContent = `Carte ${current + 1} / ${cards.length}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function updateDots() {
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = cards.map((_, i) => `<div class="dot ${i === current ? 'active' : seenSet.has(i) ? 'seen' : ''}" onclick="goTo(${i})"></div>`).join('');
+}
+
+function flip() {
+  flipped = !flipped;
+  document.getElementById('card-inner').classList.toggle('flipped', flipped);
+}
+
+function nextCard() {
+  if (current < cards.length - 1) { current++; renderCard(); }
+}
+
+function prevCard() {
+  if (current > 0) { current--; renderCard(); }
+}
+
+function goTo(i) { current = i; renderCard(); }
+
+function shuffleCards() {
+  cards = [...cards].sort(() => Math.random() - 0.5);
+  current = 0;
+  seenSet.clear();
+  renderCard();
+}
+
+function filterCat(cat) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  cards = cat === 'all' ? [...allCards] : allCards.filter(c => c.cat === cat);
+  current = 0;
+  seenSet.clear();
+  document.getElementById('complete').classList.remove('show');
+  renderCard();
+}
+
+function restart() {
+  current = 0;
+  seenSet.clear();
+  document.getElementById('complete').classList.remove('show');
+  renderCard();
+}
+
+renderCard();
+</script>
+</body>
+</html>
