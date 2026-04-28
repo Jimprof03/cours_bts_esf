@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ressources BTS ESF</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0D1B2A; --blue: #1A3A5C; --teal: #1B6CA8;
+    --accent: #E63946; --gold: #F4A261; --green: #2A9D8F;
+    --gray: #8A9BB0; --white: #FFFFFF;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 0 20px 60px;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 80% 5%, #1A3A5C55, transparent),
+                radial-gradient(ellipse 40% 50% at 5% 90%, #2A9D8F15, transparent);
+    pointer-events: none; z-index: 0;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { padding: 50px 0 36px; text-align: center; }
+  .header-tag { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 900; line-height: 1.1; margin-bottom: 10px; }
+  .header h1 span { color: var(--gold); }
+  .header p { font-size: 15px; color: var(--gray); font-weight: 300; }
+
+  /* SECTIONS */
+  .section-label {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray);
+    margin: 32px 0 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: #ffffff15; }
+
+  /* CARDS */
+  .cards { display: flex; flex-direction: column; gap: 10px; }
+  .card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 20px;
+    background: #ffffff08;
+    border: 1px solid #ffffff15;
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.2s;
+  }
+  .card:hover { background: #ffffff14; border-color: #ffffff30; transform: translateY(-1px); }
+  .card-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .card-body { flex: 1; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+  .card-desc { font-size: 13px; color: var(--gray); font-weight: 300; }
+  .card-arrow { color: var(--gray); font-size: 18px; flex-shrink: 0; }
+
+  .ic-quiz { background: #1B6CA820; }
+  .ic-flash { background: #F4A26120; }
+  .ic-scenario { background: #2A9D8F20; }
+  .ic-infog { background: #E6394620; }
+  .ic-credit { background: #7B5EA720; }
+
+  /* FOOTER */
+  .footer { margin-top: 48px; text-align: center; font-size: 12px; color: #ffffff30; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-tag">BTS ESF · Ressources pédagogiques</div>
+    <h1>Espace de <span>révision</span></h1>
+    <p>Toutes les ressources de votre cours en un seul endroit</p>
+  </div>
+
+  <div class="section-label">Logement & Habitat indigne</div>
+  <div class="cards">
+    <a class="card" href="quiz_logement_bts_esf.html">
+      <div class="card-icon ic-quiz">🎯</div>
+      <div class="card-body">
+        <div class="card-title">Quiz interactif</div>
+        <div class="card-desc">50 questions · QCM, Vrai/Faux, Association · Score en temps réel</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+    <a class="card" href="flashcards_logement_bts_esf.html">
+      <div class="card-icon ic-flash">🃏</div>
+      <div class="card-body">
+        <div class="card-title">Flashcards</div>
+        <div class="card-desc">20 cartes · Causes, conséquences, aides, procédures · À retourner</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+    <a class="card" href="scenarios_bts_esf.html">
+      <div class="card-icon ic-scenario">📋</div>
+      <div class="card-body">
+        <div class="card-title">Scénarios cas pratiques</div>
+        <div class="card-desc">3 scénarios · Indécence, Insalubrité, Aides financières</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+    <a class="card" href="infographie_logement_indigne.html">
+      <div class="card-icon ic-infog">🗺️</div>
+      <div class="card-body">
+        <div class="card-title">Infographie – Logement indigne</div>
+        <div class="card-desc">Aides & recours pour les locataires · Format paysage</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+  </div>
+
+  <div class="section-label">Gestion de budget & Crédit</div>
+  <div class="cards">
+    <a class="card" href="infographie_credit_conso.html">
+      <div class="card-icon ic-credit">💳</div>
+      <div class="card-body">
+        <div class="card-title">Infographie – Crédit à la consommation</div>
+        <div class="card-desc">Types de crédit, risques, surendettement, bons réflexes</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+  </div>
+
+  <div class="footer">BTS ESF · Conseil en vie quotidienne</div>
+
+</div>
+</body>
+</html>
