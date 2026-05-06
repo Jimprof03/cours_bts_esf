@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Démarche Qualité en Alimentaire | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22; --purple: #8e44ad;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* 4 risques */
+  .risques { background: var(--navy2); border: 1px solid rgba(231,76,60,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .risques-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .risque-card { border-radius: 10px; padding: 14px 10px; text-align: center; }
+  .risque-card.bio { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.35); }
+  .risque-card.chi { background: rgba(230,126,34,0.1); border: 1px solid rgba(230,126,34,0.35); }
+  .risque-card.phy { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.35); }
+  .risque-card.all { background: rgba(142,68,173,0.1); border: 1px solid rgba(142,68,173,0.35); }
+  .risque-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .risque-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; margin-bottom: 6px; }
+  .risque-card.bio .risque-name { color: var(--red); }
+  .risque-card.chi .risque-name { color: var(--orange); }
+  .risque-card.phy .risque-name { color: var(--blue-light); }
+  .risque-card.all .risque-name { color: #c39bd3; }
+  .risque-ex { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* TIAC */
+  .tiac { background: var(--navy2); border: 1px solid rgba(231,76,60,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .tiac-def { background: rgba(231,76,60,0.08); border-left: 4px solid var(--red); padding: 14px 16px; border-radius: 0 8px 8px 0; margin-top: 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--white); margin-bottom: 14px; }
+  .facteurs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .facteur-item { background: var(--navy3); border-radius: 8px; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start; font-family: 'Trebuchet MS', sans-serif; font-size: 0.76rem; color: var(--text); }
+
+  /* Allergènes */
+  .allergenes { background: var(--navy2); border: 1px solid rgba(142,68,173,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .all-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 14px; }
+  .all-item { background: var(--navy3); border-radius: 6px; padding: 8px 4px; text-align: center; font-family: 'Trebuchet MS', sans-serif; font-size: 0.62rem; color: var(--text-dim); line-height: 1.3; }
+  .all-item .ai-icon { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+  .all-oblig { margin-top: 10px; background: rgba(142,68,173,0.08); border-left: 3px solid #c39bd3; padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: #c39bd3; }
+
+  /* HACCP 7 étapes */
+  .haccp { background: var(--navy2); border: 1px solid rgba(39,174,96,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .haccp-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .haccp-step { display: flex; gap: 12px; align-items: flex-start; background: var(--navy3); border-radius: 8px; padding: 12px 14px; }
+  .hs-num { width: 28px; height: 28px; border-radius: 50%; background: var(--green); color: white; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hs-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--white); margin-bottom: 3px; }
+  .hs-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+  .pdca-box { margin-top: 12px; background: rgba(39,174,96,0.08); border-left: 3px solid var(--green-light); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--green-light); }
+
+  /* CCP vs PRPo */
+  .ccp-prpo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .ccp-card { background: var(--navy2); border-radius: 12px; padding: 20px; }
+  .ccp-card.ccp { border: 1px solid rgba(231,76,60,0.4); }
+  .ccp-card.prpo { border: 1px solid rgba(45,139,186,0.4); }
+  .ccp-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; font-weight: bold; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .ccp-card.ccp .ccp-title { color: var(--red); }
+  .ccp-card.prpo .ccp-title { color: var(--blue-light); }
+  .ccp-item { font-family: 'Trebuchet MS', sans-serif; font-size: 0.76rem; color: var(--text-dim); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .ccp-item:last-child { border-bottom: none; }
+
+  /* Acteurs / Outils */
+  .acteurs-outils { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .acteurs-card, .outils-card { background: var(--navy2); border-radius: 12px; padding: 20px; }
+  .acteurs-card { border: 1px solid rgba(45,139,186,0.25); }
+  .outils-card { border: 1px solid rgba(201,168,76,0.25); }
+  .ao-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; font-weight: bold; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .acteurs-card .ao-title { color: var(--blue-light); }
+  .outils-card .ao-title { color: var(--gold-light); }
+  .ao-item { font-family: 'Trebuchet MS', sans-serif; font-size: 0.76rem; color: var(--text-dim); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .ao-item:last-child { border-bottom: none; }
+  .ao-item strong { color: var(--white); }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 640px) {
+    .risques-grid { grid-template-columns: repeat(2, 1fr); }
+    .all-grid { grid-template-columns: repeat(4, 1fr); }
+    .ccp-prpo, .acteurs-outils, .facteurs-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Gestion des activités · E2</div>
+    <span class="header-icon">🍽️</span>
+    <h1>Démarche Qualité en Alimentaire</h1>
+    <p>Risques · TIAC · Allergènes · HACCP · CCP · Acteurs · Outils</p>
+  </div>
+
+  <!-- 4 risques -->
+  <div class="risques">
+    <div class="section-title">Les 4 types de risques sanitaires alimentaires</div>
+    <div class="risques-grid">
+      <div class="risque-card bio">
+        <div class="risque-icon">🦠</div>
+        <div class="risque-name">Biologique</div>
+        <div class="risque-ex">Bactéries (Salmonella, Listeria, E. coli, Staphylococcus)<br>Virus (norovirus, hépatite A)<br>Parasites (Toxoplasma)</div>
+      </div>
+      <div class="risque-card chi">
+        <div class="risque-icon">⚗️</div>
+        <div class="risque-name">Chimique</div>
+        <div class="risque-ex">Pesticides, additifs, résidus nettoyage, bisphénol A (emballages), métaux lourds</div>
+      </div>
+      <div class="risque-card phy">
+        <div class="risque-icon">🔩</div>
+        <div class="risque-name">Physique</div>
+        <div class="risque-ex">Corps étrangers : verre, plastique, métal, fragments d'os (ex. rappel Blédina 2023)</div>
+      </div>
+      <div class="risque-card all">
+        <div class="risque-icon">⚠️</div>
+        <div class="risque-name">Allergène</div>
+        <div class="risque-ex">14 allergènes à déclaration obligatoire. Réaction immunitaire pouvant aller jusqu'à l'anaphylaxie.</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-family:'Trebuchet MS',sans-serif;font-size:0.78rem;color:var(--text-dim);">Conséquences : aiguës (diarrhées, vomissements, intoxications) ou chroniques (cancers, maladies neurodégénératives). Populations vulnérables : jeunes enfants, personnes âgées, femmes enceintes, immunodéprimés.</div>
+  </div>
+
+  <!-- TIAC -->
+  <div class="tiac">
+    <div class="section-title">TIAC · Toxi-Infection Alimentaire Collective</div>
+    <div class="tiac-def">🦠 Maladie infectieuse d'origine alimentaire touchant <strong>au moins 2 personnes</strong> ayant partagé le même repas. À déclaration obligatoire depuis 1987. Signalement via RASFF en Europe.</div>
+    <div class="facteurs-grid">
+      <div class="facteur-item">❄️ Rupture de la chaîne du froid (transport, stockage)</div>
+      <div class="facteur-item">🤲 Défaut d'hygiène des mains et des tenues</div>
+      <div class="facteur-item">🔧 Matériel mal nettoyé ou mal désinfecté</div>
+      <div class="facteur-item">🥩 Contamination croisée aliments crus / cuits</div>
+      <div class="facteur-item">🌡️ Défaut de cuisson ou de refroidissement rapide</div>
+      <div class="facteur-item">📋 Défaut de surveillance et de traçabilité</div>
+    </div>
+  </div>
+
+  <!-- Allergènes -->
+  <div class="allergenes">
+    <div class="section-title">Les 14 Allergènes à Déclaration Obligatoire</div>
+    <div class="all-grid">
+      <div class="all-item"><span class="ai-icon">🌾</span>Gluten (céréales)</div>
+      <div class="all-item"><span class="ai-icon">🦐</span>Crustacés</div>
+      <div class="all-item"><span class="ai-icon">🥚</span>Œufs</div>
+      <div class="all-item"><span class="ai-icon">🐟</span>Poissons</div>
+      <div class="all-item"><span class="ai-icon">🥜</span>Arachides</div>
+      <div class="all-item"><span class="ai-icon">🫘</span>Soja</div>
+      <div class="all-item"><span class="ai-icon">🥛</span>Lait</div>
+      <div class="all-item"><span class="ai-icon">🌰</span>Fruits à coque</div>
+      <div class="all-item"><span class="ai-icon">🥬</span>Céleri</div>
+      <div class="all-item"><span class="ai-icon">🌿</span>Moutarde</div>
+      <div class="all-item"><span class="ai-icon">🌱</span>Graines de sésame</div>
+      <div class="all-item"><span class="ai-icon">🧪</span>Sulfites (≥10mg/kg)</div>
+      <div class="all-item"><span class="ai-icon">🌺</span>Lupin</div>
+      <div class="all-item"><span class="ai-icon">🦑</span>Mollusques</div>
+    </div>
+    <div class="all-oblig">⚠️ Tout établissement servant des repas sur place est tenu de mettre la liste des allergènes à disposition du public. Allergie (système immunitaire) ≠ Intolérance (réaction métabolique/digestive).</div>
+  </div>
+
+  <!-- HACCP 7 étapes -->
+  <div class="haccp">
+    <div class="section-title">HACCP · Hazard Analysis Critical Control Point · 7 étapes</div>
+    <div class="haccp-steps">
+      <div class="haccp-step"><div class="hs-num">1</div><div><div class="hs-title">Analyser les dangers</div><div class="hs-desc">Identifier tous les dangers potentiels (biologiques, chimiques, physiques) à chaque étape. Mesurer fréquence et gravité. Méthode 5M recommandée.</div></div></div>
+      <div class="haccp-step"><div class="hs-num">2</div><div><div class="hs-title">Déterminer les CCP</div><div class="hs-desc">Identifier les Points Critiques de Contrôle : opérations dont la maîtrise insuffisante entraîne un risque inacceptable. Utiliser l'arbre de décision.</div></div></div>
+      <div class="haccp-step"><div class="hs-num">3</div><div><div class="hs-title">Établir les limites critiques</div><div class="hs-desc">Fixer les valeurs de référence pour chaque CCP (ex. températures réglementées de conservation des denrées).</div></div></div>
+      <div class="haccp-step"><div class="hs-num">4</div><div><div class="hs-title">Mettre en place la surveillance</div><div class="hs-desc">Fiches de vérification à réception des denrées (agréage), relevés de températures des enceintes de stockage...</div></div></div>
+      <div class="haccp-step"><div class="hs-num">5</div><div><div class="hs-title">Définir les actions correctives</div><div class="hs-desc">Que faire si la limite critique est dépassée ? Ex : travaux si l'enceinte de stockage ne produit pas assez de froid.</div></div></div>
+      <div class="haccp-step"><div class="hs-num">6</div><div><div class="hs-title">Vérifier l'efficacité du système</div><div class="hs-desc">Autocontrôles, analyses microbiologiques, tests de dépassement des valeurs critiques...</div></div></div>
+      <div class="haccp-step"><div class="hs-num">7</div><div><div class="hs-title">Constituer le système documentaire</div><div class="hs-desc">Archiver procédures et fiches de surveillance. Mettre à jour à chaque changement de procédure.</div></div></div>
+    </div>
+    <div class="pdca-box">🔄 <strong>Amélioration continue :</strong> l'HACCP repose sur le cycle PDCA (Plan → Do → Check → Act / Planifier → Faire → Vérifier → Agir).</div>
+  </div>
+
+  <!-- CCP vs PRPo -->
+  <div class="ccp-prpo">
+    <div class="ccp-card ccp">
+      <div class="ccp-title">🔴 CCP — Point Critique de Contrôle</div>
+      <div class="ccp-item"><strong>Limite critique obligatoire</strong></div>
+      <div class="ccp-item">Si limite dépassée → <strong style="color:var(--red);">BLOCAGE du produit</strong> (retrait, retraitement, destruction)</div>
+      <div class="ccp-item">Ex : températures de stockage en chambre froide négative</div>
+      <div class="ccp-item">Ex : multiplication microbienne pendant le refroidissement</div>
+    </div>
+    <div class="ccp-card prpo">
+      <div class="ccp-title">🔵 PRPo — Programme de Pré-requis Opérationnel</div>
+      <div class="ccp-item"><strong>Pas de limite critique stricte</strong></div>
+      <div class="ccp-item">Gestion des dangers <strong style="color:var(--blue-light);">sans blocage systématique</strong> du produit</div>
+      <div class="ccp-item">Ex : hygiène des surfaces de travail</div>
+      <div class="ccp-item">Ex : nettoyage et désinfection des équipements</div>
+    </div>
+  </div>
+
+  <!-- Acteurs & Outils -->
+  <div class="acteurs-outils">
+    <div class="acteurs-card">
+      <div class="ao-title">🏛️ Acteurs du contrôle</div>
+      <div class="ao-item"><strong>DDPP</strong> — Direction Départementale de la Protection des Populations : inspections, sanctions, résultats publiés sur Alim'confiance</div>
+      <div class="ao-item"><strong>ANSES</strong> — Expertise scientifique sur les risques alimentaires</div>
+      <div class="ao-item"><strong>DGAL</strong> — Direction Générale de l'Alimentation : politique nationale de sécurité alimentaire</div>
+      <div class="ao-item"><strong>RASFF</strong> — Rapid Alert System for Food and Feed : alerte européenne en cas de TIAC</div>
+    </div>
+    <div class="outils-card">
+      <div class="ao-title">🛠️ Outils obligatoires</div>
+      <div class="ao-item"><strong>PMS</strong> (Plan de Maîtrise Sanitaire) — Document OBLIGATOIRE basé sur l'HACCP</div>
+      <div class="ao-item"><strong>GBPH</strong> (Guides de Bonnes Pratiques d'Hygiène) — validés par l'administration</div>
+      <div class="ao-item"><strong>Fiches de traçabilité</strong> — températures, nettoyage, gestion des lots</div>
+      <div class="ao-item"><strong>PNNS</strong> (2001) — Programme National Nutrition Santé · mangerbouger.fr</div>
+      <div class="ao-item"><strong>GEMRCN</strong> — Guide nutritionnel pour la restauration collective sociale</div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Gestion des activités · Démarche Qualité en Alimentaire · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

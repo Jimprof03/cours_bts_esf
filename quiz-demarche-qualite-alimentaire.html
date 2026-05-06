@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Démarche Qualité en Alimentaire | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Gestion des activités</div>
+    <h1>Démarche Qualité en Alimentaire</h1>
+    <div class="meta">Quiz de révision · 20 questions · HACCP · Risques · TIAC · Allergènes</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  // RISQUES
+  { q: "Quels sont les 4 types de risques sanitaires liés à l'alimentation ?", opts: ["Physique, chimique, thermique, biologique","Biologique, chimique, physique, allergène","Microbien, toxique, mécanique, allergique","Bactérien, viral, parasitaire, chimique"], ans: 1, fb: "Les 4 risques sanitaires en alimentaire sont : BIOLOGIQUE (bactéries, virus, parasites), CHIMIQUE (pesticides, additifs, bisphénol A, résidus de nettoyage), PHYSIQUE (corps étrangers : verre, métal, os) et ALLERGÈNE (substances provoquant une réaction immunitaire)." },
+  { q: "Citez 2 bactéries pathogènes majeures en restauration collective.", opts: ["Lactobacillus et Bifidus","Salmonella et Listeria monocytogenes","Staphylococcus epidermidis et Bacillus subtilis","E. coli K12 et Lactococcus"], ans: 1, fb: "Les bactéries pathogènes majeures en restauration collective : Salmonella, Listeria monocytogenes, E. coli O157:H7 (comme dans l'affaire Buitoni 2022), Staphylococcus aureus. Ces bactéries peuvent provoquer des TIAC graves, notamment chez les personnes vulnérables." },
+  { q: "Qu'est-ce qu'un allergène à déclaration obligatoire ?", opts: ["Tout additif alimentaire présent en quantité supérieure à 1%","Une substance pouvant provoquer une réaction du système immunitaire, dont la présence doit être signalée par tout établissement servant des repas","Un micro-organisme pathogène identifié dans un aliment","Un résidu chimique dépassant les seuils légaux"], ans: 1, fb: "Un allergène est une substance qui, ingérée, inhalée ou en contact avec l'organisme, peut déclencher une réaction immunitaire. Il existe 14 allergènes à déclaration obligatoire. Tout établissement servant des repas sur place DOIT mettre la liste des allergènes à disposition du public." },
+  { q: "Combien d'allergènes à déclaration obligatoire existe-t-il en Europe ?", opts: ["8","10","14","20"], ans: 2, fb: "Il existe 14 allergènes à déclaration obligatoire en Europe, parmi lesquels : gluten (céréales), crustacés, œufs, poissons, arachides, soja, lait, fruits à coque, céleri, moutarde, graines de sésame, anhydride sulfureux et sulfites, lupin, mollusques." },
+  { q: "Quelle est la différence entre une allergie et une intolérance alimentaire ?", opts: ["Il n'y a aucune différence, les termes sont synonymes","L'allergie implique le système immunitaire (réaction parfois grave et immédiate). L'intolérance est une réaction digestive sans implication immunitaire, généralement moins grave","L'allergie est toujours mortelle, l'intolérance jamais","L'allergie concerne uniquement les enfants, l'intolérance les adultes"], ans: 1, fb: "ALLERGIE : réaction du système immunitaire, peut être grave et immédiate (anaphylaxie, œdème de Quincke). INTOLÉRANCE : réaction métabolique ou digestive sans implication immunitaire (ex: intolérance au lactose), généralement moins grave et plus progressive." },
+  // TIAC
+  { q: "Qu'est-ce qu'une TIAC ?", opts: ["Une technique d'isolation acoustique des cuisines collectives","Une toxi-infection alimentaire collective : maladie infectieuse d'origine alimentaire touchant au moins 2 personnes — à déclaration obligatoire depuis 1987","Un type d'inspection sanitaire effectuée par la DDPP","Un traceur utilisé pour mesurer la chaîne du froid"], ans: 1, fb: "TIAC = Toxi-Infection Alimentaire Collective : maladie infectieuse d'origine alimentaire qui touche au moins 2 personnes ayant partagé le même repas. À déclaration obligatoire en France depuis 1987. Doit être signalée via le système RASFF (Rapid Alert System for Food and Feed) en Europe." },
+  { q: "Quels sont les principaux facteurs de risque de TIAC en restauration collective ?", opts: ["Personnel insuffisant et budget limité","Rupture de la chaîne du froid, défaut d'hygiène des mains, matériel mal nettoyé, contamination croisée crus/cuits, défaut de cuisson ou refroidissement","Mauvaise présentation des plats et locaux trop petits","Utilisation de produits non biologiques et additifs alimentaires"], ans: 1, fb: "Les facteurs de risque de TIAC : rupture de la chaîne du froid (transport, stockage), défaut d'hygiène des mains et des tenues, matériel mal nettoyé/désinfecté, contamination croisée entre aliments crus et cuits, défaut de cuisson ou de refroidissement rapide." },
+  // LÉGISLATION
+  { q: "Quel texte européen impose aux professionnels la responsabilité de garantir la sécurité de leurs aliments ?", opts: ["La directive REACH","Le Paquet Hygiène (2004)","La norme ISO 22000","Le règlement REACH 1907/2006"], ans: 1, fb: "Le Paquet Hygiène (2004) est l'ensemble de textes législatifs européens qui impose aux professionnels de la filière alimentaire la responsabilité de garantir la sécurité des produits mis sur le marché. Il est entré en application le 1er janvier 2006." },
+  { q: "Qu'est-ce qu'Alim'confiance ?", opts: ["Une application pour commander des repas en ligne","Un site permettant aux consommateurs d'accéder aux résultats des contrôles sanitaires dans les établissements alimentaires depuis mars 2017","Un label de qualité nutritionnelle pour les restaurants collectifs","Un guide de bonnes pratiques d'hygiène téléchargeable"], ans: 1, fb: "Alim'confiance est le site public permettant aux consommateurs d'accéder aux résultats des contrôles sanitaires officiels réalisés dans tous les établissements de la chaîne alimentaire depuis le 1er mars 2017. Ces contrôles sont réalisés par la DDPP (Direction Départementale de la Protection des Populations)." },
+  // HACCP
+  { q: "Que signifie HACCP et quelle est son origine ?", opts: ["Hygiène Alimentaire et Contrôle des Contaminations en Production — créé en France dans les années 1980","Hazard Analysis Critical Control Point — méthode préventive de maîtrise des dangers, issue des années 1960 (NASA)","Haute Autorité de Contrôle et de Certification des Produits — créée par l'UE en 2004","Hygiène et Analyse des Composants Critiques en Production — méthode normalisée ISO"], ans: 1, fb: "HACCP = Hazard Analysis Critical Control Point (Analyse des dangers et maîtrise des points critiques). Méthode préventive issue des années 1960 développée pour la NASA (alimentation des astronautes). Devenue la référence mondiale de la sécurité alimentaire." },
+  { q: "En combien d'étapes se déroule la méthode HACCP ?", opts: ["5 étapes","7 étapes","10 étapes","12 étapes"], ans: 1, fb: "La méthode HACCP se déroule en 7 étapes : 1. Analyser les dangers, 2. Déterminer les CCP, 3. Établir les limites critiques, 4. Mettre en place la surveillance, 5. Définir les actions correctives, 6. Vérifier l'efficacité du système, 7. Constituer le système documentaire." },
+  { q: "Qu'est-ce qu'un Point Critique de Contrôle (CCP) ?", opts: ["Un point du process où le responsable qualité effectue une inspection visuelle","Une opération dont la maîtrise insuffisante peut entraîner un risque inacceptable pour la santé du consommateur — avec une limite critique définie","Un document d'enregistrement des températures quotidiennes","Un code couleur pour identifier les zones à risque dans la cuisine"], ans: 1, fb: "Un CCP (Point Critique de Contrôle) est une étape du process dont la maîtrise insuffisante peut entraîner un risque inacceptable pour la santé. Il impose une LIMITE CRITIQUE : si cette limite est dépassée, le produit doit être BLOQUÉ (retiré, retravaillé ou détruit). Ex : températures de stockage en chambre froide négative." },
+  { q: "Quelle est la différence entre un CCP et un PRPo ?", opts: ["Le CCP est obligatoire, le PRPo est optionnel","Le CCP impose une limite critique (dépassement = blocage du produit). Le PRPo n'impose pas de limite critique mais gère des dangers sans nécessiter d'arrêt immédiat de production","Le PRPo concerne l'hygiène des locaux, le CCP l'hygiène des aliments uniquement","Il n'y a pas de différence pratique entre les deux"], ans: 1, fb: "CCP : limite critique obligatoire — si dépassée, le produit EST BLOQUÉ immédiatement. PRPo (Programme de pré-requis opérationnel) : pas de limite critique stricte, gestion des dangers sans blocage systématique. Ex CCP : température d'un produit. Ex PRPo : hygiène des surfaces de travail." },
+  { q: "À quelle étape HACCP correspond la fiche de vérification des températures des enceintes de stockage ?", opts: ["Étape 2 : Déterminer les CCP","Étape 3 : Établir les limites critiques","Étape 4 : Mettre en place des systèmes de surveillance","Étape 7 : Constituer le système documentaire"], ans: 2, fb: "La fiche de vérification des températures des enceintes de stockage correspond à l'étape 4 : mise en place des systèmes de SURVEILLANCE. Elle permet de s'assurer que les CCP (températures de stockage) restent dans les limites critiques définies à l'étape 3." },
+  { q: "Qu'est-ce que le Plan de Maîtrise Sanitaire (PMS) ?", opts: ["Un plan de formation du personnel à l'hygiène alimentaire","Un document OBLIGATOIRE basé sur l'HACCP, regroupant toutes les mesures prises pour garantir la sécurité sanitaire des aliments produits","Un guide de menus nutritionnellement équilibrés","Un contrat entre l'établissement et la DDPP"], ans: 1, fb: "Le PMS (Plan de Maîtrise Sanitaire) est un document OBLIGATOIRE pour tout établissement de restauration collective. Basé sur l'HACCP, il regroupe les mesures prises (GBPH, fiches de traçabilité, protocoles nettoyage, gestion des températures...) pour garantir la sécurité sanitaire." },
+  { q: "Sur quel cycle d'amélioration continue repose la méthode HACCP ?", opts: ["Le cycle SWOT","Le cycle PDCA (Plan-Do-Check-Act)","Le cycle ISO 22000","Le cycle GEMRCN"], ans: 1, fb: "L'HACCP repose sur le PDCA (Plan-Do-Check-Act = Planifier-Faire-Vérifier-Agir), aussi appelé roue de Deming. Ce cycle d'amélioration continue permet d'ajuster en permanence le système en fonction des résultats des contrôles et des actions correctives." },
+  // STRUCTURES / PROGRAMMES
+  { q: "Qu'est-ce que le PNNS ?", opts: ["Programme National de Nutrition et de Sécurité","Programme National Nutrition Santé — lancé en 2001, vise à améliorer la santé de la population en agissant sur la nutrition (alimentation, activité physique, sédentarité)","Programme de Normalisation Nutritive et Sanitaire","Plan National de Nettoyage et de Stérilisation"], ans: 1, fb: "Le PNNS (Programme National Nutrition Santé) a été lancé en 2001. Son objectif est d'améliorer l'état de santé de la population en agissant sur la nutrition au sens large : alimentation, activité physique et sédentarité. Site de référence : mangerbouger.fr." },
+  { q: "Quel est le rôle du GEMRCN ?", opts: ["Contrôler les cuisines collectives pour le compte de la DDPP","Créer des guides pratiques de qualité nutritionnelle des repas servis en restauration collective sociale, en lien avec les objectifs du PNNS","Gérer les marchés publics de restauration collective","Former les cuisiniers aux bonnes pratiques d'hygiène"], ans: 1, fb: "Le GEMRCN (Groupe d'Étude des Marchés de Restauration Collective et Nutrition) produit des guides pratiques sur la qualité nutritionnelle des repas en collectivité sociale. Objectif : améliorer les menus face à la montée du surpoids et de l'obésité, en cohérence avec le PNNS et le PNA (Plan National pour l'Alimentation)." },
+  { q: "Quelles populations sont dites 'vulnérables' face aux risques alimentaires ?", opts: ["Uniquement les personnes âgées en EHPAD","Jeunes enfants, personnes âgées, femmes enceintes et personnes immunodéprimées","Uniquement les personnes souffrant d'allergies connues","Les professionnels de santé exposés aux aliments contaminés"], ans: 1, fb: "Les populations vulnérables face aux risques alimentaires sont : les jeunes enfants (système immunitaire immature), les personnes âgées (immunité affaiblie), les femmes enceintes (risques pour le fœtus, ex. Listeria) et les immunodéprimés. Ces populations nécessitent une vigilance particulière en restauration collective." },
+  { q: "Quelle institution réalise les contrôles sanitaires officiels dans les établissements alimentaires en France ?", opts: ["L'ANSES","La DGAL","La DDPP (Direction Départementale de la Protection des Populations)","Le ministère de la Santé directement"], ans: 2, fb: "La DDPP (Direction Départementale de la Protection des Populations) réalise les contrôles sanitaires officiels (inspections inopinées ou programmées) et peut prononcer des sanctions. L'ANSES assure l'expertise scientifique sur les risques, et la DGAL applique la politique de sécurité alimentaire au niveau national." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  const q=shuffled[current];
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=shuffled[current];const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>

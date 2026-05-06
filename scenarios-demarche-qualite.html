@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scénarios – Démarche Qualité en Alimentaire | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22; --purple: #8e44ad;
+    --green-bg: rgba(46,204,113,0.12);
+    --red-bg: rgba(231,76,60,0.12);
+    --orange-bg: rgba(230,126,34,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .page { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 30px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  /* Navigation scénarios */
+  .scenario-nav { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .nav-btn { flex: 1; min-width: 150px; padding: 12px 16px; border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; background: var(--navy2); color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .nav-btn:hover, .nav-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+  .nav-btn .nb-icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+  .nav-btn .nb-label { font-weight: bold; display: block; margin-bottom: 2px; }
+  .nav-btn .nb-sub { font-size: 0.72rem; }
+
+  /* Scénario */
+  .scenario { display: none; animation: fadeIn 0.3s ease; }
+  .scenario.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  .scenario-header { border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .sc-badge { font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .scenario-header h2 { font-size: 1.4rem; color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .scenario-header .sc-context { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; line-height: 1.6; }
+
+  /* Situation */
+  .situation { border-radius: 10px; padding: 20px; margin-bottom: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.7; }
+  .situation strong { font-size: 0.95rem; display: block; margin-bottom: 10px; }
+
+  /* Méthode 5M */
+  .cinq-m-section { background: var(--navy2); border: 1px solid rgba(45,139,186,0.3); border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+  .cinq-m-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--blue-light); margin-bottom: 14px; }
+  .m-table { width: 100%; border-collapse: collapse; }
+  .m-table th { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .m-table td { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; line-height: 1.5; }
+  .m-table tr:last-child td { border-bottom: none; }
+  .m-label { font-weight: bold; white-space: nowrap; }
+  .m-table tr:nth-child(1) .m-label { color: var(--red); }
+  .m-table tr:nth-child(2) .m-label { color: var(--orange); }
+  .m-table tr:nth-child(3) .m-label { color: var(--gold-light); }
+  .m-table tr:nth-child(4) .m-label { color: var(--green-light); }
+  .m-table tr:nth-child(5) .m-label { color: var(--blue-light); }
+  .m-cause { color: var(--text-dim); }
+  .m-danger { color: #f5b8b3; }
+
+  /* HACCP steps dans scénario */
+  .haccp-section { background: var(--navy2); border: 1px solid rgba(39,174,96,0.3); border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+  .haccp-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--green-light); margin-bottom: 14px; }
+  .haccp-step-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; background: var(--navy3); border-radius: 8px; padding: 12px; }
+  .hsi-num { width: 24px; height: 24px; border-radius: 50%; background: var(--green); color: white; font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hsi-content { flex: 1; }
+  .hsi-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; color: var(--white); margin-bottom: 4px; }
+  .hsi-text { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; }
+  .hsi-ccp { display: inline-block; background: rgba(231,76,60,0.2); border: 1px solid rgba(231,76,60,0.4); color: var(--red); font-family: 'Trebuchet MS', sans-serif; font-size: 0.65rem; font-weight: bold; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+
+  /* Questions travaux dirigés */
+  .questions-section { background: var(--navy2); border: 1px solid rgba(201,168,76,0.25); border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+  .questions-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+  .question-item { background: var(--navy3); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.2s; }
+  .question-item:hover { border-color: rgba(201,168,76,0.3); }
+  .qi-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; }
+  .qi-text { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--white); margin-bottom: 8px; }
+  .qi-answer { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; display: none; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .qi-answer.show { display: block; }
+  .qi-toggle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--gold); }
+
+  /* Correction */
+  .correction-note { background: rgba(39,174,96,0.08); border-left: 3px solid var(--green-light); padding: 12px 16px; border-radius: 0 8px 8px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--green-light); margin-top: 8px; }
+
+  .footer { text-align: center; padding: 24px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Gestion des activités · E2</div>
+    <span class="header-icon">🍽️</span>
+    <h1>Démarche Qualité en Alimentaire</h1>
+    <p>3 scénarios · EHPAD · Cantine scolaire · Hôpital · Méthode 5M + HACCP appliquée</p>
+  </div>
+
+  <!-- Navigation -->
+  <div class="scenario-nav">
+    <div class="nav-btn active" onclick="showScenario(1, this)">
+      <span class="nb-icon">🏠</span>
+      <span class="nb-label">Scénario 1</span>
+      <span class="nb-sub">EHPAD Les Pins Dorés</span>
+    </div>
+    <div class="nav-btn" onclick="showScenario(2, this)">
+      <span class="nb-icon">🏫</span>
+      <span class="nb-label">Scénario 2</span>
+      <span class="nb-sub">Cantine scolaire Pasteur</span>
+    </div>
+    <div class="nav-btn" onclick="showScenario(3, this)">
+      <span class="nb-icon">🏥</span>
+      <span class="nb-label">Scénario 3</span>
+      <span class="nb-sub">Centre Hospitalier</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCÉNARIO 1 : EHPAD -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="scenario active" id="sc1">
+    <div class="scenario-header" style="background: rgba(230,126,34,0.1); border: 1px solid rgba(230,126,34,0.3);">
+      <div class="sc-badge" style="color:var(--orange);">🏠 SCÉNARIO 1 · EHPAD</div>
+      <h2>Une TIAC à l'EHPAD Les Pins Dorés</h2>
+      <div class="sc-context" style="color:var(--text-dim);">Vous êtes conseillère en économie sociale et familiale en poste à l'EHPAD Les Pins Dorés (80 résidents). Vous êtes responsable de la qualité en restauration.</div>
+    </div>
+
+    <div class="situation" style="background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.25);">
+      <strong>📋 Situation</strong>
+      Le lundi matin, l'infirmière coordinatrice vous signale que 12 résidents présentent depuis la soirée de dimanche des symptômes digestifs : diarrhées, vomissements, fièvre légère. Tous ont participé au repas dominical servi en salle de restaurant. Le menu comprenait : terrine de campagne (entrée), rôti de porc avec gratin dauphinois, salade verte, fromage blanc, tarte aux fraises.
+      <br><br>
+      Lors de votre enquête rapide, vous découvrez : le réfrigérateur de la légumerie affichait 12°C depuis vendredi soir (panne non signalée), la terrine de campagne était une préparation maison réalisée jeudi, le cuisinier remplaçant du week-end n'avait pas été formé au HACCP, et aucun relevé de température n'a été effectué samedi et dimanche.
+    </div>
+
+    <!-- 5M -->
+    <div class="cinq-m-section">
+      <div class="cinq-m-title">🔍 Méthode des 5M — Analyse des causes de la contamination</div>
+      <p style="font-family:'Trebuchet MS',sans-serif;font-size:0.8rem;color:var(--text-dim);margin-bottom:14px;">Le diagramme d'Ishikawa (5M) permet d'identifier toutes les causes possibles du problème sanitaire.</p>
+      <table class="m-table">
+        <thead>
+          <tr>
+            <th style="color:var(--text-dim);width:18%;">5M</th>
+            <th style="color:var(--text-dim);">Causes identifiées</th>
+            <th style="color:var(--text-dim);">Dangers associés</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="m-label">Méthodes</td>
+            <td class="m-cause">Pas de relevé de température le week-end · Absence de protocole de signalement de panne · Terrine préparée 3 jours avant</td>
+            <td class="m-danger">Multiplication bactérienne non détectée · Absence de traçabilité</td>
+          </tr>
+          <tr>
+            <td class="m-label">Main d'œuvre</td>
+            <td class="m-cause">Cuisinier remplaçant non formé au HACCP · Panne non signalée par l'équipe de week-end</td>
+            <td class="m-danger">Non-respect des procédures · Décision non éclairée</td>
+          </tr>
+          <tr>
+            <td class="m-label">Matériels</td>
+            <td class="m-cause">Réfrigérateur en panne depuis vendredi (12°C au lieu de ≤4°C)</td>
+            <td class="m-danger">Rupture de la chaîne du froid · Multiplication rapide des bactéries pathogènes (Salmonella, Listeria...)</td>
+          </tr>
+          <tr>
+            <td class="m-label">Milieu</td>
+            <td class="m-cause">Légumerie sans alarme de température · Absence de thermomètre d'affichage visible</td>
+            <td class="m-danger">Panne non détectée pendant 48h</td>
+          </tr>
+          <tr>
+            <td class="m-label">Matières</td>
+            <td class="m-cause">Terrine de campagne (produit carné cru, préparation maison) stockée trop longtemps à température non maîtrisée</td>
+            <td class="m-danger">Aliment à risque élevé : milieu riche en nutriments + température favorable = explosion bactérienne</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- HACCP appliqué -->
+    <div class="haccp-section">
+      <div class="haccp-title">✅ Application de l'HACCP — Réponse à la crise et mesures correctives</div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">1</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Danger identifié <span class="hsi-ccp">CCP</span></div>
+          <div class="hsi-text">Multiplication bactérienne dans la terrine du fait d'une rupture de chaîne du froid (12°C pendant 48h). Bactérie suspectée : Salmonella ou Staphylococcus aureus. Déclaration TIAC obligatoire auprès de la DDPP.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">2</div>
+        <div class="hsi-content">
+          <div class="hsi-title">CCP concerné</div>
+          <div class="hsi-text">Température de stockage en enceinte réfrigérée (CCP identifié dans le GBPH restauration collective sociale). Limite critique : ≤ 4°C pour les produits carnés. Limite DÉPASSÉE → produit aurait dû être bloqué.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">3</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Limite critique</div>
+          <div class="hsi-text">≤ 4°C pour les produits réfrigérés sensibles. 12°C constatés = dépassement de 8°C pendant au minimum 48h. Le produit aurait dû être DÉTRUIT dès la constatation de la panne.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">4</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Surveillance défaillante</div>
+          <div class="hsi-text">Aucun relevé de température réalisé samedi et dimanche. Le système de surveillance (fiche de relevé quotidien des enceintes) n'a pas été appliqué par le cuisinier remplaçant non formé.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">5</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Actions correctives immédiates</div>
+          <div class="hsi-text">• Isoler et détruire les denrées ayant séjourné dans l'enceinte défaillante · Faire réparer le réfrigérateur · Déclarer la TIAC à la DDPP · Informer le médecin coordonnateur · Prélèvements pour analyses microbiologiques · Renforcer la surveillance des résidents touchés.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">6-7</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Vérification + Documentation</div>
+          <div class="hsi-text">Analyses microbiologiques des restes alimentaires et surfaces · Mise à jour du PMS · Formation obligatoire de tout remplaçant · Installation d'une alarme de température sur chaque enceinte · Mise à jour du carnet de surveillance.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="questions-section">
+      <div class="questions-title">📝 Questions de travail dirigé</div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 1</div>
+        <div class="qi-text">Pourquoi cet incident constitue-t-il une TIAC ? Quelles sont les obligations légales qui en découlent ?</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Il s'agit bien d'une TIAC car au moins 2 personnes (ici 12 résidents) présentent les mêmes symptômes infectieux après avoir partagé le même repas. Les obligations : déclaration obligatoire auprès de la DDPP (Direction Départementale de la Protection des Populations), signalement via le RASFF si nécessaire, conservation des prélèvements alimentaires pour analyse, traçabilité complète des lots consommés. Les résidents constituent une population vulnérable (personnes âgées) ce qui renforce l'urgence de la réponse.</div>
+      </div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 2</div>
+        <div class="qi-text">En appliquant la méthode des 5M, identifiez la cause principale de la contamination et les facteurs aggravants.</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Cause principale (Matériels) : panne du réfrigérateur non détectée pendant 48h → rupture de la chaîne du froid (12°C au lieu de ≤4°C). Facteurs aggravants : Méthodes (absence de relevé de température le week-end, terrine préparée 3 jours avant), Main d'œuvre (cuisinier remplaçant non formé, panne non signalée), Milieu (absence d'alarme de température), Matières (terrine = produit carné hautement périssable, milieu favorable à la multiplication bactérienne).</div>
+      </div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 3</div>
+        <div class="qi-text">Quel CCP n'a pas été maîtrisé ? Quelles actions correctives immédiates et préventives proposez-vous ?</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">CCP non maîtrisé : température de stockage en chambre froide (CCP identifié par le GBPH restauration collective). Limite critique dépassée : 12°C au lieu de ≤4°C. Actions immédiates : destruction des denrées contaminées, déclaration TIAC, analyses microbiologiques, réparation de l'enceinte. Actions préventives : installation d'alarmes de température sur toutes les enceintes, formation HACCP obligatoire pour tout remplaçant, mise en place d'une astreinte de surveillance le week-end, révision du PMS.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCÉNARIO 2 : CANTINE SCOLAIRE -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="scenario" id="sc2">
+    <div class="scenario-header" style="background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.3);">
+      <div class="sc-badge" style="color:var(--green-light);">🏫 SCÉNARIO 2 · CANTINE SCOLAIRE</div>
+      <h2>Alerte allergène à la cantine Pasteur</h2>
+      <div class="sc-context" style="color:var(--text-dim);">Vous êtes CESF au service vie scolaire d'une commune. Vous avez en charge la coordination de la restauration scolaire (450 élèves, de la maternelle au CM2) de l'école Pasteur.</div>
+    </div>
+
+    <div class="situation" style="background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.25);">
+      <strong>📋 Situation</strong>
+      Un mardi midi, Lucas, 7 ans, allergique aux arachides (allergie sévère connue, PAI en place), présente une réaction cutanée (urticaire) et des difficultés respiratoires après avoir mangé à la cantine. L'infirmière scolaire administre l'adrénaline (stylo auto-injecteur) et appelle le SAMU. Lucas est hospitalisé.
+      <br><br>
+      L'enquête révèle : le menu du jour était "nuggets de poulet, purée, yaourt, compote". Lucas a mangé les nuggets. En vérifiant la fiche fournisseur, vous constatez que les nuggets contenaient de la farine de blé et de la protéine d'arachide (non signalée sur l'étiquette principale). La cuisinière avait commandé une nouvelle marque sans vérifier la liste des allergènes. Le fichier des enfants allergiques n'était pas accessible en salle de service ce jour-là.
+    </div>
+
+    <!-- 5M -->
+    <div class="cinq-m-section">
+      <div class="cinq-m-title">🔍 Méthode des 5M — Analyse des causes de l'incident allergène</div>
+      <table class="m-table">
+        <thead>
+          <tr>
+            <th style="color:var(--text-dim);width:18%;">5M</th>
+            <th style="color:var(--text-dim);">Causes identifiées</th>
+            <th style="color:var(--text-dim);">Dangers associés</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="m-label">Méthodes</td>
+            <td class="m-cause">Pas de procédure de vérification des allergènes lors d'un changement de fournisseur · Fichier PAI non accessible en salle de service</td>
+            <td class="m-danger">Allergène non détecté introduit dans le menu · Allergie sévère non anticipée</td>
+          </tr>
+          <tr>
+            <td class="m-label">Main d'œuvre</td>
+            <td class="m-cause">Cuisinière n'a pas vérifié la liste des allergènes de la nouvelle marque · Personnel de service sans accès aux PAI</td>
+            <td class="m-danger">Manque de formation sur la gestion des allergènes · Information non transmise</td>
+          </tr>
+          <tr>
+            <td class="m-label">Matériels</td>
+            <td class="m-cause">Absence d'affichage des allergènes en salle de restaurant · Fichier allergies non numérisé/accessible</td>
+            <td class="m-danger">Personnel de service ne peut pas alerter ou adapter le plateau</td>
+          </tr>
+          <tr>
+            <td class="m-label">Milieu</td>
+            <td class="m-cause">Communication insuffisante entre la cuisine et la salle de service · Procédure de réception non stricte sur l'étiquetage allergènes</td>
+            <td class="m-danger">Rupture du circuit d'information sécurité</td>
+          </tr>
+          <tr>
+            <td class="m-label">Matières</td>
+            <td class="m-cause">Nouvelle marque de nuggets contenant protéine d'arachide (non signalée clairement sur l'emballage principal)</td>
+            <td class="m-danger">Introduction d'un allergène majeur dans un menu sans vérification préalable</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- HACCP -->
+    <div class="haccp-section">
+      <div class="haccp-title">✅ Application de l'HACCP — Gestion des allergènes et amélioration du système</div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">1</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Danger identifié <span class="hsi-ccp">CCP</span></div>
+          <div class="hsi-text">Présence d'un allergène à déclaration obligatoire (arachide) dans un repas servi à un enfant allergique sévère. Risque anaphylaxique avéré. Le danger allergène doit figurer dans le PMS de la cantine.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">2-3</div>
+        <div class="hsi-content">
+          <div class="hsi-title">CCP + Limite critique</div>
+          <div class="hsi-text">CCP : vérification des allergènes à la réception de chaque produit. Limite critique : aucun des 14 allergènes à déclaration obligatoire présent dans un plat ne doit atteindre un enfant dont le PAI mentionne cet allergène. Obligation légale : affichage des allergènes dans tout établissement servant des repas.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">4</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Surveillance insuffisante</div>
+          <div class="hsi-text">Aucune procédure de vérification des allergènes lors d'un changement de produit. Fichier PAI non accessible au service. Absence d'affichage journalier des allergènes du menu. Ces points auraient dû être des éléments de surveillance du PMS.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">5</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Actions correctives</div>
+          <div class="hsi-text">• Retrait immédiat des nuggets incriminés · Signalement à la DDPP · Contact avec le fournisseur · Analyse du lot · Révision des menus en cours · Information aux familles · Réunion de crise avec l'équipe.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">6-7</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Vérification + Documentation</div>
+          <div class="hsi-text">Création d'une fiche de vérification allergènes obligatoire à chaque réception de nouveau produit · Affichage des allergènes du menu en salle chaque jour · Tablette numérique en salle de service avec accès aux PAI · Formation annuelle de tout le personnel aux 14 allergènes · Mise à jour du PMS.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="questions-section">
+      <div class="questions-title">📝 Questions de travail dirigé</div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 1</div>
+        <div class="qi-text">Quelle est l'obligation légale de tout établissement servant des repas concernant les allergènes ? Citez au moins 5 des 14 allergènes à déclaration obligatoire.</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Obligation légale : tout établissement proposant des repas à consommer sur place doit mettre à disposition du public la liste des allergènes présents dans chaque plat. Les 14 allergènes à déclaration obligatoire incluent : gluten (céréales contenant du gluten), crustacés, œufs, poissons, arachides, soja, lait, fruits à coque (amandes, noisettes, noix...), céleri, moutarde, graines de sésame, anhydride sulfureux et sulfites, lupin, mollusques.</div>
+      </div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 2</div>
+        <div class="qi-text">Faites la distinction entre allergie et intolérance alimentaire. En quoi la situation de Lucas illustre-t-elle un risque allergique grave ?</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">L'ALLERGIE implique le système immunitaire : l'organisme reconnaît l'allergène comme un ennemi et déclenche une réaction pouvant être immédiate et sévère (urticaire, difficultés respiratoires, anaphylaxie). L'INTOLÉRANCE est une réaction métabolique ou digestive sans implication immunitaire, généralement moins grave et plus progressive (ex. intolérance au lactose). Lucas présente une réaction allergique sévère avec risque anaphylactique (choc allergique potentiellement mortel) — d'où l'urgence d'adrénaline et l'hospitalisation. La population enfantine est vulnérable et la cantine a une responsabilité juridique forte.</div>
+      </div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 3</div>
+        <div class="qi-text">En tant que CESF, quelles mesures préventives organisationnelles proposez-vous pour éviter qu'un tel incident se reproduise ?</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Mesures préventives : 1. Créer une procédure obligatoire de vérification des allergènes à chaque réception de nouveau produit (fiche de vérification allergènes intégrée au PMS). 2. Afficher quotidiennement les allergènes du menu dans la salle de restaurant (obligation légale). 3. Rendre accessibles les PAI au personnel de service (tablette, affichage sécurisé). 4. Former annuellement tout le personnel aux 14 allergènes et aux signes d'alerte. 5. Établir un protocole de communication cuisine/salle pour les enfants à PAI. 6. Vérifier la liste des allergènes de chaque produit avant toute commande, particulièrement en cas de changement de fournisseur.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCÉNARIO 3 : HÔPITAL -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="scenario" id="sc3">
+    <div class="scenario-header" style="background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3);">
+      <div class="sc-badge" style="color:var(--blue-light);">🏥 SCÉNARIO 3 · HÔPITAL</div>
+      <h2>Mise en place du PMS au Centre Hospitalier de Clermont</h2>
+      <div class="sc-context" style="color:var(--text-dim);">Vous êtes CESF à la direction des services économiques d'un centre hospitalier de 350 lits. La DDPP vient d'effectuer une inspection et a constaté l'absence de Plan de Maîtrise Sanitaire (PMS). La direction vous charge de le mettre en place.</div>
+    </div>
+
+    <div class="situation" style="background: rgba(45,139,186,0.08); border: 1px solid rgba(45,139,186,0.25);">
+      <strong>📋 Situation</strong>
+      L'inspection de la DDPP a relevé les non-conformités suivantes : absence de PMS formalisé, aucun enregistrement des températures sur les 6 derniers mois, pas de protocole de traçabilité des lots, contaminations croisées observées entre légumes crus et aliments cuits dans la zone de préparation froide, personnel non formé à l'HACCP depuis 3 ans, et absence de procédure écrite en cas de TIAC.
+      <br><br>
+      La direction vous donne 3 mois pour remettre la cuisine en conformité. Le prochain contrôle aura lieu dans 4 mois. Le résultat sera publié sur Alim'confiance.
+    </div>
+
+    <!-- 5M -->
+    <div class="cinq-m-section">
+      <div class="cinq-m-title">🔍 Méthode des 5M — Diagnostic des non-conformités</div>
+      <table class="m-table">
+        <thead>
+          <tr>
+            <th style="color:var(--text-dim);width:18%;">5M</th>
+            <th style="color:var(--text-dim);">Non-conformités constatées</th>
+            <th style="color:var(--text-dim);">Risques associés</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="m-label">Méthodes</td>
+            <td class="m-cause">Pas de PMS · Pas de protocole TIAC · Pas de traçabilité des lots · Pas de procédure écrite pour les CCP</td>
+            <td class="m-danger">Impossibilité de gérer une crise sanitaire · Non-conformité réglementaire grave · Sanction DDPP</td>
+          </tr>
+          <tr>
+            <td class="m-label">Main d'œuvre</td>
+            <td class="m-cause">Formation HACCP non réalisée depuis 3 ans · Personnel non sensibilisé aux CCP</td>
+            <td class="m-danger">Procédures non appliquées même si elles existaient · Risque de TIAC non maîtrisé</td>
+          </tr>
+          <tr>
+            <td class="m-label">Matériels</td>
+            <td class="m-cause">Absence d'enregistrements de températures sur 6 mois · Pas de système de traçabilité des lots</td>
+            <td class="m-danger">Impossibilité de détecter et prouver la maîtrise des CCP · Ruptures de chaîne du froid non détectées</td>
+          </tr>
+          <tr>
+            <td class="m-label">Milieu</td>
+            <td class="m-cause">Contaminations croisées entre légumes crus et aliments cuits dans la zone de préparation froide · Non-respect de la marche en avant</td>
+            <td class="m-danger">Transfert de micro-organismes pathogènes des aliments crus vers les aliments prêts à consommer</td>
+          </tr>
+          <tr>
+            <td class="m-label">Matières</td>
+            <td class="m-cause">Absence de vérification à réception (agréage) · Pas de fiches de vérification des denrées</td>
+            <td class="m-danger">Produits non conformes ou dégradés pouvant entrer dans le circuit de production</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- HACCP -->
+    <div class="haccp-section">
+      <div class="haccp-title">✅ Plan d'action HACCP — Mise en conformité en 3 mois</div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">1</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Analyser tous les dangers de la chaîne alimentaire</div>
+          <div class="hsi-text">Cartographier chaque étape : réception → stockage → décongélation → préparation froide/chaude → remise en température → distribution. Identifier les dangers biologiques (bactéries), chimiques (résidus nettoyage) et physiques (corps étrangers) à chaque étape. Utiliser la méthode 5M pour chaque poste.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">2</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Déterminer les CCP (GBPH restauration collective) <span class="hsi-ccp">CCP</span></div>
+          <div class="hsi-text">CCP identifiés par le GBPH : températures de stockage chambre froide négative · réchauffement lors du stockage chambre froide positive · multiplication microbienne pendant le refroidissement · mauvaises pratiques de congélation · altération des produits lors de l'entreposage.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">3</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Établir les limites critiques réglementées</div>
+          <div class="hsi-text">Températures réglementées : produits réfrigérés ≤4°C · produits congelés ≤-18°C · plats chauds servis ≥63°C · refroidissement rapide de +63°C à +10°C en moins de 2h. Ces valeurs doivent figurer dans le PMS et être affichées aux postes concernés.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">4</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Mettre en place la surveillance</div>
+          <div class="hsi-text">Fiches de relevé quotidien des températures (3 fois/jour minimum) · Fiche d'agréage à réception des denrées · Fiche de traçabilité des lots (numéros, dates de péremption) · Fiches de nettoyage-désinfection · Tableau de suivi des non-conformités.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">5</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Définir les actions correctives</div>
+          <div class="hsi-text">Procédure écrite pour chaque CCP : que faire si T° dépasse la limite ? (ex. : destruction du lot + réparation enceinte + signalement responsable). Procédure TIAC formalisée. Procédure de rappel de lot. Contact DDPP en cas de dépassement.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">6</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Vérifier l'efficacité</div>
+          <div class="hsi-text">Autocontrôles microbiologiques mensuels (surfaces, plats cuisinés) · Audit interne trimestriel · Exploitation des résultats Alim'confiance · Plan de formation HACCP annuel pour tout le personnel.</div>
+        </div>
+      </div>
+      <div class="haccp-step-item">
+        <div class="hsi-num">7</div>
+        <div class="hsi-content">
+          <div class="hsi-title">Constituer le PMS (Plan de Maîtrise Sanitaire)</div>
+          <div class="hsi-text">Rédiger et archiver : toutes les procédures HACCP · Les GBPH utilisés · Toutes les fiches de surveillance · Les résultats d'autocontrôles · Les actions correctives réalisées · Le plan de formation du personnel. Le PMS doit être mis à jour à chaque changement de procédure et présenté à la DDPP lors du prochain contrôle.</div>
+        </div>
+      </div>
+      <div class="correction-note">📅 Planning de mise en conformité : Mois 1 = formation HACCP du personnel + rédaction des procédures · Mois 2 = mise en place des fiches de surveillance + correction des contaminations croisées · Mois 3 = premier autocontrôle microbiologique + finalisation du PMS · Contrôle DDPP mois 4.</div>
+    </div>
+
+    <!-- Questions -->
+    <div class="questions-section">
+      <div class="questions-title">📝 Questions de travail dirigé</div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 1</div>
+        <div class="qi-text">Qu'est-ce que le PMS et pourquoi est-il obligatoire en restauration hospitalière ?</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Le PMS (Plan de Maîtrise Sanitaire) est un document OBLIGATOIRE pour tout établissement de restauration collective, imposé par le Paquet Hygiène (2004, en vigueur depuis 2006). Il regroupe l'ensemble des mesures prises pour garantir la sécurité sanitaire : les GBPH utilisés, le plan HACCP avec les CCP et limites critiques, les fiches de traçabilité (températures, nettoyage, gestion des lots) et les procédures d'autocontrôle. En milieu hospitalier, la population servie (patients malades, immunodéprimés, personnes âgées) est particulièrement vulnérable, ce qui renforce encore l'obligation de rigueur.</div>
+      </div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 2</div>
+        <div class="qi-text">Citez les CCP identifiés par le GBPH pour la restauration collective à caractère social et expliquez pourquoi les températures constituent des CCP.</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Les CCP du GBPH restauration collective sociale : températures de stockage non maîtrisées en chambre froide négative · réchauffement des produits en chambre froide positive · multiplication microbienne pendant le refroidissement · mauvaises pratiques de congélation · altération des produits lors de l'entreposage. Les températures sont des CCP car elles constituent des points où une maîtrise insuffisante (dépassement de limite) entraîne directement un risque inacceptable pour la santé : entre 4°C et 63°C, les bactéries pathogènes se multiplient rapidement (zone de danger). Si la limite est dépassée, le produit DOIT être bloqué et détruit — c'est la définition même d'un CCP.</div>
+      </div>
+      <div class="question-item" onclick="toggleAnswer(this)">
+        <div class="qi-num">Question 3</div>
+        <div class="qi-text">Qu'est-ce qu'Alim'confiance et quel impact peut avoir la publication des résultats du prochain contrôle sur l'établissement ?</div>
+        <div class="qi-toggle">▼ Voir la réponse</div>
+        <div class="qi-answer">Alim'confiance est le site public (accessible à tous les citoyens) qui publie les résultats des contrôles sanitaires officiels réalisés par la DDPP dans tous les établissements de la chaîne alimentaire, depuis le 1er mars 2017. Les résultats sont notés de "très satisfaisant" à "à améliorer de façon urgente". Pour un centre hospitalier, une mauvaise note publiée sur Alim'confiance aurait un impact fort sur : la confiance des patients et de leurs familles, la réputation de l'établissement, la pression de la direction et des autorités de santé. À l'inverse, une bonne note après mise en conformité démontre la culture qualité de l'établissement.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Gestion des activités · Démarche Qualité en Alimentaire · Scénarios E2 — Conseil et Expertise Technologiques</div>
+</div>
+
+<script>
+function showScenario(num, btn) {
+  document.querySelectorAll('.scenario').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sc' + num).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleAnswer(el) {
+  const answer = el.querySelector('.qi-answer');
+  const toggle = el.querySelector('.qi-toggle');
+  if (answer.classList.contains('show')) {
+    answer.classList.remove('show');
+    toggle.textContent = '▼ Voir la réponse';
+  } else {
+    answer.classList.add('show');
+    toggle.textContent = '▲ Masquer la réponse';
+  }
+}
+</script>
+</body>
+</html>

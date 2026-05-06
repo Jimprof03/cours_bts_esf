@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Le Circuit des Déchets | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Gestion des activités</div>
+    <h1>Le Circuit des Déchets</h1>
+    <div class="meta">Quiz de révision · 20 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  { q: "Combien d'étapes composent le parcours des déchets dans un établissement ?", opts: ["4 étapes","5 étapes","6 étapes","8 étapes"], ans: 2, fb: "Le parcours des déchets comporte 6 étapes : production → tri à la source → entreposage intermédiaire → collecte interne → entreposage centralisé → enlèvement." },
+  { q: "Qu'est-ce que le 'tri à la source' (étape 2) ?", opts: ["Trier les déchets dans le local déchets centralisé","Jeter le déchet dans un contenant approprié immédiatement sur le lieu de production","Séparer les déchets lors de leur collecte par le prestataire","Valoriser les déchets organiques sur place"], ans: 1, fb: "Le tri à la source consiste à jeter le déchet dans un contenant approprié (corbeille papier, poubelle jaune...) immédiatement sur le lieu de production, dès la génération du déchet." },
+  { q: "Qu'est-ce que l'entreposage intermédiaire (étape 3) ?", opts: ["Le stockage final avant destruction","Le regroupement des contenants au niveau d'un service ou d'un étage dans un local approprié","Le transport des déchets par le prestataire extérieur","Le tri des déchets à la plonge"], ans: 1, fb: "L'entreposage intermédiaire est le regroupement des contenants de déchets au niveau d'un service, d'un étage ou d'un bâtiment dans un local approprié. C'est à la fois une action et un lieu, appelé 'local déchets'." },
+  { q: "Qu'est-ce que l'enlèvement (étape 6) ?", opts: ["L'action du personnel de cuisine de vider les poubelles","Le regroupement final de tous les déchets dans la déchetterie","L'action d'un prestataire extérieur visant à emporter les déchets vers un lieu de valorisation ou de destruction","L'étape de tri manuel par le personnel"], ans: 2, fb: "L'enlèvement est réalisé par un prestataire extérieur. Il emporte les déchets vers un lieu de valorisation ou de destruction. Les déchets doivent faire l'objet d'un suivi (traçabilité) jusqu'à leur élimination finale." },
+  { q: "Qu'est-ce qu'un bio-déchet ?", opts: ["Tout déchet traité par des bactéries désinfectantes","Un déchet organique issu de ressources naturelles végétales ou animales, biodégradable (putrescible/fermentescible)","Un déchet d'activité de soins à risque infectieux","Un déchet traité chimiquement avant élimination"], ans: 1, fb: "Un bio-déchet est un déchet organique issu de ressources naturelles végétales ou animales, qui a la capacité de 'pourrir' (putrescible ou fermentescible). Exemples : déchets alimentaires, déchets de jardin." },
+  { q: "Quelle obligation légale pèse sur tout producteur de déchets, même s'il les transmet à un tiers ?", opts: ["Payer une taxe environnementale annuelle","Tenir un registre des déchets produits chaque semaine","Être responsable de la gestion de ses déchets jusqu'à leur élimination ou valorisation finale","Former son personnel à la sécurité incendie"], ans: 2, fb: "Tout producteur de déchets est responsable de la gestion de ces derniers jusqu'à leur élimination ou valorisation finale, même lorsqu'ils sont transmis à un tiers (prestataire)." },
+  { q: "Quelles sont les 3 méthodes de valorisation des bio-déchets ?", opts: ["Incinération, enfouissement, déchetterie","Compostage, lombricompostage, méthanisation","Biodiesel, biogaz, compostage","Recyclage, réemploi, réduction à la source"], ans: 1, fb: "Les 3 méthodes de valorisation des bio-déchets sont : le compostage (décomposition aérobie), le lombricompostage (décomposition par lombrics, possible en appartement) et la méthanisation (décomposition anaérobie produisant du biogaz)." },
+  { q: "Qu'est-ce que la méthanisation ?", opts: ["Un compostage accéléré par la chaleur","Un procédé de dégradation de la matière organique par des bactéries en l'absence d'oxygène, produisant du biogaz et du digestat","Un traitement aux ultraviolets pour désinfecter les bio-déchets","Un procédé de déshydratation des déchets organiques"], ans: 1, fb: "La méthanisation est la dégradation de la matière organique par des bactéries en absence d'oxygène (anaérobie). Elle produit du biogaz (intérêt énergétique) et du digestat (intérêt agronomique)." },
+  { q: "Que signifie SPAn ?", opts: ["Système de Protection Alimentaire national","Sous-Produits Animaux","Seuil de Production des Aliments non conformes","Stocks de Produits Alimentaires non utilisés"], ans: 1, fb: "SPAn = Sous-Produits Animaux. Ce sont des produits d'origine animale ou végétale, crus ou non, qui doivent être classifiés et gérés selon leur niveau de risque sanitaire (C1, C2, C3)." },
+  { q: "Quelle est la catégorie SPAn présentant le risque sanitaire le plus élevé ?", opts: ["C3 (faible risque)","C2 (risque modéré)","C1 (risque élevé)","C0 (aucun risque)"], ans: 2, fb: "La catégorie C1 présente le risque sanitaire le plus élevé (cadavres d'animaux, déchets de cuisine de transports internationaux). Ils sont valorisés en biodiesel/combustible ou éliminés par incinération." },
+  { q: "Comment sont valorisés les SPAn de catégorie C3 ?", opts: ["Éliminés uniquement par incinération","Valorisés en alimentation animale, pharmacie, cosmétique, engrais ou énergie","Uniquement en compostage","Éliminés par enfouissement obligatoire"], ans: 1, fb: "Les SPAn C3 (faible risque sanitaire, ex : restes alimentaires sans risque) peuvent être valorisés en alimentation animale ou pour des usages divers : pharmacie, cosmétique, engrais, énergie." },
+  { q: "Que sont les HAU et comment doivent-elles être gérées ?", opts: ["Les Huiles Alimentaires Usagées — à jeter dans les égouts avec précaution","Les Huiles Alimentaires Usagées — classées SPAn C3, valorisables en biodiesel ou détergents, jamais dans les égouts ni les ordures ménagères","Les Huiles Alimentaires Usagées — à stocker à température négative","Les Huiles à Usage alimentaire — à réutiliser après filtration"], ans: 1, fb: "Les HAU (Huiles Alimentaires Usagées) sont classées SPAn C3. Leur valorisation privilégiée est la fabrication de détergents ou de biodiesel. Elles ne doivent jamais être rejetées dans les égouts (risque pour les réseaux) ni dans les ordures ménagères." },
+  { q: "Quel est le principe fondamental à appliquer pour le circuit des déchets en restauration ?", opts: ["Regrouper tous les déchets dans un seul local centralisé","Marche en avant et non-croisement des circuits propres et souillés","Évacuer les déchets uniquement la nuit pour éviter les nuisances","Utiliser exclusivement des contenants biodégradables"], ans: 1, fb: "Les règles fondamentales sont : la marche en avant (progression continue sans retour arrière) et le non-croisement des circuits propres et souillés. Les déchets ne doivent jamais traverser les zones propres." },
+  { q: "À quelle fréquence minimum les poubelles de cuisine doivent-elles être déversées dans les poubelles de voirie ?", opts: ["Toutes les 2 heures","Une fois par semaine","Au moins quotidiennement","Uniquement lors du passage du prestataire"], ans: 2, fb: "Les poubelles de cuisine doivent être déversées dans celles de voirie au moins quotidiennement, afin de limiter les risques de contamination et les nuisances." },
+  { q: "Quel type de poubelles est recommandé à proximité des postes de travail en cuisine ?", opts: ["Poubelles classiques sans couvercle pour faciliter l'accès","Poubelles à commande hygiénique (pédale ou capteur) équipées de sacs plastique","Poubelles en bois avec couvercle en métal","Sacs poubelle directement posés sur le sol"], ans: 1, fb: "Les poubelles doivent être à commande hygiénique (ouverture sans les mains) et équipées de sacs en plastique, pour éviter la contamination lors des manipulations en cuisine." },
+  { q: "Quels sont les 5 éléments essentiels pour un bon local de stockage des déchets ?", opts: ["Grande surface, éclairage puissant, accès 24h/24, climatisation, vidéosurveillance","Gestion séparée des flux, stockage des HAU, point d'eau, nettoyage facilité, aération","Réfrigération permanente, sols en bois, lumière naturelle, accès libre, tri automatique","Alarme incendie, extincteur, registre de déchets, caméras, sol antidérapant"], ans: 1, fb: "Le local à déchets doit prévoir : gestion séparée des flux, stockage des HAU, point d'eau (pour le nettoyage), facilité de nettoyage des surfaces et aération correcte." },
+  { q: "Que signifie DAOM ?", opts: ["Déchets d'Activité à Odeur Médicale","Déchets Assimilés aux Ordures Ménagères","Déchets Alimentaires d'Origine Mixte","Déchets à Autorisation Officielle Médicale"], ans: 1, fb: "DAOM = Déchets Assimilés aux Ordures Ménagères. Avec les DASRI, ce sont les deux principales catégories de déchets en volume dans les établissements de santé." },
+  { q: "Que signifie DASRI ?", opts: ["Déchets d'Alimentation et de Soins à Risques Infectieux","Déchets d'Activités de Soins à Risques Infectieux","Dossier d'Analyse Sanitaire et de Risques Infectieux","Dispositif d'Alerte Sanitaire et de Réduction des Infections"], ans: 1, fb: "DASRI = Déchets d'Activités de Soins à Risques Infectieux. Ils peuvent contenir des micro-organismes pathogènes pouvant contaminer l'environnement. Ils nécessitent un conditionnement spécifique." },
+  { q: "Quelle couleur dominante doivent avoir les conditionnements DASRI ?", opts: ["Rouge","Vert","Jaune","Orange"], ans: 2, fb: "Les contenants DASRI doivent avoir une couleur dominante jaune, porter le symbole 'danger biologique' et le nom du producteur. Ils doivent être résistants et imperméables." },
+  { q: "Où doivent être stockés les DASRI ?", opts: ["Dans le même local que les déchets ménagers","Dans des locaux clairement identifiés, sécurisés (clé ou digicode), écartés des zones de chaleur, réservés au stockage des déchets","Dans des réfrigérateurs dédiés en cuisine","Dans les vestiaires du personnel soignant"], ans: 1, fb: "Les DASRI doivent être entreposés dans des locaux clairement identifiés, sécurisés (clé ou digicode), situés à l'écart des zones de chaleur et réservés exclusivement au stockage des déchets. Les déchets doivent être préalablement emballés." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  const q=shuffled[current];
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=shuffled[current];const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>

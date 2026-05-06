@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – La Méthode des 5M | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22; --purple: #8e44ad;
+    --teal: #1abc9c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* Définition + Objectif */
+  .intro { background: var(--navy2); border: 1px solid rgba(201,168,76,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+  .intro-card { background: var(--navy3); border-radius: 10px; padding: 18px; }
+  .intro-card h3 { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--gold-light); margin-bottom: 10px; }
+  .intro-card p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text); line-height: 1.6; }
+  .usages { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .usage-tag { background: var(--navy3); border: 1px solid rgba(201,168,76,0.25); border-radius: 20px; padding: 5px 12px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; color: var(--text-dim); }
+
+  /* Diagramme Ishikawa SVG */
+  .ishikawa { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .ishikawa svg { width: 100%; height: auto; display: block; }
+
+  /* 5M détaillés */
+  .cinq-m { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .m-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 14px; }
+  .m-card { border-radius: 10px; padding: 16px 10px; }
+  .m-card.m1 { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.4); }
+  .m-card.m2 { background: rgba(230,126,34,0.1); border: 1px solid rgba(230,126,34,0.4); }
+  .m-card.m3 { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.4); }
+  .m-card.m4 { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.4); }
+  .m-card.m5 { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.4); }
+  .m-icon { font-size: 1.8rem; text-align: center; margin-bottom: 8px; }
+  .m-letter { font-family: 'Trebuchet MS', sans-serif; font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 4px; }
+  .m-card.m1 .m-letter { color: var(--red); }
+  .m-card.m2 .m-letter { color: var(--orange); }
+  .m-card.m3 .m-letter { color: var(--gold-light); }
+  .m-card.m4 .m-letter { color: var(--green-light); }
+  .m-card.m5 .m-letter { color: var(--blue-light); }
+  .m-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; text-align: center; color: var(--white); margin-bottom: 8px; }
+  .m-def { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; margin-bottom: 8px; text-align: center; }
+  .m-exemples { display: flex; flex-direction: column; gap: 3px; }
+  .m-ex { font-family: 'Trebuchet MS', sans-serif; font-size: 0.67rem; color: var(--text-dim); padding: 3px 6px; background: rgba(255,255,255,0.04); border-radius: 4px; }
+
+  /* Comment l'utiliser */
+  .methode { background: var(--navy2); border: 1px solid rgba(39,174,96,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .steps-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .step-card { background: var(--navy3); border-radius: 10px; padding: 14px 10px; text-align: center; }
+  .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--green); color: white; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+  .step-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; color: var(--white); margin-bottom: 5px; }
+  .step-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Exemple concret */
+  .exemple { background: var(--navy2); border: 1px solid rgba(231,76,60,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .pb-box { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); border-radius: 8px; padding: 14px 16px; margin-top: 14px; margin-bottom: 16px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--white); text-align: center; }
+  .ex-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .ex-card { border-radius: 8px; padding: 12px 8px; }
+  .ex-card.m1 { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.25); }
+  .ex-card.m2 { background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.25); }
+  .ex-card.m3 { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25); }
+  .ex-card.m4 { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.25); }
+  .ex-card.m5 { background: rgba(45,139,186,0.08); border: 1px solid rgba(45,139,186,0.25); }
+  .ex-m { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; font-weight: bold; margin-bottom: 6px; }
+  .ex-card.m1 .ex-m { color: var(--red); }
+  .ex-card.m2 .ex-m { color: var(--orange); }
+  .ex-card.m3 .ex-m { color: var(--gold-light); }
+  .ex-card.m4 .ex-m { color: var(--green-light); }
+  .ex-card.m5 .ex-m { color: var(--blue-light); }
+  .ex-items { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* Lien HACCP */
+  .lien-haccp { background: var(--navy2); border: 1px solid rgba(39,174,96,0.25); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .lien-row { display: flex; gap: 14px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+  .lien-item { flex: 1; min-width: 180px; background: var(--navy3); border-radius: 8px; padding: 12px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+  .lien-item strong { display: block; color: var(--white); margin-bottom: 4px; }
+  .lien-arrow { color: var(--gold); font-size: 1.4rem; flex-shrink: 0; }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 680px) {
+    .intro-grid { grid-template-columns: 1fr; }
+    .m-grid, .ex-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps-flow { grid-template-columns: repeat(2, 1fr); }
+    .m-card.m5, .ex-card.m5 { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Gestion des activités · E2</div>
+    <span class="header-icon">🐟</span>
+    <h1>La Méthode des 5M</h1>
+    <p>Diagramme d'Ishikawa · Outil d'analyse des causes · Qualité alimentaire</p>
+  </div>
+
+  <!-- Définition & Objectif -->
+  <div class="intro">
+    <div class="section-title">Définition & Objectif</div>
+    <div class="intro-grid">
+      <div class="intro-card">
+        <h3>📌 Qu'est-ce que c'est ?</h3>
+        <p>La méthode des <strong>5M</strong> (aussi appelée <strong>diagramme d'Ishikawa</strong> ou <strong>diagramme en arête de poisson</strong>) est un outil de gestion de la qualité qui permet d'identifier et de classer toutes les causes possibles d'un problème en 5 grandes familles.</p>
+      </div>
+      <div class="intro-card">
+        <h3>🎯 À quoi ça sert ?</h3>
+        <p>Elle sert à analyser un problème de manière systématique pour <strong>ne manquer aucune cause</strong>. Elle oblige à regarder le problème sous 5 angles différents avant de chercher des solutions. C'est un outil de <strong>questionnement collectif</strong>, souvent utilisé en équipe.</p>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-family:'Trebuchet MS',sans-serif;font-size:0.8rem;color:var(--text-dim);margin-bottom:10px;">Utilisée dans :</div>
+    <div class="usages">
+      <span class="usage-tag">🍽️ Sécurité alimentaire (HACCP)</span>
+      <span class="usage-tag">🧹 Gestion du linge (RABC)</span>
+      <span class="usage-tag">🏭 Industrie et production</span>
+      <span class="usage-tag">🏥 Milieu médico-social</span>
+      <span class="usage-tag">📦 Logistique et entretien</span>
+      <span class="usage-tag">🔍 Audit qualité</span>
+    </div>
+  </div>
+
+  <!-- Diagramme Ishikawa SVG -->
+  <div class="ishikawa">
+    <div class="section-title">Le diagramme en arête de poisson · Principe visuel</div>
+    <svg viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg" style="margin-top:10px;">
+      <!-- Fond -->
+      <rect width="860" height="320" fill="transparent"/>
+
+      <!-- Arête centrale -->
+      <line x1="60" y1="160" x2="740" y2="160" stroke="#c9a84c" stroke-width="3"/>
+
+      <!-- Tête du poisson (effet) -->
+      <rect x="740" y="130" width="110" height="60" rx="8" fill="rgba(231,76,60,0.2)" stroke="#e74c3c" stroke-width="1.5"/>
+      <text x="795" y="155" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="#f0f4f8" font-weight="bold">PROBLÈME</text>
+      <text x="795" y="172" text-anchor="middle" font-family="Trebuchet MS" font-size="9" fill="#8892b0">(l'effet à analyser)</text>
+
+      <!-- Flèche centrale -->
+      <polygon points="740,155 725,148 725,172" fill="#c9a84c"/>
+
+      <!-- Queue -->
+      <polygon points="60,160 80,145 80,175" fill="#c9a84c"/>
+
+      <!-- ── ARÊTES SUPÉRIEURES ── -->
+      <!-- M1 Méthodes (haut gauche) -->
+      <line x1="160" y1="160" x2="110" y2="60" stroke="#e74c3c" stroke-width="2"/>
+      <rect x="48" y="30" width="105" height="36" rx="6" fill="rgba(231,76,60,0.15)" stroke="#e74c3c" stroke-width="1"/>
+      <text x="100" y="50" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="#e74c3c" font-weight="bold">Méthodes</text>
+      <text x="100" y="63" text-anchor="middle" font-family="Trebuchet MS" font-size="9" fill="#8892b0">Organisation, process</text>
+      <!-- sous-arêtes -->
+      <line x1="155" y1="160" x2="128" y2="120" stroke="#e74c3c" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+      <line x1="148" y1="160" x2="118" y2="108" stroke="#e74c3c" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+      <!-- M2 Main d'œuvre (haut centre-gauche) -->
+      <line x1="320" y1="160" x2="270" y2="60" stroke="#e67e22" stroke-width="2"/>
+      <rect x="208" y="30" width="125" height="36" rx="6" fill="rgba(230,126,34,0.15)" stroke="#e67e22" stroke-width="1"/>
+      <text x="270" y="50" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="#e67e22" font-weight="bold">Main d'œuvre</text>
+      <text x="270" y="63" text-anchor="middle" font-family="Trebuchet MS" font-size="9" fill="#8892b0">Personnel, compétences</text>
+      <line x1="315" y1="160" x2="288" y2="120" stroke="#e67e22" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+      <line x1="308" y1="160" x2="278" y2="108" stroke="#e67e22" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+      <!-- M3 Matériels (haut centre-droite) -->
+      <line x1="500" y1="160" x2="450" y2="60" stroke="#c9a84c" stroke-width="2"/>
+      <rect x="388" y="30" width="120" height="36" rx="6" fill="rgba(201,168,76,0.15)" stroke="#c9a84c" stroke-width="1"/>
+      <text x="448" y="50" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="#f0c96b" font-weight="bold">Matériels</text>
+      <text x="448" y="63" text-anchor="middle" font-family="Trebuchet MS" font-size="9" fill="#8892b0">Machines, équipements</text>
+      <line x1="495" y1="160" x2="468" y2="120" stroke="#c9a84c" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+      <line x1="488" y1="160" x2="458" y2="108" stroke="#c9a84c" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+      <!-- ── ARÊTES INFÉRIEURES ── -->
+      <!-- M4 Milieu (bas gauche) -->
+      <line x1="240" y1="160" x2="190" y2="260" stroke="#2ecc71" stroke-width="2"/>
+      <rect x="128" y="252" width="120" height="36" rx="6" fill="rgba(39,174,96,0.15)" stroke="#2ecc71" stroke-width="1"/>
+      <text x="188" y="272" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="#2ecc71" font-weight="bold">Milieu</text>
+      <text x="188" y="285" text-anchor="middle" font-family="Trebuchet MS" font-size="9" fill="#8892b0">Environnement, locaux</text>
+      <line x1="235" y1="160" x2="208" y2="200" stroke="#2ecc71" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+      <line x1="228" y1="160" x2="198" y2="212" stroke="#2ecc71" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+      <!-- M5 Matières (bas droite) -->
+      <line x1="620" y1="160" x2="570" y2="260" stroke="#2d8bba" stroke-width="2"/>
+      <rect x="508" y="252" width="115" height="36" rx="6" fill="rgba(45,139,186,0.15)" stroke="#2d8bba" stroke-width="1"/>
+      <text x="565" y="272" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="#2d8bba" font-weight="bold">Matières</text>
+      <text x="565" y="285" text-anchor="middle" font-family="Trebuchet MS" font-size="9" fill="#8892b0">Produits, ingrédients</text>
+      <line x1="615" y1="160" x2="588" y2="200" stroke="#2d8bba" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+      <line x1="608" y1="160" x2="578" y2="212" stroke="#2d8bba" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+    </svg>
+    <div style="text-align:center;font-family:'Trebuchet MS',sans-serif;font-size:0.75rem;color:var(--text-dim);margin-top:8px;">Les 5 familles de causes convergent vers l'effet (le problème) — comme des arêtes vers la tête d'un poisson.</div>
+  </div>
+
+  <!-- 5M détaillés -->
+  <div class="cinq-m">
+    <div class="section-title">Les 5M en détail · Définitions & Exemples</div>
+    <div class="m-grid">
+      <div class="m-card m1">
+        <div class="m-icon">📋</div>
+        <div class="m-letter">M1</div>
+        <div class="m-name">Méthodes</div>
+        <div class="m-def">Organisation du travail, procédures, modes opératoires, protocoles, réglages…</div>
+        <div class="m-exemples">
+          <div class="m-ex">Pas de relevé de T°</div>
+          <div class="m-ex">Procédure non respectée</div>
+          <div class="m-ex">Absence de protocole TIAC</div>
+          <div class="m-ex">Mauvais ordre d'opérations</div>
+        </div>
+      </div>
+      <div class="m-card m2">
+        <div class="m-icon">👤</div>
+        <div class="m-letter">M2</div>
+        <div class="m-name">Main d'œuvre</div>
+        <div class="m-def">Actions liées aux personnes : formation, compétences, comportement, hygiène individuelle…</div>
+        <div class="m-exemples">
+          <div class="m-ex">Non-formation HACCP</div>
+          <div class="m-ex">Mauvais lavage des mains</div>
+          <div class="m-ex">Tenue inappropriée</div>
+          <div class="m-ex">Erreur de manipulation</div>
+        </div>
+      </div>
+      <div class="m-card m3">
+        <div class="m-icon">⚙️</div>
+        <div class="m-letter">M3</div>
+        <div class="m-name">Matériels</div>
+        <div class="m-def">Équipements, machines, outils, chariots, enceintes de stockage, ustensiles…</div>
+        <div class="m-exemples">
+          <div class="m-ex">Réfrigérateur en panne</div>
+          <div class="m-ex">Matériel mal entretenu</div>
+          <div class="m-ex">Sonde T° défectueuse</div>
+          <div class="m-ex">Lave-linge insuffisant</div>
+        </div>
+      </div>
+      <div class="m-card m4">
+        <div class="m-icon">🏢</div>
+        <div class="m-letter">M4</div>
+        <div class="m-name">Milieu</div>
+        <div class="m-def">Environnement de travail : locaux, air, eau, températures ambiantes, organisation spatiale…</div>
+        <div class="m-exemples">
+          <div class="m-ex">Pas d'alarme de T°</div>
+          <div class="m-ex">Contamination croisée</div>
+          <div class="m-ex">Marche en avant non respectée</div>
+          <div class="m-ex">Aération insuffisante</div>
+        </div>
+      </div>
+      <div class="m-card m5">
+        <div class="m-icon">📦</div>
+        <div class="m-letter">M5</div>
+        <div class="m-name">Matières</div>
+        <div class="m-def">Les produits entrants : aliments, matières premières, produits d'entretien, linge…</div>
+        <div class="m-exemples">
+          <div class="m-ex">Produit périmé</div>
+          <div class="m-ex">Allergène non détecté</div>
+          <div class="m-ex">Matière première contaminée</div>
+          <div class="m-ex">Linge souillé mal trié</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comment l'utiliser -->
+  <div class="methode">
+    <div class="section-title">Comment utiliser la méthode des 5M · 4 étapes</div>
+    <div class="steps-flow">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-name">Définir le problème</div>
+        <div class="step-desc">Formuler clairement l'effet (le problème) à analyser. Il sera placé à la "tête du poisson".<br><br>Ex : "12 résidents ont été malades après le repas de dimanche."</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-name">Brainstorming en équipe</div>
+        <div class="step-desc">Réunir les acteurs concernés. Chacun propose des causes. Elles sont rattachées à l'une des 5 familles selon leur nature.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-name">Identifier les causes racines</div>
+        <div class="step-desc">Pour chaque cause identifiée, se poser la question "Pourquoi ?" jusqu'à trouver la cause profonde (méthode des "5 Pourquoi").</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-name">Définir des actions correctives</div>
+        <div class="step-desc">Pour chaque cause racine identifiée, définir une action corrective concrète et un responsable. Puis vérifier l'efficacité des actions.</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;background:rgba(201,168,76,0.08);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;font-family:'Trebuchet MS',sans-serif;font-size:0.82rem;color:var(--gold-light);">
+      💡 L'intérêt principal de la méthode : en forçant à explorer les 5 familles, on évite de se focaliser uniquement sur la cause évidente et on découvre souvent des facteurs aggravants insoupçonnés.
+    </div>
+  </div>
+
+  <!-- Exemple concret alimentaire -->
+  <div class="exemple">
+    <div class="section-title">Exemple concret · Problème : une TIAC en EHPAD</div>
+    <div class="pb-box">🔴 PROBLÈME IDENTIFIÉ : 12 résidents malades après le repas du dimanche (vomissements, diarrhées)</div>
+    <div class="ex-grid">
+      <div class="ex-card m1">
+        <div class="ex-m">📋 Méthodes</div>
+        <div class="ex-items">• Pas de relevé de T° le week-end<br>• Terrine préparée 3 jours avant<br>• Absence de procédure de signalement de panne</div>
+      </div>
+      <div class="ex-card m2">
+        <div class="ex-m">👤 Main d'œuvre</div>
+        <div class="ex-items">• Cuisinier remplaçant non formé au HACCP<br>• Panne non signalée par l'équipe<br>• Procédure inconnue du remplaçant</div>
+      </div>
+      <div class="ex-card m3">
+        <div class="ex-m">⚙️ Matériels</div>
+        <div class="ex-items">• Réfrigérateur en panne (12°C au lieu de 4°C)<br>• Pas d'alarme de température<br>• Pas de thermomètre d'affichage visible</div>
+      </div>
+      <div class="ex-card m4">
+        <div class="ex-m">🏢 Milieu</div>
+        <div class="ex-items">• Légumerie sans système d'alarme<br>• Absence de surveillance le week-end<br>• Organisation insuffisante pour les remplaçants</div>
+      </div>
+      <div class="ex-card m5">
+        <div class="ex-m">📦 Matières</div>
+        <div class="ex-items">• Terrine de campagne (produit carné hautement périssable)<br>• Stockée à 12°C pendant 48h<br>• Multiplication bactérienne massive</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lien avec HACCP -->
+  <div class="lien-haccp">
+    <div class="section-title">Lien avec l'HACCP · La méthode 5M à l'étape 1</div>
+    <div class="lien-row">
+      <div class="lien-item">
+        <strong>Étape 1 HACCP</strong>
+        "Analyser tous les dangers potentiels à chaque étape de la chaîne alimentaire"
+      </div>
+      <div class="lien-arrow">→</div>
+      <div class="lien-item">
+        <strong>La méthode 5M est l'outil recommandé</strong>
+        Pour s'assurer de ne manquer aucune cause lors de l'analyse des dangers. Elle structure le brainstorming de l'équipe HACCP.
+      </div>
+      <div class="lien-arrow">→</div>
+      <div class="lien-item">
+        <strong>Résultat</strong>
+        Tableau d'analyse des risques complet → identification des CCP → définition des limites critiques → PMS
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Gestion des activités · La Méthode des 5M · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

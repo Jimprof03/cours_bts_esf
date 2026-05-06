@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Le Circuit des Déchets | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* 6 étapes */
+  .parcours { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .etapes-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .etape { background: var(--navy3); border-radius: 10px; padding: 14px 12px; text-align: center; }
+  .etape-num { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+  .etape-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; color: var(--white); margin-bottom: 5px; }
+  .etape-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Bio-déchets valorisation */
+  .biodechets { background: var(--navy2); border: 1px solid rgba(39,174,96,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .bio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .bio-card { background: var(--navy3); border-radius: 10px; padding: 16px 12px; text-align: center; }
+  .bio-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .bio-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--green-light); margin-bottom: 5px; }
+  .bio-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* SPAn */
+  .span { background: var(--navy2); border: 1px solid rgba(231,76,60,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .span-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .span-card { border-radius: 10px; padding: 16px 12px; }
+  .span-card.c1 { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.4); }
+  .span-card.c2 { background: rgba(230,126,34,0.12); border: 1px solid rgba(230,126,34,0.4); }
+  .span-card.c3 { background: rgba(39,174,96,0.12); border: 1px solid rgba(39,174,96,0.4); }
+  .span-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; }
+  .span-card.c1 .span-label { color: var(--red); }
+  .span-card.c2 .span-label { color: var(--orange); }
+  .span-card.c3 .span-label { color: var(--green-light); }
+  .span-risk { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px; }
+  .span-card.c1 .span-risk { color: var(--red); }
+  .span-card.c2 .span-risk { color: var(--orange); }
+  .span-card.c3 .span-risk { color: var(--green-light); }
+  .span-ex { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; margin-bottom: 8px; }
+  .span-val { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--blue-light); font-style: italic; }
+  .hau-box { margin-top: 12px; background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); border-radius: 8px; padding: 12px 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--blue-light); }
+
+  /* Règles cuisine */
+  .regles { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .regles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  .regle-item { background: var(--navy3); border-radius: 8px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .regle-icon { font-size: 1rem; flex-shrink: 0; }
+  .regle-text { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text); line-height: 1.4; }
+
+  /* Local déchets */
+  .local { background: var(--navy2); border: 1px solid rgba(45,139,186,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .local-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 14px; }
+  .local-item { background: var(--navy3); border-radius: 8px; padding: 12px 8px; text-align: center; }
+  .local-icon { font-size: 1.3rem; margin-bottom: 5px; }
+  .local-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--white); font-weight: bold; }
+
+  /* DASRI / DAOM */
+  .milieu-hosp { background: var(--navy2); border: 1px solid rgba(231,76,60,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .hosp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+  .hosp-card { border-radius: 10px; padding: 18px 14px; }
+  .hosp-card.daom { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); }
+  .hosp-card.dasri { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); }
+  .hosp-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; font-weight: bold; margin-bottom: 10px; }
+  .hosp-card.daom .hosp-title { color: var(--blue-light); }
+  .hosp-card.dasri .hosp-title { color: var(--red); }
+  .hosp-item { font-family: 'Trebuchet MS', sans-serif; font-size: 0.76rem; color: var(--text-dim); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); line-height: 1.4; }
+  .hosp-item:last-child { border-bottom: none; }
+  .dasri-cond { margin-top: 12px; background: rgba(231,76,60,0.08); border-left: 3px solid var(--red); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: #f5b8b3; }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 640px) {
+    .etapes-flow, .bio-grid, .span-grid { grid-template-columns: repeat(2, 1fr); }
+    .regles-grid, .hosp-grid { grid-template-columns: 1fr; }
+    .local-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Gestion des activités · E2</div>
+    <span class="header-icon">🗑️</span>
+    <h1>Le Circuit des Déchets</h1>
+    <p>6 étapes · Bio-déchets · SPAn · HAU · DAOM · DASRI</p>
+  </div>
+
+  <!-- 6 étapes -->
+  <div class="parcours">
+    <div class="section-title">Les 6 étapes du parcours des déchets</div>
+    <div class="etapes-flow">
+      <div class="etape">
+        <div class="etape-num">1</div>
+        <div class="etape-name">Production</div>
+        <div class="etape-desc">Action à l'origine du déchet : soins, préparation repas, entretien espaces verts</div>
+      </div>
+      <div class="etape">
+        <div class="etape-num">2</div>
+        <div class="etape-name">Tri à la source</div>
+        <div class="etape-desc">Jeter dans le contenant approprié immédiatement sur le lieu de production</div>
+      </div>
+      <div class="etape">
+        <div class="etape-num">3</div>
+        <div class="etape-name">Entreposage intermédiaire</div>
+        <div class="etape-desc">Regroupement au niveau d'un service/étage dans un local approprié (« local déchets »)</div>
+      </div>
+      <div class="etape">
+        <div class="etape-num">4</div>
+        <div class="etape-name">Collecte interne</div>
+        <div class="etape-desc">Collecte de tous les lieux d'entreposage intermédiaires pour préparer l'évacuation</div>
+      </div>
+      <div class="etape">
+        <div class="etape-num">5</div>
+        <div class="etape-name">Entreposage centralisé</div>
+        <div class="etape-desc">Regroupement de tous les déchets de l'établissement (= déchetterie)</div>
+      </div>
+      <div class="etape">
+        <div class="etape-num">6</div>
+        <div class="etape-name">Enlèvement</div>
+        <div class="etape-desc">Prestataire extérieur. Traçabilité jusqu'à l'élimination finale.</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;background:rgba(231,76,60,0.08);border-left:3px solid var(--red);padding:10px 14px;border-radius:0 6px 6px 0;font-family:'Trebuchet MS',sans-serif;font-size:0.82rem;color:#f5b8b3;">
+      ⚠️ Marche en avant + non-croisement des circuits propres et souillés — Les déchets ne traversent jamais les zones propres.
+    </div>
+  </div>
+
+  <!-- Bio-déchets -->
+  <div class="biodechets">
+    <div class="section-title">Bio-déchets · Valorisation</div>
+    <div class="bio-grid">
+      <div class="bio-card">
+        <div class="bio-icon">🌿</div>
+        <div class="bio-name">Compostage</div>
+        <div class="bio-desc">Décomposition naturelle aérobie de la matière organique. Produit un amendement pour les sols.</div>
+      </div>
+      <div class="bio-card">
+        <div class="bio-icon">🪱</div>
+        <div class="bio-name">Lombricompostage</div>
+        <div class="bio-desc">Compostage par lombrics dans un bac fermé. Possible en appartement. Décomposition hors sol.</div>
+      </div>
+      <div class="bio-card">
+        <div class="bio-icon">⚡</div>
+        <div class="bio-name">Méthanisation</div>
+        <div class="bio-desc">Dégradation anaérobie (sans oxygène) par bactéries. Produit du biogaz (énergie) et du digestat (agronomie).</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-family:'Trebuchet MS',sans-serif;font-size:0.8rem;color:var(--text-dim);">💡 Tout producteur est responsable de ses déchets jusqu'à leur élimination finale, même s'ils sont transmis à un tiers.</div>
+  </div>
+
+  <!-- SPAn -->
+  <div class="span">
+    <div class="section-title">SPAn · Sous-Produits Animaux · 3 catégories</div>
+    <div class="span-grid">
+      <div class="span-card c1">
+        <div class="span-label">C1 — Catégorie 1</div>
+        <div class="span-risk">🔴 Risque élevé</div>
+        <div class="span-ex">Cadavres d'animaux, déchets cuisine de transports internationaux</div>
+        <div class="span-val">→ Biodiesel / combustible ou incinération</div>
+      </div>
+      <div class="span-card c2">
+        <div class="span-label">C2 — Catégorie 2</div>
+        <div class="span-risk">🟠 Risque modéré</div>
+        <div class="span-ex">Cadavres d'élevage, déchets cuisine en décomposition</div>
+        <div class="span-val">→ Engrais, biogaz, compostage ou incinération/enfouissement</div>
+      </div>
+      <div class="span-card c3">
+        <div class="span-label">C3 — Catégorie 3</div>
+        <div class="span-risk">🟢 Risque faible</div>
+        <div class="span-ex">Déchets de cuisine sans risque élevé, anciens aliments, lait, œufs, pain/légumes ayant côtoyé de la viande</div>
+        <div class="span-val">→ Alimentation animale, pharmacie, cosmétique, engrais, énergie</div>
+      </div>
+    </div>
+    <div class="hau-box">🛢️ <strong>HAU (Huiles Alimentaires Usagées)</strong> — Classées SPAn C3. Valorisées en biodiesel ou détergents. ⚠️ Jamais dans les égouts (endommage les réseaux) ni dans les ordures ménagères.</div>
+  </div>
+
+  <!-- Règles cuisine -->
+  <div class="regles">
+    <div class="section-title">Règles de gestion des déchets en cuisine</div>
+    <div class="regles-grid">
+      <div class="regle-item"><div class="regle-icon">📦</div><div class="regle-text">Éliminer rapidement emballages carton, bois et polystyrène. Ne pas les introduire dans les locaux de fabrication.</div></div>
+      <div class="regle-item"><div class="regle-icon">🗑️</div><div class="regle-text">3 points de stockage intermédiaire : réception, déconditionnement et plonge.</div></div>
+      <div class="regle-item"><div class="regle-icon">🤲</div><div class="regle-text">Se laver les mains après manipulation des emballages et après manipulation des poubelles.</div></div>
+      <div class="regle-item"><div class="regle-icon">🦵</div><div class="regle-text">Utiliser des poubelles à commande hygiénique (pédale) équipées de sacs plastique, à proximité des postes de travail.</div></div>
+      <div class="regle-item"><div class="regle-icon">⏰</div><div class="regle-text">Vider les poubelles "tampon" au minimum à chaque fin de demi-journée dans la poubelle de cuisine. Déverser dans voirie au moins quotidiennement.</div></div>
+      <div class="regle-item"><div class="regle-icon">🧹</div><div class="regle-text">Nettoyer et désinfecter les poubelles régulièrement, au moins à chaque fin de journée de travail.</div></div>
+    </div>
+  </div>
+
+  <!-- Local déchets -->
+  <div class="local">
+    <div class="section-title">Le local à déchets · 5 principes</div>
+    <div class="local-grid">
+      <div class="local-item"><div class="local-icon">🔀</div><div class="local-label">Gestion séparée des flux</div></div>
+      <div class="local-item"><div class="local-icon">🛢️</div><div class="local-label">Stockage des HAU</div></div>
+      <div class="local-item"><div class="local-icon">🚰</div><div class="local-label">Point d'eau</div></div>
+      <div class="local-item"><div class="local-icon">🧽</div><div class="local-label">Nettoyage facilité</div></div>
+      <div class="local-item"><div class="local-icon">💨</div><div class="local-label">Aération</div></div>
+    </div>
+    <div style="margin-top:12px;font-family:'Trebuchet MS',sans-serif;font-size:0.8rem;color:var(--text-dim);">Le local à déchets permet le regroupement, le stockage séparé et le confinement vis-à-vis des autres flux internes, en particulier des circuits propres.</div>
+  </div>
+
+  <!-- DAOM / DASRI milieu hospitalier -->
+  <div class="milieu-hosp">
+    <div class="section-title">Milieu hospitalier · DAOM et DASRI</div>
+    <div class="hosp-grid">
+      <div class="hosp-card daom">
+        <div class="hosp-title">📋 DAOM</div>
+        <div class="hosp-item">Déchets Assimilés aux Ordures Ménagères</div>
+        <div class="hosp-item">1re catégorie en volume dans les établissements de santé</div>
+        <div class="hosp-item">Gestion classique, comme les ordures ménagères</div>
+      </div>
+      <div class="hosp-card dasri">
+        <div class="hosp-title">⚠️ DASRI</div>
+        <div class="hosp-item">Déchets d'Activités de Soins à Risques Infectieux</div>
+        <div class="hosp-item">Contiennent des micro-organismes pathogènes</div>
+        <div class="hosp-item">Matériels piquants/coupants, produits sanguins, déchets anatomiques humains</div>
+        <div class="hosp-item" style="color:#f5b8b3;">Conditionnement jaune obligatoire avec symbole "danger biologique" + nom du producteur</div>
+      </div>
+    </div>
+    <div class="dasri-cond">🔒 Stockage DASRI : local identifié, sécurisé (clé/digicode), écarté des zones de chaleur, réservé aux déchets, déchets préalablement emballés.</div>
+  </div>
+
+  <div class="footer">BTS ESF · Gestion des activités · Le Circuit des Déchets · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

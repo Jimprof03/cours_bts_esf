@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Le Circuit du Linge | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* Risques */
+  .risques { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .risque-card { background: var(--navy2); border-radius: 12px; padding: 20px; }
+  .risque-card.blessure { border: 1px solid rgba(230,126,34,0.4); }
+  .risque-card.infectieux { border: 1px solid rgba(231,76,60,0.4); }
+  .risque-card h3 { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; font-weight: bold; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .risque-card.blessure h3 { color: var(--orange); }
+  .risque-card.infectieux h3 { color: var(--red); }
+  .risque-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; }
+  .risque-alert { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--white); font-style: italic; }
+
+  /* Voies de contamination */
+  .voies { background: var(--navy2); border: 1px solid rgba(231,76,60,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .voies-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  .voie-card { background: var(--navy3); border-radius: 8px; padding: 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .voie-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .voie-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; color: var(--white); margin-bottom: 3px; }
+  .voie-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+  .voie-ex { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--red); margin-top: 4px; font-style: italic; }
+
+  /* Procédure 5 étapes */
+  .procedure { background: var(--navy2); border: 1px solid rgba(39,174,96,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .proc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 14px; }
+  .proc-card { background: var(--navy3); border-radius: 8px; padding: 12px 8px; text-align: center; }
+  .proc-icon { font-size: 1.3rem; margin-bottom: 6px; }
+  .proc-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; font-weight: bold; color: var(--green-light); margin-bottom: 5px; }
+  .proc-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.67rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* 5M */
+  .cinq-m { background: var(--navy2); border: 1px solid rgba(45,139,186,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .m-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .m-row { display: flex; gap: 12px; align-items: flex-start; background: var(--navy3); border-radius: 8px; padding: 12px 14px; }
+  .m-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--gold-light); min-width: 100px; flex-shrink: 0; }
+  .m-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* RABC étapes */
+  .rabc { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .rabc-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+  .rabc-step { background: var(--navy3); border-radius: 8px; padding: 12px 10px; }
+  .rabc-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--gold); margin-bottom: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+  .rabc-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; color: var(--white); font-weight: bold; margin-bottom: 4px; }
+  .rabc-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Circuit du linge flow */
+  .circuit { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .circuit-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 14px; }
+  .circuit-col h4 { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; margin-bottom: 12px; padding: 6px 10px; border-radius: 6px; }
+  .circuit-col.sale h4 { background: rgba(231,76,60,0.15); color: var(--red); }
+  .circuit-col.propre h4 { background: rgba(39,174,96,0.15); color: var(--green-light); }
+  .circuit-step { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; color: var(--text); padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 8px; }
+  .circuit-step:last-child { border-bottom: none; }
+  .cs-arrow { color: var(--text-dim); font-size: 0.7rem; }
+  .lavage-box { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.4); border-radius: 8px; padding: 10px 14px; text-align: center; margin-top: 12px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--blue-light); font-weight: bold; }
+
+  /* Catégories linge */
+  .categories { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .cat-card { background: var(--navy3); border-radius: 8px; padding: 12px; }
+  .cat-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; color: var(--white); margin-bottom: 4px; }
+  .cat-ex { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; }
+  .pretri-box { margin-top: 12px; background: rgba(201,168,76,0.08); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--gold-light); }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 640px) {
+    .risques, .voies-grid, .circuit-cols { grid-template-columns: 1fr; }
+    .proc-grid { grid-template-columns: repeat(3, 1fr); }
+    .rabc-steps { grid-template-columns: repeat(2, 1fr); }
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Gestion des activités · E2</div>
+    <span class="header-icon">👕</span>
+    <h1>Le Circuit du Linge</h1>
+    <p>Risques · Voies de contamination · DARI · RABC · 5M · Circuit</p>
+  </div>
+
+  <!-- Risques -->
+  <div class="risques">
+    <div class="risque-card blessure">
+      <h3>⚠️ Risque de blessure</h3>
+      <div class="risque-desc">Par objets piquants, coupants, tranchants (OPCT) pouvant se trouver dans le linge souillé.</div>
+      <div class="risque-alert">Présent lors de toute manipulation du linge souillé</div>
+    </div>
+    <div class="risque-card infectieux">
+      <h3>🦠 Risque infectieux</h3>
+      <div class="risque-desc">Le linge est un facteur majeur de propagation d'infections par des germes pathogènes (bactéries, virus, champignons, parasites).</div>
+      <div class="risque-alert">Potentiel lors de toute manipulation du linge souillé</div>
+    </div>
+  </div>
+
+  <!-- Voies de contamination -->
+  <div class="voies">
+    <div class="section-title">4 voies de contamination du personnel</div>
+    <div class="voies-grid">
+      <div class="voie-card">
+        <div class="voie-icon">💨</div>
+        <div>
+          <div class="voie-name">Voie aérienne</div>
+          <div class="voie-desc">Inhalation de poussières contaminées lors de la manipulation</div>
+          <div class="voie-ex">Tuberculose, streptocoques, grippe</div>
+        </div>
+      </div>
+      <div class="voie-card">
+        <div class="voie-icon">🍽️</div>
+        <div>
+          <div class="voie-name">Voie digestive</div>
+          <div class="voie-desc">Mains souillées lors de repas, boissons, cigarettes, onychophagie sur le lieu de travail</div>
+          <div class="voie-ex">Hépatite A, salmonellose</div>
+        </div>
+      </div>
+      <div class="voie-card">
+        <div class="voie-icon">💉</div>
+        <div>
+          <div class="voie-name">Voie percutanée / cutanéo-muqueuse</div>
+          <div class="voie-desc">Piqûres, projections de produits biologiques</div>
+          <div class="voie-ex">Hépatite B, C, VIH, staphylocoques</div>
+        </div>
+      </div>
+      <div class="voie-card">
+        <div class="voie-icon">🖐️</div>
+        <div>
+          <div class="voie-name">Voie cutanée sans effraction</div>
+          <div class="voie-desc">Contact direct avec la peau ou les muqueuses, sans blessure</div>
+          <div class="voie-ex">Gale, herpès</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Procédure 5 étapes -->
+  <div class="procedure">
+    <div class="section-title">Procédure · 5 mesures pour éviter la propagation</div>
+    <div class="proc-grid">
+      <div class="proc-card">
+        <div class="proc-icon">🧤</div>
+        <div class="proc-title">Hygiène personnelle</div>
+        <div class="proc-desc">Gants usage unique, blouse, charlotte, surchaussures. Hygiène irréprochable.</div>
+      </div>
+      <div class="proc-card">
+        <div class="proc-icon">🗑️</div>
+        <div class="proc-title">Circuit linge sale</div>
+        <div class="proc-desc">Sacs de couleur codifiée, chariots porte-sacs à couvercle pour collecter et transporter.</div>
+      </div>
+      <div class="proc-card">
+        <div class="proc-icon">📦</div>
+        <div class="proc-title">Circuit linge propre</div>
+        <div class="proc-desc">Sécher rapidement. Stocker parfaitement sec sous films plastiques ou conteneurs hermétiques.</div>
+      </div>
+      <div class="proc-card">
+        <div class="proc-icon">🌀</div>
+        <div class="proc-title">Traiter le linge</div>
+        <div class="proc-desc">Nettoyer et désinfecter selon les salissures. Respecter le cercle de Sinner : produits, température, action mécanique, temps.</div>
+      </div>
+      <div class="proc-card">
+        <div class="proc-icon">🧹</div>
+        <div class="proc-title">Nettoyer la blanchisserie</div>
+        <div class="proc-desc">Désinfecter les surfaces en contact avec le linge sale. Sols et surfaces tous les jours.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5M -->
+  <div class="cinq-m">
+    <div class="section-title">Méthode des 5M · Diagramme d'Ishikawa · Causes de biocontamination</div>
+    <div class="m-grid">
+      <div class="m-row"><div class="m-label">Méthodes</div><div class="m-desc">Organisation mise en place, mode opératoire écrit, enregistrement des contrôles, réglages des matériels</div></div>
+      <div class="m-row"><div class="m-label">Main d'œuvre</div><div class="m-desc">Lavage des mains, tenue professionnelle, formation — toute action liée à une personne individuellement</div></div>
+      <div class="m-row"><div class="m-label">Matériels</div><div class="m-desc">Machines, chariots, véhicules de transport du linge</div></div>
+      <div class="m-row"><div class="m-label">Milieu</div><div class="m-desc">Environnement de travail : air, eau, locaux</div></div>
+      <div class="m-row"><div class="m-label">Matières</div><div class="m-desc">Le linge sale ou propre selon le secteur de travail</div></div>
+    </div>
+  </div>
+
+  <!-- RABC -->
+  <div class="rabc">
+    <div class="section-title">Démarche R.A.B.C · Risk Analysis Biocontamination Control · 7 étapes</div>
+    <div class="rabc-steps">
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 1</div>
+        <div class="rabc-title">Lister les dangers</div>
+        <div class="rabc-desc">Tous les dangers microbiologiques à chaque étape + mesures de contrôle</div>
+      </div>
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 2</div>
+        <div class="rabc-title">Analyser les risques</div>
+        <div class="rabc-desc">Définir les points de maîtrise</div>
+      </div>
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 3</div>
+        <div class="rabc-title">Limites critiques</div>
+        <div class="rabc-desc">Ex : stockage linge souillé max 48h (+24h de tolérance)</div>
+      </div>
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 4</div>
+        <div class="rabc-title">Surveillance</div>
+        <div class="rabc-desc">Système de surveillance pour chaque point de contrôle</div>
+      </div>
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 5</div>
+        <div class="rabc-title">Actions correctives</div>
+        <div class="rabc-desc">Ex : réorganiser réception et tri si dépassement délai</div>
+      </div>
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 6</div>
+        <div class="rabc-title">Vérification</div>
+        <div class="rabc-desc">Procédures de vérification du système RABC (contrôles microbiologiques...)</div>
+      </div>
+      <div class="rabc-step">
+        <div class="rabc-num">Étape 7</div>
+        <div class="rabc-title">Documentation</div>
+        <div class="rabc-desc">Protocoles, instructions de travail, enregistrement</div>
+      </div>
+      <div class="rabc-step" style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);">
+        <div class="rabc-num" style="color:var(--gold);">Principe clé</div>
+        <div class="rabc-title" style="color:var(--gold-light);">Zone sale ≠ Zone propre</div>
+        <div class="rabc-desc">Blanchisserie divisée physiquement. Aucun croisement possible.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Circuit du linge -->
+  <div class="circuit">
+    <div class="section-title">Circuit complet du linge en établissement</div>
+    <div class="circuit-cols">
+      <div class="circuit-col sale">
+        <h4>🔴 Circuit linge sale</h4>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Utilisation du linge dans le service</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Manipulation adéquate du linge sale</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Collecte et conditionnement (sacs couleur)</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Transport interne + stockage</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Transport vers la blanchisserie</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Réception à la blanchisserie + tri des sacs</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Tri du linge sale</div>
+      </div>
+      <div class="circuit-col propre">
+        <h4>🟢 Circuit linge propre</h4>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Finition, séchage, réparations, pliage</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Préparation des livraisons</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Transport vers l'institution</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Réception et distribution du linge propre</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Stockage dans le service utilisateur</div>
+        <div class="circuit-step"><span class="cs-arrow">→</span>Utilisation adéquate du linge</div>
+      </div>
+    </div>
+    <div class="lavage-box">🌀 LAVAGE — DÉSINFECTION (point pivot entre linge sale et linge propre)</div>
+  </div>
+
+  <!-- Catégories -->
+  <div class="categories">
+    <div class="section-title">Catégories de linge · Pré-tri</div>
+    <div class="cat-grid">
+      <div class="cat-card">
+        <div class="cat-name">Grand plat</div>
+        <div class="cat-ex">Draps, alèses, dessus de lits</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-name">Petit plat</div>
+        <div class="cat-ex">Taies d'oreiller, serviettes de toilette</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-name">Linge en forme</div>
+        <div class="cat-ex">Blouses, tuniques, pantalons</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-name">Linge fragile</div>
+        <div class="cat-ex">Lainage, couvertures</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-name">Linge personnel résidents</div>
+        <div class="cat-ex">Traitement séparé et individualisé</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-name">Petites pièces</div>
+        <div class="cat-ex">Bandeaux de lavage, gants, carrés d'essuyage</div>
+      </div>
+    </div>
+    <div class="pretri-box">💡 Le pré-tri du linge facilite la tâche en lingerie et réduit le risque de contamination en séparant les catégories dès la collecte. Un code couleur de sacs est utilisé.</div>
+  </div>
+
+  <div class="footer">BTS ESF · Gestion des activités · Le Circuit du Linge · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

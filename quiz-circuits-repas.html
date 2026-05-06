@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Circuits des repas, du linge et des déchets | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Gestion des activités</div>
+    <h1>Circuits des repas, du linge et des déchets</h1>
+    <div class="meta">Quiz de révision · 20 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  // PRINCIPES
+  { q: "Quel est l'objectif principal de la gestion des circuits dans un établissement ?", opts: ["Réduire les coûts de fonctionnement","Réduire le risque de bio-contamination lié aux déplacements dans les locaux","Augmenter la productivité du personnel","Simplifier l'organisation des repas"], ans: 1, fb: "Les déplacements dans les locaux peuvent propager des micro-organismes et être vecteurs de bio-contaminations. L'objectif est donc de réduire ce risque." },
+  { q: "Quels éléments peuvent être vecteurs de bio-contamination ?", opts: ["Uniquement le personnel et la vaisselle","Le personnel, les fluides, les déchets, le matériel d'entretien, le linge et la vaisselle","Seulement les aliments crus et le matériel de cuisine","Les produits chimiques et les emballages uniquement"], ans: 1, fb: "Les vecteurs de bio-contamination sont nombreux : personnel, fluides (air, eau), déchets, matériel d'entretien, linge et vaisselle." },
+  { q: "Qu'est-ce que le principe de la 'marche en avant' ?", opts: ["Un protocole de nettoyage des locaux de l'arrière vers l'avant","Une progression rationnelle et continue des opérations sans retour en arrière, depuis l'arrivée des matières premières jusqu'à la consommation","Un système de rotation du personnel","Un circuit de distribution des repas de la cuisine vers les tables"], ans: 1, fb: "La marche en avant est une progression rationnelle et continue sans aucun retour en arrière, depuis l'arrivée des matières premières ou le début de l'entretien jusqu'à la consommation ou la fin des prestations." },
+  { q: "Quelles sont les 3 règles fondamentales à respecter dans les zones à risques ?", opts: ["Nettoyer, désinfecter, ventiler","Progression en continu sans retour ; produits propres et souillés ne se croisent pas ; zones propres et sales séparées","Porter des gants, une blouse et un masque","Température contrôlée, humidité réglée, lumière adaptée"], ans: 1, fb: "Les 3 règles : progression continue sans retour arrière ; produits propres et souillés circulent emballés et ne se croisent jamais ; séparation entre zones propres (sans micro-organismes) et zones sales (pourvoyeuses de germes)." },
+  { q: "Que faire si la marche en avant dans l'espace est impossible à respecter ?", opts: ["Abandonner le principe de marche en avant","Appliquer la marche en avant dans le temps : même lieu utilisé successivement avec nettoyage-désinfection entre chaque opération","Réorganiser complètement les locaux","Demander une dérogation à l'administration"], ans: 1, fb: "Quand l'espace ne permet pas la marche en avant spatiale, on applique la marche en avant dans le temps : le même lieu sert à plusieurs opérations successives, avec nettoyage-désinfection entre chaque, pour éviter les contaminations croisées." },
+  { q: "Que signifie qu'un produit doit circuler 'emballé' ?", opts: ["Il doit être dans un sac plastique transparent","Les produits propres et souillés ne doivent circuler qu'emballés afin de ne pas contaminer l'environnement ni se croiser","Il doit être étiqueté avec la date de fabrication","Il doit être transporté dans un chariot réfrigéré"], ans: 1, fb: "Les produits ou matériels dits 'souillés' et les produits 'propres' ne doivent circuler qu'emballés, et ne doivent jamais se croiser pour éviter les contaminations croisées." },
+  // CIRCUIT DES REPAS - HYGIÈNE
+  { q: "Quelles sont les 3 conditions pour garantir une bonne hygiène en restauration ?", opts: ["Personnel formé, bonne ventilation, équipement récent","Maîtrise sanitaire du milieu, bonnes pratiques de fabrication, choix des matières premières","Respect des températures, nettoyage quotidien, formation annuelle","Locaux neufs, matériel inox, personnel qualifié"], ans: 1, fb: "Les 3 conditions : maîtrise sanitaire du milieu (locaux, équipement, entretien) + bonnes pratiques de fabrication (formation, propreté, températures) + choix des matières premières saines et bien entreposées." },
+  { q: "Qu'est-ce que le 'Paquet hygiène' et depuis quand est-il en vigueur ?", opts: ["Une réglementation française de 1996 sur les cuisines professionnelles","Un ensemble de textes législatifs européens visant à harmoniser les dispositions d'hygiène, en vigueur depuis le 1er janvier 2006","Un guide de bonnes pratiques volontaire pour les restaurateurs","Un système de certification qualité des cuisines collectives"], ans: 1, fb: "Le Paquet hygiène est un ensemble de textes européens visant à harmoniser et simplifier les règles d'hygiène alimentaire. Il est entré en application le 1er janvier 2006." },
+  { q: "Sur quels 2 grands principes repose le Paquet hygiène ?", opts: ["La prévention et la répression","La responsabilité de tous les acteurs de la filière et les objectifs à atteindre en laissant le choix des moyens aux professionnels","La traçabilité des aliments et les contrôles sanitaires","La formation obligatoire et les inspections régulières"], ans: 1, fb: "Le Paquet hygiène repose sur : la responsabilité de tous les acteurs de la filière alimentaire, et des objectifs à atteindre en laissant aux professionnels le choix des moyens pour les atteindre." },
+  { q: "Quelles sont les 3 règles d'or pour la conception des locaux de cuisine ?", opts: ["Aération, éclairage, température","Respecter la marche en avant, définir des zones spécifiques de travail, établir les circuits les plus courts possibles","Nettoyage quotidien, désinfection hebdomadaire, contrôle mensuel","Surface suffisante, équipement adéquat, personnel formé"], ans: 1, fb: "Les 3 règles d'or pour les locaux : respecter la marche en avant (pas de croisement propre/souillé), définir des zones spécifiques de travail, établir des circuits courts pour une circulation aisée." },
+  // ZONES
+  { q: "Lesquelles de ces zones sont des zones contaminées (sales) en cuisine professionnelle ?", opts: ["Préparation froide, préparation chaude, office","Réception des marchandises, stockages des denrées brutes, légumerie, plonge à batterie, laverie vaisselle, stockage des déchets","Stockages intermédiaires, zone de distribution, préparation des produits nettoyés","Cuisines, réfectoires, vestiaires"], ans: 1, fb: "Les zones contaminées (sales) sont : réception des marchandises, stockages secs ou réfrigérés des denrées brutes, traitement des denrées (légumerie), plonge à batterie, laverie vaisselle, stockage des déchets." },
+  { q: "Quel type de matériaux doit-on utiliser pour les revêtements (sols, murs, plafonds) en cuisine professionnelle ?", opts: ["Carrelage coloré pour identifier les zones","Matériaux lisses et imputrescibles, pouvant être nettoyés au jet d'eau sous pression","Bois traité pour limiter la propagation des bactéries","Matériaux absorbants pour réduire les projections"], ans: 1, fb: "Les locaux doivent pouvoir être nettoyés au jet d'eau sous pression. Les sols, murs et plafonds doivent donc être lisses et en matériau imputrescible. Il faut aussi éviter les jonctions en arêtes vives." },
+  { q: "Combien de chambres ou armoires frigorifiques le local de stockage des matières premières doit-il comporter au minimum ?", opts: ["Une seule, suffisamment grande","Deux : une pour les produits sensibles (viandes) et une pour les produits bruts (légumes, BOF, poissons)","Trois : une pour les viandes, une pour les légumes, une pour les desserts","Quatre, selon les gammes de produits"], ans: 1, fb: "Le local de stockage doit comporter au moins deux chambres froides : une pour les produits sensibles (viandes, préparations carnées) et une pour les produits bruts (légumes 4ème gamme, BOF, poissons sous glace)." },
+  { q: "Pourquoi les lave-mains en cuisine professionnelle doivent-ils être à commande non manuelle ?", opts: ["Pour économiser l'eau","Pour éviter la contamination des mains propres au contact du robinet — qui pourrait être souillé","Pour des raisons esthétiques","Pour accélérer le lavage des mains"], ans: 1, fb: "Les lave-mains à commande non manuelle (coude, genou, pédale) permettent d'éviter la recontamination des mains lavées au contact du robinet, qui aurait pu être touché avec des mains souillées." },
+  { q: "Qu'est-ce que le 'triangle d'activité' en cuisine familiale ?", opts: ["Un plan de travail triangulaire pour optimiser l'espace","La disposition de la cuisine en fonction des 3 zones principales (stockage, cuisson, nettoyage) avec des distances égales et sans obstacles","Un système de rangement à 3 niveaux","La réglementation des 3 normes d'hygiène en cuisine domestique"], ans: 1, fb: "Le triangle d'activité organise la cuisine autour des 3 actions principales : stockage (frigo, meubles), cuisson (plaque, four), nettoyage (évier, lave-vaisselle). Le triangle doit être équilatéral — distances égales et sans obstacles." },
+  { q: "Quelles sont les 3 zones du triangle d'activité ?", opts: ["Préparation, cuisson, service","Stockage, cuisson et nettoyage","Réception, préparation, distribution","Légumerie, cuisson, plonge"], ans: 1, fb: "Le triangle d'activité comprend : la zone de stockage (frigo et meubles), la zone de préparation et cuisson (plaque + four), et la zone de nettoyage (évier, lave-vaisselle, poubelle, vaisselle propre)." },
+  { q: "Quelle configuration de cuisine offre le triangle d'activité idéal (isocèle parfait) ?", opts: ["La cuisine en I (linéaire)","La cuisine en L","La cuisine en U ou en G","La cuisine en double I"], ans: 2, fb: "La cuisine en U ou en G permet un triangle isocèle parfait avec les différents pôles à égale distance — c'est l'agencement idéal. La cuisine en I donne un triangle plat, moins ergonomique." },
+  { q: "À quoi sert la démarche HACCP mentionnée dans la législation ?", opts: ["À contrôler les prix des matières premières en restauration","À mettre en œuvre la maîtrise des risques sanitaires, en lien avec les guides de bonnes pratiques sectoriels","À former le personnel aux gestes de premiers secours","À certifier la qualité gustative des plats servis"], ans: 1, fb: "La démarche HACCP (Hazard Analysis Critical Control Points) permet la maîtrise des risques sanitaires en restauration. Elle s'applique via les guides de bonnes pratiques sectoriels, accessibles en ligne sur le site du ministère de l'Agriculture." },
+  { q: "Pourquoi faut-il éviter les recoins inaccessibles dans le local de préparation et cuisson ?", opts: ["Pour des raisons esthétiques uniquement","Pour faciliter le nettoyage et éviter que la poussière et les micro-organismes s'y accumulent","Pour permettre une meilleure circulation du personnel","Pour respecter les normes d'éclairage"], ans: 1, fb: "Le matériel doit être installé pour faciliter le nettoyage. Les recoins inaccessibles et les espaces sous le matériel sont des zones où s'accumulent poussière et micro-organismes difficiles à éliminer." },
+  { q: "Quel est le principe général pour concevoir un bon aménagement de locaux professionnels en hygiène ?", opts: ["Maximiser la surface disponible","La facilité de nettoyage : locaux pouvant être nettoyés au jet d'eau sous pression, surfaces lisses et imputrescibles","Minimiser les coûts de construction","La beauté et le confort visuel des espaces"], ans: 1, fb: "L'idée principale pour un bon aménagement est la facilité de nettoyage. Les locaux doivent pouvoir être nettoyés au jet d'eau sous pression — d'où l'exigence de surfaces lisses, imputrescibles, sans arêtes vives." },
+  { q: "Pourquoi les circuits doivent-ils être les plus courts possibles en cuisine professionnelle ?", opts: ["Pour réduire la consommation d'énergie","Les circuits courts, logiques et simples permettent une circulation aisée et rapide des matières et du personnel, réduisant les risques de contamination","Pour limiter l'usure du matériel","Pour respecter les normes de surface imposées par la réglementation"], ans: 1, fb: "Les circuits courts, logiques et simples permettent une circulation aisée et rapide des matières et du personnel. Moins de déplacements = moins de risques de contamination croisée entre zones propres et souillées." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  const q=shuffled[current];
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=shuffled[current];const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>

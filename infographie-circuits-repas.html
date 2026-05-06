@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Circuits des repas, du linge et des déchets | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* Objectif & règles */
+  .objectif { background: var(--navy2); border: 1px solid rgba(231,76,60,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .objectif-content { background: rgba(231,76,60,0.08); border-left: 4px solid var(--red); padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 16px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--white); line-height: 1.6; }
+  .vecteurs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .vecteur-tag { background: var(--navy3); border: 1px solid rgba(231,76,60,0.3); border-radius: 6px; padding: 8px 12px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text); text-align: center; }
+
+  /* 3 règles */
+  .regles { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .regles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .regle-card { background: var(--navy3); border-radius: 10px; padding: 16px 14px; text-align: center; }
+  .regle-num { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+  .regle-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--white); margin-bottom: 6px; }
+  .regle-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* Marche en avant */
+  .marche { background: var(--navy2); border: 1px solid rgba(39,174,96,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .marche-flow { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .marche-step { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.35); border-radius: 8px; padding: 12px 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; color: var(--green-light); text-align: center; flex: 1; min-width: 100px; }
+  .marche-arrow { color: var(--green-light); font-size: 1.2rem; flex-shrink: 0; }
+  .marche-note { margin-top: 14px; background: rgba(201,168,76,0.08); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--gold-light); }
+  .marche-temps { margin-top: 10px; background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); border-radius: 8px; padding: 12px 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--blue-light); }
+
+  /* Zones cuisine pro */
+  .zones { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .zones-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+  .zone-bloc { border-radius: 10px; padding: 16px; }
+  .zone-bloc.sale { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3); }
+  .zone-bloc.propre { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.3); }
+  .zone-bloc-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; }
+  .zone-bloc.sale .zone-bloc-title { color: var(--red); }
+  .zone-bloc.propre .zone-bloc-title { color: var(--green-light); }
+  .zone-item { font-family: 'Trebuchet MS', sans-serif; font-size: 0.74rem; color: var(--text-dim); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .zone-item:last-child { border-bottom: none; }
+
+  /* Hygiène restauration */
+  .hygiene { background: var(--navy2); border: 1px solid rgba(45,139,186,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .hygiene-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .hg-card { background: var(--navy3); border-radius: 10px; padding: 16px 12px; }
+  .hg-icon { font-size: 1.5rem; margin-bottom: 8px; }
+  .hg-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--gold-light); margin-bottom: 6px; }
+  .hg-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
+  .paquet-box { margin-top: 12px; background: rgba(45,139,186,0.08); border: 1px solid rgba(45,139,186,0.3); border-radius: 8px; padding: 12px 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--blue-light); }
+
+  /* Triangle d'activité */
+  .triangle { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .triangle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .tri-card { background: var(--navy3); border-radius: 10px; padding: 16px 12px; text-align: center; }
+  .tri-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .tri-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; font-weight: bold; color: var(--white); margin-bottom: 6px; }
+  .tri-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
+  .triangle-rule { margin-top: 12px; background: rgba(201,168,76,0.08); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--gold-light); }
+  .configs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+  .config-card { background: var(--navy3); border-radius: 8px; padding: 10px 8px; text-align: center; }
+  .config-letter { font-size: 1.2rem; font-weight: bold; color: var(--gold-light); margin-bottom: 4px; font-family: 'Trebuchet MS', sans-serif; }
+  .config-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--text-dim); line-height: 1.3; }
+  .config-card.best { border: 1px solid rgba(39,174,96,0.4); }
+  .config-card.best .config-letter { color: var(--green-light); }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 640px) {
+    .regles-grid, .hygiene-grid, .triangle-grid { grid-template-columns: 1fr; }
+    .zones-cols { grid-template-columns: 1fr; }
+    .vecteurs-grid { grid-template-columns: repeat(2, 1fr); }
+    .configs-grid { grid-template-columns: repeat(2, 1fr); }
+    .marche-flow { flex-direction: column; }
+    .marche-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Gestion des activités · E2</div>
+    <span class="header-icon">🍽️</span>
+    <h1>Circuits des repas, du linge et des déchets</h1>
+    <p>Principes d'organisation · Marche en avant · Hygiène · Triangle d'activité</p>
+  </div>
+
+  <!-- Objectif -->
+  <div class="objectif">
+    <div class="section-title">Objectif de la gestion des circuits</div>
+    <div class="objectif-content">⚠️ Les déplacements dans les locaux peuvent propager des micro-organismes et être vecteurs de bio-contamination. L'objectif est de <strong>réduire ce risque</strong>.</div>
+    <div style="font-family:'Trebuchet MS',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-bottom:10px;">Vecteurs de bio-contamination :</div>
+    <div class="vecteurs-grid">
+      <div class="vecteur-tag">👤 Personnel</div>
+      <div class="vecteur-tag">💧 Fluides (air, eau)</div>
+      <div class="vecteur-tag">🗑️ Déchets</div>
+      <div class="vecteur-tag">🧹 Matériel d'entretien</div>
+      <div class="vecteur-tag">👕 Linge</div>
+      <div class="vecteur-tag">🍽️ Vaisselle</div>
+    </div>
+  </div>
+
+  <!-- 3 règles -->
+  <div class="regles">
+    <div class="section-title">Les 3 règles fondamentales</div>
+    <div class="regles-grid">
+      <div class="regle-card">
+        <div class="regle-num">1</div>
+        <div class="regle-title">Progression continue</div>
+        <div class="regle-desc">Toute production ou entretien doit s'effectuer en continu, sans retour en arrière, de l'arrivée des matières jusqu'à la fin des prestations.</div>
+      </div>
+      <div class="regle-card">
+        <div class="regle-num">2</div>
+        <div class="regle-title">Pas de croisement</div>
+        <div class="regle-desc">Produits "souillés" et produits "propres" ne circulent qu'emballés et ne doivent jamais se croiser.</div>
+      </div>
+      <div class="regle-card">
+        <div class="regle-num">3</div>
+        <div class="regle-title">Séparation propre / sale</div>
+        <div class="regle-desc">Zones propres (exemptes de micro-organismes) et zones sales (pourvoyeuses de germes) doivent être séparées.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marche en avant -->
+  <div class="marche">
+    <div class="section-title">La marche en avant · Principe clé</div>
+    <div class="marche-flow">
+      <div class="marche-step">📦 Réception des marchandises</div>
+      <div class="marche-arrow">→</div>
+      <div class="marche-step">❄️ Stockage</div>
+      <div class="marche-arrow">→</div>
+      <div class="marche-step">🥕 Pré-préparation</div>
+      <div class="marche-arrow">→</div>
+      <div class="marche-step">🍳 Préparation / cuisson</div>
+      <div class="marche-arrow">→</div>
+      <div class="marche-step">🍽️ Distribution / consommation</div>
+    </div>
+    <div class="marche-note">💡 Aucun retour en arrière possible. Aucun croisement entre flux propres et flux souillés.</div>
+    <div class="marche-temps">🕐 <strong>Marche en avant dans le temps</strong> : si l'espace ne le permet pas, on utilise le même lieu pour plusieurs opérations successives avec un nettoyage-désinfection entre chaque étape, pour éviter les contaminations croisées.</div>
+  </div>
+
+  <!-- Zones propres / sales -->
+  <div class="zones">
+    <div class="section-title">Zones en cuisine professionnelle</div>
+    <div class="zones-cols">
+      <div class="zone-bloc sale">
+        <div class="zone-bloc-title">🔴 Zones contaminées (sales)</div>
+        <div class="zone-item">Réception des marchandises</div>
+        <div class="zone-item">Stockages secs ou réfrigérés (denrées brutes)</div>
+        <div class="zone-item">Traitement des denrées (légumerie)</div>
+        <div class="zone-item">Plonge à batterie</div>
+        <div class="zone-item">Laverie vaisselle</div>
+        <div class="zone-item">Stockage des déchets</div>
+      </div>
+      <div class="zone-bloc propre">
+        <div class="zone-bloc-title">🟢 Zones propres</div>
+        <div class="zone-item">Préparation des produits nettoyés</div>
+        <div class="zone-item">Préparation froide</div>
+        <div class="zone-item">Préparation chaude</div>
+        <div class="zone-item">Office</div>
+        <div class="zone-item">Stockages intermédiaires (denrées préparées)</div>
+        <div class="zone-item">Zone de distribution</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-family:'Trebuchet MS',sans-serif;font-size:0.8rem;color:var(--text-dim);">
+      <strong style="color:var(--white);">3 règles d'or pour les locaux :</strong> marche en avant · zones spécifiques de travail · circuits les plus courts possibles · revêtements lisses et imputrescibles
+    </div>
+  </div>
+
+  <!-- Hygiène restauration -->
+  <div class="hygiene">
+    <div class="section-title">Hygiène en restauration · 3 conditions</div>
+    <div class="hygiene-grid">
+      <div class="hg-card">
+        <div class="hg-icon">🏗️</div>
+        <div class="hg-title">Maîtrise sanitaire du milieu</div>
+        <div class="hg-desc">Locaux agencés selon la marche en avant. Séparation propre/sale. Équipement adéquat. Entretien et nettoyage régulier.</div>
+      </div>
+      <div class="hg-card">
+        <div class="hg-icon">👨‍🍳</div>
+        <div class="hg-title">Bonnes pratiques de fabrication</div>
+        <div class="hg-desc">Formation à l'hygiène. Propreté du personnel et des manipulations. Respect des températures et des règles d'hygiène.</div>
+      </div>
+      <div class="hg-card">
+        <div class="hg-icon">🥬</div>
+        <div class="hg-title">Choix des matières premières</div>
+        <div class="hg-desc">Denrées saines et nutritives. Entreposage à bonne température. Deux chambres froides minimum (produits sensibles / produits bruts).</div>
+      </div>
+    </div>
+    <div class="paquet-box">📋 <strong>Paquet hygiène (UE, en vigueur depuis le 1er janvier 2006)</strong> : harmoniser les règles d'hygiène alimentaire. Basé sur la responsabilité de tous les acteurs et les objectifs à atteindre. Mis en œuvre via la démarche HACCP et les guides de bonnes pratiques sectoriels.</div>
+  </div>
+
+  <!-- Triangle d'activité -->
+  <div class="triangle">
+    <div class="section-title">Triangle d'activité · Cuisine familiale</div>
+    <div class="triangle-grid">
+      <div class="tri-card">
+        <div class="tri-icon">❄️</div>
+        <div class="tri-name">Zone de stockage</div>
+        <div class="tri-desc">Frigo et meubles de cuisine. Stockage des denrées alimentaires.</div>
+      </div>
+      <div class="tri-card">
+        <div class="tri-icon">🔥</div>
+        <div class="tri-name">Zone de cuisson</div>
+        <div class="tri-desc">Plaque encastrée au plan de travail, four à proximité. Gestes réduits au minimum.</div>
+      </div>
+      <div class="tri-card">
+        <div class="tri-icon">🚿</div>
+        <div class="tri-name">Zone de nettoyage</div>
+        <div class="tri-desc">Évier, lave-vaisselle, poubelle et rangement de la vaisselle propre — centralisés.</div>
+      </div>
+    </div>
+    <div class="triangle-rule">📐 Le triangle doit être le plus équilatéral possible : distances égales entre les 3 zones, sans obstacles entre elles.</div>
+    <div style="margin-top:14px;font-family:'Trebuchet MS',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-bottom:10px;">Configurations de cuisine :</div>
+    <div class="configs-grid">
+      <div class="config-card">
+        <div class="config-letter">I</div>
+        <div class="config-desc">Triangle plat. Cuisine en longueur. Moins ergonomique.</div>
+      </div>
+      <div class="config-card">
+        <div class="config-letter">L</div>
+        <div class="config-desc">Classique. Cuisson et froid à proximité. Plus de déplacements.</div>
+      </div>
+      <div class="config-card best">
+        <div class="config-letter">U / G ⭐</div>
+        <div class="config-desc">Triangle isocèle parfait. Agencement idéal. Toutes distances équivalentes.</div>
+      </div>
+      <div class="config-card">
+        <div class="config-letter">Îlot</div>
+        <div class="config-desc">Réduit le triangle. Ouverture sur salle à manger possible.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Gestion des activités · Circuits des repas, du linge et des déchets · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

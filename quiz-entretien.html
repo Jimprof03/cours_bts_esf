@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Entretien : Points Clés | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Entretien des locaux</div>
+    <h1>Produits & Techniques : Points clés</h1>
+    <div class="meta">Quiz ciblé · 25 questions · Tensioactifs · TACT · Désinfection · Maintenance</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 25</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+
+  // ── DÉSINFECTION / RÉMANENCE ──
+  { q: "Quelle est la définition exacte de la désinfection ?",
+    opts: [
+      "Éliminer visuellement toutes les salissures d'une surface",
+      "Opération au résultat momentané permettant d'éliminer, tuer ou inhiber les micro-organismes et/ou d'inactiver les virus sur des milieux inertes contaminés",
+      "Opération permanente qui empêche tout retour des bactéries sur une surface",
+      "Technique de nettoyage réservée aux blocs opératoires"
+    ], ans: 1,
+    fb: "La désinfection est une opération AU RÉSULTAT MOMENTANÉ : elle agit sur les micro-organismes présents au moment de l'opération uniquement. Elle n'empêche pas une recontamination ultérieure. À distinguer de la stérilisation qui est définitive."
+  },
+  { q: "Pourquoi dit-on que la désinfection a un 'résultat momentané' ?",
+    opts: [
+      "Parce que le produit s'évapore rapidement",
+      "Parce qu'elle n'agit que sur les micro-organismes présents au moment de l'opération — une recontamination ultérieure reste possible",
+      "Parce qu'elle ne fonctionne que sur les surfaces chaudes",
+      "Parce qu'elle dure exactement 30 minutes"
+    ], ans: 1,
+    fb: "Le résultat est momentané car la désinfection élimine les micro-organismes présents À CE MOMENT PRÉCIS. Dès qu'une nouvelle contamination survient (contact, air...), la surface peut redevenir contaminée. C'est pourquoi les protocoles prévoient des fréquences de désinfection régulières."
+  },
+  { q: "Qu'est-ce que la rémanence d'un désinfectant ?",
+    opts: [
+      "Sa capacité à mouiller les surfaces",
+      "La continuité de son action dans le temps après application",
+      "Sa résistance à la dilution dans l'eau",
+      "Son efficacité contre les spores uniquement"
+    ], ans: 1,
+    fb: "La rémanence = la continuité de l'action dans le temps. Un produit rémanent continue d'agir APRÈS son application. C'est un avantage dans les zones à risque infectieux élevé car il prolonge la protection entre deux opérations de désinfection."
+  },
+  { q: "Dans quel ordre doit-on toujours procéder ?",
+    opts: [
+      "Désinfecter d'abord, puis nettoyer pour éliminer les résidus",
+      "Nettoyer D'ABORD (surface propre), puis désinfecter — la désinfection n'est efficace que sur une surface propre",
+      "Nettoyer et désinfecter en même temps avec le même produit uniquement",
+      "L'ordre n'a pas d'importance si le produit est puissant"
+    ], ans: 1,
+    fb: "RÈGLE ABSOLUE : la désinfection n'est efficace que sur une surface déjà propre. Les salissures protègent les micro-organismes et empêchent le désinfectant d'agir. On nettoie toujours AVANT de désinfecter — sauf avec un détergent-désinfectant qui fait les deux en une étape."
+  },
+
+  // ── DURETÉ DE L'EAU ──
+  { q: "Qu'est-ce que la dureté de l'eau (titre hydrotimétrique, TH) ?",
+    opts: [
+      "La pression à laquelle l'eau sort du robinet",
+      "La teneur en ions calcium et magnésium de l'eau — eau dure = riche en calcaire, eau douce = peu de calcaire",
+      "Le pH de l'eau du robinet",
+      "La quantité de chlore ajoutée au réseau d'eau potable"
+    ], ans: 1,
+    fb: "La dureté de l'eau mesure sa teneur en ions calcium (Ca²⁺) et magnésium (Mg²⁺). Une eau 'dure' est calcaire : elle laisse des dépôts (tartre) sur les surfaces, réduit l'efficacité des détergents et endommage les appareils. Une eau 'douce' mousse mieux et rince plus facilement."
+  },
+  { q: "Pourquoi la dureté de l'eau influence-t-elle le dosage des produits d'entretien ?",
+    opts: [
+      "Elle n'a aucune influence sur les produits",
+      "Une eau dure (calcaire) inhibe les tensioactifs et nécessite un dosage plus élevé ou l'ajout d'un séquestrant pour neutraliser le calcaire",
+      "Une eau douce nécessite plus de produit car elle ne mouille pas bien",
+      "La dureté de l'eau affecte uniquement la désinfection, pas le nettoyage"
+    ], ans: 1,
+    fb: "En eau dure, les ions calcium et magnésium réagissent avec les tensioactifs et les neutralisent partiellement — on parle de 'précipitation calcaire'. Il faut donc augmenter le dosage ou utiliser un produit avec séquestrants (chélateurs du calcaire) pour maintenir l'efficacité du nettoyage."
+  },
+
+  // ── TENSIOACTIFS ──
+  { q: "Qu'est-ce qu'une molécule tensioactive (amphiphile) ?",
+    opts: [
+      "Une molécule entièrement soluble dans l'eau",
+      "Une molécule avec une tête hydrophile (aime l'eau) et une queue hydrophobe/lipophile (fuit l'eau, attirée par les graisses)",
+      "Une molécule acide utilisée pour le détartrage",
+      "Une molécule qui désinfecte sans nettoyer"
+    ], ans: 1,
+    fb: "Un tensioactif est dit AMPHIPHILE : il possède deux parties opposées. La TÊTE HYDROPHILE se dissout dans l'eau. La QUEUE HYDROPHOBE (lipophile) fuit l'eau et va se fixer sur les salissures grasses. C'est cette double nature qui permet de 'faire le lien' entre l'eau et les graisses."
+  },
+  { q: "Quels sont les 4 effets (pouvoirs) des tensioactifs ?",
+    opts: [
+      "Nettoyer, désinfecter, parfumer, rincer",
+      "Mouiller, décrocher les salissures, évacuer (mettre en suspension), émulsionner",
+      "Dissoudre, oxyder, réduire, neutraliser",
+      "Absorber, filtrer, adsorber, éliminer"
+    ], ans: 1,
+    fb: "Les 4 pouvoirs des tensioactifs : 1. MOUILLER (abaisser la tension superficielle de l'eau pour qu'elle pénètre partout), 2. DÉCROCHER les salissures du support, 3. ÉVACUER (les mettre en suspension dans la solution), 4. ÉMULSIONNER (maintenir eau et graisses mélangées pour éviter leur séparation)."
+  },
+  { q: "Qu'est-ce qu'une micelle ?",
+    opts: [
+      "Un micro-organisme résistant aux désinfectants",
+      "Une structure sphérique formée par les tensioactifs en solution : les queues hydrophobes se regroupent au centre (piégeant les graisses) et les têtes hydrophiles sont à l'extérieur vers l'eau",
+      "Un type de particule abrasive très fine",
+      "Un filtre utilisé dans les systèmes de ventilation"
+    ], ans: 1,
+    fb: "Une micelle est la structure que forment les tensioactifs quand leur concentration est suffisante. Les QUEUES HYDROPHOBES se regroupent au CENTRE pour fuir l'eau et piéger les graisses. Les TÊTES HYDROPHILES s'orientent vers l'EXTÉRIEUR, vers l'eau. La graisse est ainsi encapsulée et peut être emportée avec l'eau de rinçage."
+  },
+  { q: "Pourquoi appelle-t-on un tensioactif 'tensioactif' ?",
+    opts: [
+      "Parce qu'il augmente la tension de surface de l'eau",
+      "Parce qu'il abaisse la tension superficielle de l'eau — l'eau s'étale mieux, pénètre dans les porosités et mouille les surfaces grasses",
+      "Parce qu'il crée une tension électrique sur les surfaces métalliques",
+      "Parce qu'il est actif uniquement sous pression"
+    ], ans: 1,
+    fb: "L'eau a naturellement une forte tension superficielle (elle forme des gouttelettes). Les tensioactifs ABAISSENT cette tension : l'eau s'étale (mouille) mieux sur les surfaces, pénètre dans les porosités et entre en contact avec les salissures grasses. Sans tensioactif, l'eau seule 'perle' sur les graisses."
+  },
+  { q: "Quels sont les 4 types de tensioactifs selon leur charge électrique ?",
+    opts: [
+      "Actifs, inactifs, semi-actifs, ultra-actifs",
+      "Anioniques (charge −), cationiques (charge +), amphotères (charge nulle globale), non ioniques (sans charge)",
+      "Acides, basiques, neutres, amphotères",
+      "Naturels, synthétiques, minéraux, organiques"
+    ], ans: 1,
+    fb: "Les 4 types : ANIONIQUES (charge −, ex. lauryl sulfate de sodium — les plus utilisés, moussants) · CATIONIQUES (charge +, ex. ammoniums quaternaires — bactériostatiques, irritants, désinfectants) · AMPHOTÈRES (charges + et −, doux, utilisés en cosmétique) · NON IONIQUES (sans charge, doux, peu moussants, utilisés en alimentaire et cosmétique)."
+  },
+  { q: "Pourquoi les tensioactifs cationiques (ammoniums quaternaires) sont-ils particulièrement surveillés ?",
+    opts: [
+      "Parce qu'ils sont inefficaces contre les bactéries",
+      "Parce qu'ils sont irritants (surtout pour les yeux), toxiques pour l'environnement et favorisent la résistance des bactéries",
+      "Parce qu'ils ne moussent pas et sont difficiles à rincer",
+      "Parce qu'ils réagissent avec l'eau de Javel"
+    ], ans: 1,
+    fb: "Les tensioactifs cationiques (ammoniums quaternaires) sont irritants, toxiques pour les organismes aquatiques et, utilisés comme désinfectants, favorisent le développement de souches bactériennes résistantes. C'est pourquoi il est conseillé d'alterner les désinfectants pour éviter les phénomènes de résistance."
+  },
+
+  // ── GRANULOMÉTRIE / ABRASIFS ──
+  { q: "Qu'est-ce que la granulométrie d'un abrasif et quel est son effet sur le résultat ?",
+    opts: [
+      "La couleur des particules abrasives — plus elles sont sombres, plus elles sont efficaces",
+      "La dimension des particules abrasives — plus elles sont FINES, plus l'aspect final est LISSE ; plus elles sont GROSSES, plus elles décapent mais rayent davantage",
+      "La quantité de produit abrasif dans le flacon",
+      "La solubilité des particules dans l'eau"
+    ], ans: 1,
+    fb: "La GRANULOMÉTRIE = taille des particules abrasives. FINES → résultat lisse (polissage délicat). GROSSES → décapage puissant mais risque de rayures plus important. La DURETÉ des particules détermine aussi l'agressivité : abrasif TENDRE (silice, blanc d'Espagne) pour surfaces sensibles comme l'émail ; abrasif DUR (quartz, verre) pour décapage des surfaces résistantes."
+  },
+  { q: "Pourquoi un abrasif très dur est-il déconseillé sur une surface en émail ou en inox ?",
+    opts: [
+      "Parce qu'il laisse un résidu chimique nocif",
+      "Parce que plus un abrasif est dur, plus il raye — il détériorerait définitivement la surface en créant des micro-rayures qui retiennent ensuite les salissures",
+      "Parce que l'eau chaude le rend inefficace",
+      "Parce qu'il réagit chimiquement avec l'émail"
+    ], ans: 1,
+    fb: "Un abrasif trop dur sur une surface sensible (émail, inox poli) crée des MICRO-RAYURES qui détériorent l'aspect de la surface ET créent des refuges pour les micro-organismes (la surface devient plus difficile à nettoyer). On choisit toujours l'abrasif le moins dur possible qui soit efficace sur la salissure."
+  },
+
+  // ── CERCLE DE SINNER / TACT ──
+  { q: "Qu'est-ce que le cercle de Sinner (TACT) ?",
+    opts: [
+      "Un protocole de désinfection en 4 étapes séquentielles obligatoires",
+      "Un modèle montrant que l'efficacité du nettoyage résulte de l'interaction de 4 paramètres : Température, Action mécanique, action Chimique, Temps — augmenter l'un peut compenser la réduction d'un autre",
+      "La liste des 4 types de tensioactifs utilisés en nettoyage",
+      "Un système de contrôle qualité du nettoyage en collectivité"
+    ], ans: 1,
+    fb: "Le cercle de Sinner représente les 4 facteurs interdépendants du nettoyage : T (Température), A (Action mécanique), C (action Chimique), T (Temps). Leur SOMME est constante : si on réduit un facteur, il faut compenser par un autre. Ex : eau froide (T↓) → plus de frottement (A↑) ou plus de produit (C↑) ou plus de temps (T↑)."
+  },
+  { q: "Que se passe-t-il si on réduit la concentration du produit chimique dans le cercle de Sinner ?",
+    opts: [
+      "Le nettoyage devient automatiquement moins efficace, sans compensation possible",
+      "Il faut compenser en augmentant un ou plusieurs autres paramètres : plus de température, plus de frottement mécanique ou plus de temps de contact",
+      "Il faut obligatoirement ajouter un désinfectant séparé",
+      "Rien — le produit reste efficace quelle que soit la dilution"
+    ], ans: 1,
+    fb: "Dans le cercle de Sinner, les 4 paramètres sont INTERDÉPENDANTS. Réduire C (chimie, ex. sous-dosage) oblige à compenser par T (plus chaud), A (plus de frottement) ou T (laisser agir plus longtemps). C'est pourquoi un dosage correct est essentiel : sous-doser oblige à travailler plus ou moins bien."
+  },
+  { q: "Quel paramètre du cercle de Sinner explique qu'on ne doit pas rincer un désinfectant trop tôt ?",
+    opts: [
+      "La température — le produit n'est efficace qu'à chaud",
+      "Le Temps de contact — le désinfectant doit rester en contact suffisamment longtemps avec la surface pour agir et atteindre son efficacité maximale",
+      "L'action mécanique — il faut frotter pendant toute la durée d'action",
+      "La concentration — rincer dilue le produit et le rend plus puissant"
+    ], ans: 1,
+    fb: "Le T de TEMPS DE CONTACT est crucial : un désinfectant rincé trop tôt n'a pas eu le temps de détruire les micro-organismes. Chaque produit indique sur sa fiche technique un temps d'action minimum à respecter scrupuleusement pour garantir l'efficacité annoncée."
+  },
+
+  // ── FICHE TECHNIQUE vs FDS ──
+  { q: "Quelle est la différence entre la fiche technique et la fiche de données de sécurité (FDS) ?",
+    opts: [
+      "Ce sont deux documents identiques avec des noms différents",
+      "La fiche technique donne les conditions d'utilisation (dosage, dilution, pH, mode d'emploi). La FDS est la 'carte d'identité' du produit : risques santé/environnement, moyens de protection et mesures d'urgence — obligatoirement transmise au médecin de prévention",
+      "La fiche technique est réservée aux professionnels, la FDS aux particuliers",
+      "La fiche technique concerne les désinfectants, la FDS uniquement les détergents"
+    ], ans: 1,
+    fb: "FICHE TECHNIQUE = comment utiliser le produit (dosage, dilution, pH, temps d'action, surfaces compatibles). FDS (Fiche de Données de Sécurité) = 'carte d'identité' complète : composition, risques pour la santé et l'environnement, protections nécessaires, conduite à tenir en cas d'accident. La FDS DOIT être transmise au médecin de prévention."
+  },
+  { q: "Que doit-on obligatoirement trouver sur l'étiquette d'un produit d'entretien ?",
+    opts: [
+      "Uniquement le nom commercial et le prix",
+      "La contenance, le rôle du produit, le mode d'emploi, la nature du produit actif, les pictogrammes de sécurité, les risques en cas de contact et les conseils de sécurité",
+      "Uniquement les pictogrammes de danger",
+      "Le nom du fabricant et la date de fabrication uniquement"
+    ], ans: 1,
+    fb: "L'étiquette doit obligatoirement mentionner : contenance, rôle du produit, mode d'emploi, conseils d'utilisation, nature du produit actif, PICTOGRAMMES de sécurité, risques en cas de contact, conseils de sécurité et conduite à tenir en cas d'accident. La FDS complète ces informations avec des données plus détaillées."
+  },
+
+  // ── RECOMMANDATIONS / CONSEILS ──
+  { q: "Parmi ces recommandations pour l'utilisation des produits ménagers, laquelle est FAUSSE ?",
+    opts: [
+      "Porter des gants et aérer pendant et après le ménage",
+      "Ne jamais transvaser les produits dans d'autres contenants et ne jamais les mélanger",
+      "Choisir des produits très parfumés car ils garantissent une meilleure propreté",
+      "Utiliser de petites quantités — aucun produit n'est 100% biodégradable"
+    ], ans: 2,
+    fb: "FAUX : les produits très parfumés NE SONT PAS un gage de propreté. Ils peuvent provoquer des allergies et irritations respiratoires. La propreté vient de l'efficacité chimique et mécanique, pas de l'odeur. Les parfums dans les produits ménagers sont au contraire à éviter, notamment les 26 substances allergènes réglementées."
+  },
+  { q: "Pourquoi conseille-t-on d'éviter les produits antibactériens pour un usage domestique courant ?",
+    opts: [
+      "Parce qu'ils coûtent trop cher",
+      "Parce qu'ils favorisent le développement de bactéries résistantes et ne sont pas nécessaires dans un environnement domestique non médical",
+      "Parce qu'ils ne sont efficaces que contre les virus, pas les bactéries",
+      "Parce qu'ils laissent des résidus visibles sur les surfaces"
+    ], ans: 1,
+    fb: "L'usage répété d'antibactériens en milieu domestique favorise la SÉLECTION DE SOUCHES RÉSISTANTES. En plus, les surfaces de la maison ne nécessitent pas une désinfection de niveau hospitalier — un bon nettoyage suffit dans la plupart des cas. L'usage des désinfectants doit être réservé aux situations à risque réel."
+  },
+  { q: "Pourquoi ne faut-il jamais transvaser un produit d'entretien dans un autre contenant ?",
+    opts: [
+      "Pour des raisons fiscales (traçabilité des produits)",
+      "Parce que l'étiquette d'origine contient toutes les informations de sécurité indispensables — la perdre en transvassant crée un risque d'erreur d'identification et d'utilisation dangereuse",
+      "Parce que certains matériaux de contenant réagissent avec les produits",
+      "Pour éviter l'évaporation du produit"
+    ], ans: 1,
+    fb: "Transvaser un produit dans un autre flacon = perdre son étiquette de sécurité. En cas d'accident, d'ingestion par un enfant ou de mélange accidentel, les secours n'ont plus d'information sur le produit. C'est aussi une source d'erreur d'utilisation (confondre un produit pour un autre)."
+  },
+
+  // ── MAINTENANCE ──
+  { q: "Quelle est la différence fondamentale entre maintenance préventive et corrective ?",
+    opts: [
+      "La maintenance préventive est réalisée par du personnel externe, la corrective par du personnel interne",
+      "La maintenance préventive agit AVANT la panne (planifiée, investissement rentable). La maintenance corrective agit APRÈS la panne (subie, coûteuse, perturbe l'activité)",
+      "La maintenance préventive concerne uniquement les appareils électriques",
+      "Il n'y a pas de différence — ce sont deux termes pour la même chose"
+    ], ans: 1,
+    fb: "Maintenance PRÉVENTIVE : planifiée, régulière, évite les pannes → bonnes conditions de travail, clients satisfaits, bonne rentabilité. Maintenance CORRECTIVE : intervient APRÈS la panne → surcoûts de réparation, délais non respectés, surcharge du personnel, clients mécontents. La préventive est rentable à long terme malgré son coût immédiat."
+  },
+  { q: "Quels sont les 3 objectifs de la maintenance ?",
+    opts: [
+      "Réduire les coûts, former le personnel, améliorer le design",
+      "Augmenter la durée de vie du matériel, optimiser son taux d'utilisation, assurer les conditions d'hygiène et de sécurité",
+      "Augmenter la productivité, réduire le personnel, supprimer les pannes",
+      "Contrôler les stocks, gérer les commandes, former les techniciens"
+    ], ans: 1,
+    fb: "Les 3 objectifs de la maintenance sont : 1. Augmenter la DURÉE DE VIE du matériel (éviter l'usure prématurée), 2. Optimiser le TAUX D'UTILISATION (matériel disponible et fonctionnel quand on en a besoin), 3. Assurer les CONDITIONS D'HYGIÈNE ET DE SÉCURITÉ (matériel bien entretenu = moins de risques)."
+  },
+  { q: "Quels documents sont indispensables à la maintenance d'un équipement ?",
+    opts: [
+      "Uniquement les factures d'achat",
+      "Documents techniques (notice, fiche d'entretien), documents de planification (calendrier, plan de maintenance) et documents contractuels/réglementaires (contrat, carnet d'entretien, attestations)",
+      "Uniquement le contrat avec le prestataire de maintenance",
+      "Les photos de l'équipement prises à l'achat"
+    ], ans: 1,
+    fb: "3 catégories de documents nécessaires : TECHNIQUES (notice d'entretien, fiche technique de l'appareil), PLANIFICATION (calendrier d'entretien, plan de maintenance préventive), CONTRACTUELS ET RÉGLEMENTAIRES (contrat de maintenance, carnet d'entretien, attestations légales). Ces documents permettent la traçabilité et prouvent le respect des obligations."
+  }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  const q=shuffled[current];
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=shuffled[current];const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Le Circuit du Linge | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Gestion des activités</div>
+    <h1>Le Circuit du Linge</h1>
+    <div class="meta">Quiz de révision · 20 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  { q: "Quels sont les 2 types de risques associés à la manipulation du linge souillé dans les établissements ?", opts: ["Risque chimique et risque physique","Risque de blessure (OPCT) et risque infectieux","Risque de blessure et risque d'allergie","Risque électrique et risque microbiologique"], ans: 1, fb: "Le circuit du linge expose à 2 risques : le risque de blessure par objets piquants, coupants, tranchants (OPCT) et le risque infectieux, car le linge est un facteur majeur de propagation d'infections." },
+  { q: "Qu'est-ce qu'un micro-organisme pathogène ?", opts: ["Un micro-organisme présent uniquement dans les hôpitaux","Un micro-organisme qui provoque une maladie chez l'homme","Un micro-organisme inoffensif qui vit sur la peau","Un micro-organisme détruit par la chaleur"], ans: 1, fb: "Un micro-organisme pathogène est un micro-organisme qui provoque une maladie chez l'homme. Les micro-organismes regroupent bactéries, virus, champignons (levures, moisissures) et parasites." },
+  { q: "Quelle voie de contamination correspond à l'inhalation de poussières contaminées lors de la manipulation du linge ?", opts: ["Voie digestive","Voie cutanée sans effraction","Voie aérienne","Voie percutanée"], ans: 2, fb: "La voie aérienne correspond à l'inhalation de poussières contaminées. Elle peut provoquer tuberculose, infection à streptocoques, grippe..." },
+  { q: "Un agent manipulant du linge souillé mange un sandwich sans se laver les mains. Quelle voie de contamination est en jeu ?", opts: ["Voie aérienne","Voie percutanée","Voie cutanée sans effraction","Voie digestive"], ans: 3, fb: "La voie digestive correspond à la contamination via les mains souillées lors de boissons, repas, cigarettes ou onychophagie. Elle peut provoquer hépatite A, salmonellose..." },
+  { q: "La gale et l'herpès se transmettent par quelle voie lors de la manipulation du linge ?", opts: ["Voie aérienne","Voie digestive","Voie cutanée sans effraction","Voie percutanée"], ans: 2, fb: "La gale et l'herpès se transmettent par voie cutanée sans effraction — contact direct avec la peau ou les muqueuses, sans blessure nécessaire." },
+  { q: "Que signifie DARI ?", opts: ["Document d'Application des Règles d'Isolement","Document d'Analyse du Risque Infectieux","Démarche d'Analyse des Risques en Institution","Dispositif Antibactérien de Réduction des Infections"], ans: 1, fb: "Le DARI est le Document d'Analyse du Risque Infectieux. Il mobilise les établissements médico-sociaux sur la prévention et la maîtrise du risque infectieux." },
+  { q: "Quelles sont les 3 étapes de la démarche d'analyse du risque infectieux (DARI) ?", opts: ["Identifier, corriger, documenter","Évaluation du risque, analyse du niveau de maîtrise et élaboration d'actions prioritaires, communication des résultats","Former, contrôler, sanctionner","Nettoyer, désinfecter, stériliser"], ans: 1, fb: "Le DARI comporte 3 étapes : évaluation du risque infectieux (identifier et hiérarchiser les risques des 3 dernières années), analyse du niveau de maîtrise (programme d'actions), communication des résultats aux professionnels et usagers." },
+  { q: "Que signifie R.A.B.C ?", opts: ["Risk Assessment and Biocontamination Control","Risk Analysis Biocontamination Control","Règles d'Application des Bonnes Conditions","Référentiel d'Analyse des Bactéries Contaminantes"], ans: 1, fb: "RABC = Risk Analysis Biocontamination Control. C'est un système de management de la qualité permettant de maîtriser les risques de biocontamination des textiles traités en blanchisserie." },
+  { q: "Quelle est la première étape de la démarche RABC ?", opts: ["Établir des actions correctives","Élaborer un système de surveillance","Dresser la liste de tous les dangers microbiologiques associés à chaque étape et des mesures de contrôle","Mettre en place un système d'enregistrement"], ans: 2, fb: "L'étape 1 du RABC consiste à dresser la liste de tous les dangers microbiologiques associés à chacune des étapes, puis la liste de toutes les mesures de contrôle destinées à les maîtriser." },
+  { q: "Dans l'exemple RABC de réception du linge souillé, quelle est la limite critique fixée pour le stockage ?", opts: ["24 heures maximum","48 heures (avec une tolérance de +24h)","72 heures maximum","Pas de limite fixée, selon les salissures"], ans: 1, fb: "La limite critique fixée est 48 heures de stockage avant lavage, avec une tolérance de +24 heures. Au-delà, des actions correctives s'imposent." },
+  { q: "Quels sont les 5M de la méthode d'Ishikawa appliquée au linge ?", opts: ["Matériaux, Machines, Mesures, Management, Main d'œuvre","Méthodes, Main d'œuvre, Matériels, Milieu, Matières","Microbes, Manipulation, Matériels, Milieu, Méthodes","Maintenance, Matières, Milieu, Main d'œuvre, Mesures"], ans: 1, fb: "Les 5M appliqués au linge : Méthodes (organisation, modes opératoires), Main d'œuvre (lavage des mains, tenue, formation), Matériels (machines, chariots, véhicules), Milieu (air, eau, locaux), Matières (le linge sale ou propre)." },
+  { q: "Qu'est-ce que la méthode des 5M permet d'identifier dans le contexte du linge ?", opts: ["Les coûts de la blanchisserie","Toutes les causes possibles de biocontamination du linge, sans en oublier","Les durées optimales de lavage","Les produits lessivels adaptés à chaque type de linge"], ans: 1, fb: "La méthode des 5M (diagramme d'Ishikawa) permet de ne pas oublier de causes possibles de biocontamination du linge en analysant systématiquement les 5 familles de causes." },
+  { q: "Quelle est la règle fondamentale pour l'aménagement d'une blanchisserie ?", opts: ["Les machines doivent être centralisées pour économiser l'espace","Deux parties séparées physiquement : zone sale et zone propre, pour éviter tout croisement","La zone propre doit être plus grande que la zone sale","La blanchisserie doit être au sous-sol pour des raisons de drainage"], ans: 1, fb: "L'aménagement d'une blanchisserie doit distinguer deux parties séparées physiquement : zone sale et zone propre, afin d'éviter tout risque de contact ou croisement entre linge sale et linge propre." },
+  { q: "Comment doit être conditionné le linge sale pour son transport ?", opts: ["Dans des caisses en bois étiquetées","Dans des sacs de couleur codifiée, dans des chariots porte-sacs à couvercle","En vrac dans des bacs ouverts","Emballé individuellement dans du papier kraft"], ans: 1, fb: "Le linge sale doit être collecté et transporté dans des sacs de couleur codifiée, dans des chariots porte-sacs à couvercle, pour éviter les contaminations et permettre le tri." },
+  { q: "Comment doit être stocké et conservé le linge propre à la sortie du lave-linge ?", opts: ["À l'air libre sur des étagères","Parfaitement sec, sous films plastiques ou dans des conteneurs hermétiques","Dans des sacs en tissu respirants","Sur des cintres dans une pièce ventilée"], ans: 1, fb: "Le linge propre doit être séché rapidement, puis stocké et conservé parfaitement sec sous films plastiques ou dans des conteneurs hermétiques pour éviter toute recontamination." },
+  { q: "Que faut-il respecter lors du traitement du linge selon la méthode du cercle de Sinner ?", opts: ["Température, durée, pH, concentration","Produits, température, action mécanique et temps de contact","Tri, lavage, rinçage, essorage","Pré-trempage, lavage, désinfection, séchage"], ans: 1, fb: "Le cercle de Sinner définit les 4 paramètres du lavage efficace : produits (chimie), température, action mécanique et temps de contact. Ces 4 paramètres doivent être optimisés ensemble." },
+  { q: "Quel est l'objectif du pré-tri du linge ?", opts: ["Réduire la quantité de linge à laver","Faciliter la tâche en lingerie et réduire le risque de contamination","Permettre d'identifier le linge personnel des résidents","Accélérer le temps de séchage"], ans: 1, fb: "Le pré-tri du linge facilite la tâche en lingerie (tri par catégorie déjà effectué en amont) et réduit le risque de contamination en séparant les différentes catégories dès la collecte." },
+  { q: "À quelle fréquence les sols et surfaces des endroits de stockage du linge doivent-ils être nettoyés et désinfectés ?", opts: ["Une fois par semaine","Tous les jours","Une fois par mois","Après chaque tournée de linge"], ans: 1, fb: "Les sols et surfaces des endroits de stockage du linge sale et du linge propre, ainsi que le matériel de collecte (chariots, sacs) doivent être nettoyés et désinfectés tous les jours." },
+  { q: "Quel équipement de protection individuelle est indispensable pour manipuler le linge souillé ?", opts: ["Uniquement des gants","Gants à usage unique, tablier ou blouse, charlotte, surchaussures","Masque FFP2 et lunettes de protection","Combinaison intégrale de type NBC"], ans: 1, fb: "La tenue de protection pour manipuler le linge souillé comprend : gants à usage unique, tablier ou blouse, charlotte et surchaussures. L'hygiène personnelle doit par ailleurs être irréprochable." },
+  { q: "Quelles sont les étapes du circuit du linge en lingerie, dans l'ordre ?", opts: ["Tri → lavage → finition → livraison","Réception et tri des sacs → tri du linge sale → lavage-désinfection → finition/séchage/réparations/pliage → préparation des livraisons","Lavage → tri → séchage → distribution","Collecte → transport → stockage → lavage → retour"], ans: 1, fb: "En lingerie, le circuit suit : réception à la blanchisserie et tri des sacs → tri du linge sale → lavage-désinfection → finition, séchage, réparations, pliage → préparation des livraisons." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  const q=shuffled[current];
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=shuffled[current];const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>
