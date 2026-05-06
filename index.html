@@ -29,6 +29,7 @@
   .header h1 span { color: var(--gold); }
   .header p { font-size: 15px; color: var(--gray); font-weight: 300; }
 
+  /* DOMAINE */
   .domain { margin-top: 20px; border: 1px solid #ffffff18; border-radius: 18px; overflow: hidden; }
   .domain-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -44,6 +45,7 @@
   .domain-body { display: none; padding: 0 16px 16px; }
   .domain.open .domain-body { display: block; }
 
+  /* SECTION */
   .section-label {
     font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
     letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray);
@@ -51,6 +53,7 @@
   }
   .section-label::after { content: ''; flex: 1; height: 1px; background: #ffffff15; }
 
+  /* CARDS */
   .cards { display: flex; flex-direction: column; gap: 8px; }
   .card {
     display: flex; align-items: center; gap: 16px; padding: 16px 18px;
@@ -69,6 +72,7 @@
   .ic-info     { background: #2A9D8F20; }
   .ic-img      { background: #7B5EA720; }
   .ic-scenario { background: #E6394620; }
+  .ic-doc      { background: #2563EB20; }
   .footer { margin-top: 48px; text-align: center; font-size: 12px; color: #ffffff30; }
 </style>
 </head>
@@ -81,20 +85,23 @@
     <p>Toutes les ressources de votre cours en un seul endroit</p>
   </div>
 
-  <!-- DOMAINE 1 : LOGEMENT & HABITAT INDIGNE -->
-  <div class="domain open" id="domain-logement">
-    <div class="domain-header" onclick="toggleDomain('domain-logement')">
+  <!-- DOMAINE : HABITAT LOGEMENT ENVIRONNEMENT -->
+  <div class="domain" id="domain-hle">
+    <div class="domain-header" onclick="toggleDomain('domain-hle')">
       <div class="domain-header-left">
-        <span class="domain-emoji">🏚️</span>
+        <span class="domain-emoji">🏠</span>
         <div>
-          <div class="domain-title">Logement &amp; Habitat indigne</div>
-          <div class="domain-subtitle">Quiz · Flashcards · Scénarios</div>
+          <div class="domain-title">Habitat, Logement &amp; Environnement</div>
+          <div class="domain-subtitle">Logement · Eau · Déchets · Adoucisseur · Équipements</div>
         </div>
       </div>
       <span class="domain-chevron">›</span>
     </div>
     <div class="domain-body">
-      <div class="cards" style="margin-top:12px">
+
+      <!-- Logement & Habitat indigne -->
+      <div class="section-label">🏚️ Logement &amp; Habitat indigne</div>
+      <div class="cards">
         <a class="card" href="quiz_logement_bts_esf.html">
           <div class="card-icon ic-quiz">🎯</div>
           <div class="card-body">
@@ -119,24 +126,33 @@
           </div>
           <div class="card-arrow">›</div>
         </a>
+        <a class="card" href="Infographie logement.png">
+          <div class="card-icon ic-img">🖼️</div>
+          <div class="card-body">
+            <div class="card-title">Fiche visuelle – Logement</div>
+            <div class="card-desc">Synthèse visuelle format image</div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+        <a class="card" href="Résumé logement.docx">
+          <div class="card-icon ic-doc">📄</div>
+          <div class="card-body">
+            <div class="card-title">Résumé – Logement</div>
+            <div class="card-desc">Document Word · Synthèse du cours</div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+        <a class="card" href="Panorama des institutions.docx">
+          <div class="card-icon ic-doc">📄</div>
+          <div class="card-body">
+            <div class="card-title">Panorama des institutions</div>
+            <div class="card-desc">Document Word · Acteurs et institutions</div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
       </div>
-    </div>
-  </div>
 
-  <!-- DOMAINE 2 : HABITAT LOGEMENT ENVIRONNEMENT -->
-  <div class="domain open" id="domain-hle">
-    <div class="domain-header" onclick="toggleDomain('domain-hle')">
-      <div class="domain-header-left">
-        <span class="domain-emoji">🏠</span>
-        <div>
-          <div class="domain-title">Habitat, Logement &amp; Environnement</div>
-          <div class="domain-subtitle">Eau · Déchets · Adoucisseur · Équipements</div>
-        </div>
-      </div>
-      <span class="domain-chevron">›</span>
-    </div>
-    <div class="domain-body">
-
+      <!-- Eau -->
       <div class="section-label">💧 Eau</div>
       <div class="cards">
         <a class="card" href="quiz_eau_bts_esf.html">
@@ -157,6 +173,7 @@
         </a>
       </div>
 
+      <!-- Déchets -->
       <div class="section-label">♻️ Déchets</div>
       <div class="cards">
         <a class="card" href="quiz_dechets_bts_esf.html">
@@ -185,6 +202,7 @@
         </a>
       </div>
 
+      <!-- Adoucisseur -->
       <div class="section-label">🔬 Adoucisseur d'eau</div>
       <div class="cards">
         <a class="card" href="quiz_adoucisseur_bts_esf.html">
@@ -213,6 +231,7 @@
         </a>
       </div>
 
+      <!-- Lave-linge -->
       <div class="section-label">👕 Lave-linge</div>
       <div class="cards">
         <a class="card" href="quiz-lave-linge.html">
@@ -235,12 +254,13 @@
           <div class="card-icon ic-img">🖼️</div>
           <div class="card-body">
             <div class="card-title">Fiche visuelle – Lave-linge</div>
-            <div class="card-desc">Fiche visuelle format image</div>
+            <div class="card-desc">Affiche visuelle format image</div>
           </div>
           <div class="card-arrow">›</div>
         </a>
       </div>
 
+      <!-- Lave-vaisselle -->
       <div class="section-label">🍽️ Lave-vaisselle</div>
       <div class="cards">
         <a class="card" href="quiz-lave-vaisselle.html">
@@ -263,12 +283,13 @@
           <div class="card-icon ic-img">🖼️</div>
           <div class="card-body">
             <div class="card-title">Fiche visuelle – Lave-vaisselle</div>
-            <div class="card-desc">Fiche visuelle format image</div>
+            <div class="card-desc">Affiche visuelle format image</div>
           </div>
           <div class="card-arrow">›</div>
         </a>
       </div>
 
+      <!-- Autocuiseurs -->
       <div class="section-label">🥘 Autocuiseurs</div>
       <div class="cards">
         <a class="card" href="quiz-autocuiseurs.html">
@@ -289,6 +310,7 @@
         </a>
       </div>
 
+      <!-- Fours -->
       <div class="section-label">🔥 Fours</div>
       <div class="cards">
         <a class="card" href="quiz-fours.html">
@@ -309,6 +331,7 @@
         </a>
       </div>
 
+      <!-- Plaques de cuisson -->
       <div class="section-label">⚡ Plaques de cuisson</div>
       <div class="cards">
         <a class="card" href="quiz-plaques-cuisson.html">
@@ -323,12 +346,13 @@
           <div class="card-icon ic-img">🖼️</div>
           <div class="card-body">
             <div class="card-title">Fiche visuelle – Plaques de cuisson</div>
-            <div class="card-desc">Fiche visuelle format image</div>
+            <div class="card-desc">Affiche visuelle format image</div>
           </div>
           <div class="card-arrow">›</div>
         </a>
       </div>
 
+      <!-- Micro-ondes -->
       <div class="section-label">📡 Micro-ondes</div>
       <div class="cards">
         <a class="card" href="Quiz_Micro_ondes.html">
@@ -343,12 +367,13 @@
           <div class="card-icon ic-img">🖼️</div>
           <div class="card-body">
             <div class="card-title">Fiche visuelle – Micro-ondes</div>
-            <div class="card-desc">Fiche visuelle aide CCF</div>
+            <div class="card-desc">Aide CCF format image</div>
           </div>
           <div class="card-arrow">›</div>
         </a>
       </div>
 
+      <!-- Confort acoustique -->
       <div class="section-label">🔊 Confort acoustique</div>
       <div class="cards">
         <a class="card" href="quiz-confort-acoustique.html">
