@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Le Lave-Linge | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 920px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* 8 étapes */
+  .etapes { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .etapes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .etape-card { background: var(--navy3); border-radius: 10px; padding: 14px 10px; text-align: center; position: relative; }
+  .etape-num { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: var(--navy); font-weight: bold; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+  .etape-icon { font-size: 1.4rem; margin-bottom: 6px; }
+  .etape-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; color: var(--white); margin-bottom: 5px; }
+  .etape-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; }
+  .etape-warn { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: #f5b8b3; margin-top: 4px; }
+
+  /* Composants */
+  .composants { background: var(--navy2); border: 1px solid rgba(45,139,186,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .composants-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .comp-card { background: var(--navy3); border-radius: 10px; padding: 14px 12px; text-align: center; }
+  .comp-icon { font-size: 1.5rem; margin-bottom: 6px; }
+  .comp-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; color: var(--gold-light); margin-bottom: 4px; }
+  .comp-role { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Températures */
+  .temperatures { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .temp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .temp-card { border-radius: 10px; padding: 16px 12px; text-align: center; }
+  .temp-card.t30 { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.4); }
+  .temp-card.t40 { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.4); }
+  .temp-card.t60 { background: rgba(230,126,34,0.1); border: 1px solid rgba(230,126,34,0.4); }
+  .temp-card.t90 { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.4); }
+  .temp-deg { font-size: 1.8rem; font-weight: bold; margin-bottom: 6px; }
+  .temp-card.t30 .temp-deg { color: var(--blue-light); }
+  .temp-card.t40 .temp-deg { color: var(--green-light); }
+  .temp-card.t60 .temp-deg { color: var(--orange); }
+  .temp-card.t90 .temp-deg { color: var(--red); }
+  .temp-usage { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; color: var(--white); margin-bottom: 5px; }
+  .temp-info { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; }
+  .temp-warn { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: #f5b8b3; margin-top: 4px; }
+
+  /* Tri & lessive */
+  .tri-lessive { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .tri-card, .lessive-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 20px; }
+  .tri-card h3, .lessive-card h3 { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--white); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .tri-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+  .tri-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .tri-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--white); font-weight: bold; margin-bottom: 2px; }
+  .tri-detail { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+  .lessive-item { margin-bottom: 10px; }
+  .lessive-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--gold-light); font-weight: bold; margin-bottom: 2px; }
+  .lessive-detail { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+  .lessive-warn { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: #f5b8b3; }
+
+  /* Entretien */
+  .entretien { background: var(--navy2); border: 1px solid rgba(39,174,96,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .entretien-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .ent-step { background: var(--navy3); border-radius: 10px; padding: 16px; text-align: center; }
+  .ent-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .ent-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--white); margin-bottom: 5px; }
+  .ent-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 620px) {
+    .etapes-grid, .composants-grid, .temp-grid { grid-template-columns: repeat(2, 1fr); }
+    .tri-lessive { grid-template-columns: 1fr; }
+    .entretien-steps { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Cours 13 · E2</div>
+    <span class="header-icon">🌀</span>
+    <h1>Le Lave-Linge</h1>
+    <p>Fonctionnement · 8 étapes · Tri · Lessive · Entretien</p>
+  </div>
+
+  <!-- 8 étapes -->
+  <div class="etapes">
+    <div class="section-title">Les 8 étapes de fonctionnement</div>
+    <div class="etapes-grid">
+      <div class="etape-card">
+        <div class="etape-num">1</div>
+        <div class="etape-icon">👕</div>
+        <div class="etape-name">Chargement</div>
+        <div class="etape-desc">4–15 kg (particuliers) · 10–30 kg (pros)</div>
+        <div class="etape-warn">⚠ Ne pas surcharger</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">2</div>
+        <div class="etape-icon">🔒</div>
+        <div class="etape-name">Verrouillage</div>
+        <div class="etape-desc">Fermeture du hublot — autorise le démarrage. Sécurité impérative.</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">3</div>
+        <div class="etape-icon">💧</div>
+        <div class="etape-name">Remplissage</div>
+        <div class="etape-desc">Électrovanne + lessive entraînée. Arrêt auto au niveau requis (pressostat).</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">4</div>
+        <div class="etape-icon">🔥</div>
+        <div class="etape-name">Rotation & chauffage</div>
+        <div class="etape-desc">Moteur + courroie → tambour. Résistance chauffe à la T° choisie.</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">5</div>
+        <div class="etape-icon">🚿</div>
+        <div class="etape-name">Vidange</div>
+        <div class="etape-desc">Pompe + durite + tuyau d'évacuation éliminent les eaux usées.</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">6</div>
+        <div class="etape-icon">♻️</div>
+        <div class="etape-name">Rinçages</div>
+        <div class="etape-desc">Plusieurs cycles remplissage/vidange. Adoucissant au dernier rinçage.</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">7</div>
+        <div class="etape-icon">🌀</div>
+        <div class="etape-name">Essorage</div>
+        <div class="etape-desc">Force centrifuge. Vitesse réglable en tours/min. Tachymètre contrôle.</div>
+      </div>
+      <div class="etape-card">
+        <div class="etape-num">8</div>
+        <div class="etape-icon">🔓</div>
+        <div class="etape-name">Déverrouillage</div>
+        <div class="etape-desc">Ne jamais forcer la porte. Bouton Arrêt avant déchargement.</div>
+        <div class="etape-warn">⚠ Risque de casser la poignée</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Composants clés -->
+  <div class="composants">
+    <div class="section-title">Composants clés</div>
+    <div class="composants-grid">
+      <div class="comp-card">
+        <div class="comp-icon">⚡</div>
+        <div class="comp-name">Électrovanne</div>
+        <div class="comp-role">Contrôle l'entrée d'eau dans le tambour</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">📊</div>
+        <div class="comp-name">Pressostat / Débitmètre</div>
+        <div class="comp-role">Contrôle le niveau d'eau, arrête le remplissage</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">🔥</div>
+        <div class="comp-name">Résistance / Thermoplongeur</div>
+        <div class="comp-role">Chauffe l'eau selon la T° du programme</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">🌡️</div>
+        <div class="comp-name">Sonde / Thermostat</div>
+        <div class="comp-role">Contrôle et régule la température de l'eau</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">⚙️</div>
+        <div class="comp-name">Moteur + Courroie</div>
+        <div class="comp-role">Entraîne la rotation du tambour</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">📡</div>
+        <div class="comp-name">Tachymètre</div>
+        <div class="comp-role">Mesure la vitesse de rotation (essorage)</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">🚿</div>
+        <div class="comp-name">Pompe de vidange</div>
+        <div class="comp-role">Expulse les eaux usées hors du tambour</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">🧴</div>
+        <div class="comp-name">Bacs à produits</div>
+        <div class="comp-role">Lessive, adoucissant, dosage automatique</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Températures -->
+  <div class="temperatures">
+    <div class="section-title">Programmes de température</div>
+    <div class="temp-grid">
+      <div class="temp-card t30">
+        <div class="temp-deg">30°C</div>
+        <div class="temp-usage">Linge délicat / peu sale</div>
+        <div class="temp-info">Économique, préserve les couleurs et les fibres</div>
+      </div>
+      <div class="temp-card t40">
+        <div class="temp-deg">40°C</div>
+        <div class="temp-usage">Usage courant</div>
+        <div class="temp-info">Bon compromis efficacité / économie d'énergie</div>
+      </div>
+      <div class="temp-card t60">
+        <div class="temp-deg">60°C</div>
+        <div class="temp-usage">Blanc, taches tenaces</div>
+        <div class="temp-info">Efficace contre les salissures fortes et le linge très sale</div>
+      </div>
+      <div class="temp-card t90">
+        <div class="temp-deg">90°C</div>
+        <div class="temp-usage">Désinfection</div>
+        <div class="temp-info">Réservé à la désinfection</div>
+        <div class="temp-warn">⚠ Risque de rétrécissement</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;background:rgba(231,76,60,0.08);border-left:3px solid var(--red);padding:10px 14px;border-radius:0 6px 6px 0;font-family:'Trebuchet MS',sans-serif;font-size:0.82rem;color:#f5b8b3;">
+      ⚠️ Toujours consulter les étiquettes de lavage — les fortes températures peuvent provoquer des rétrécissements.
+    </div>
+  </div>
+
+  <!-- Tri & Lessive -->
+  <div class="tri-lessive">
+    <div class="tri-card">
+      <h3>🗂️ Tri du linge</h3>
+      <div class="tri-item">
+        <div class="tri-icon">🧵</div>
+        <div>
+          <div class="tri-label">Par matière</div>
+          <div class="tri-detail">Coton, synthétique, délicat, laine — chaque matière a son programme</div>
+        </div>
+      </div>
+      <div class="tri-item">
+        <div class="tri-icon">🎨</div>
+        <div>
+          <div class="tri-label">Par couleur</div>
+          <div class="tri-detail">Clairs avec clairs, foncés avec foncés — évite les décolorations</div>
+        </div>
+      </div>
+      <div class="tri-item">
+        <div class="tri-icon">🌡️</div>
+        <div>
+          <div class="tri-label">Par température</div>
+          <div class="tri-detail">Linge très sale → T° élevée · Linge délicat → 30°C</div>
+        </div>
+      </div>
+      <div class="tri-item">
+        <div class="tri-icon">🏷️</div>
+        <div>
+          <div class="tri-label">Étiquettes</div>
+          <div class="tri-detail">Toujours consulter les conseils de lavage sur l'étiquette</div>
+        </div>
+      </div>
+      <div class="tri-item">
+        <div class="tri-icon">🆕</div>
+        <div>
+          <div class="tri-label">1er lavage</div>
+          <div class="tri-detail">Laver à la main — un vêtement neuf peut dégorger !</div>
+        </div>
+      </div>
+    </div>
+    <div class="lessive-card">
+      <h3>🧴 Choix de la lessive</h3>
+      <div class="lessive-item">
+        <div class="lessive-name">Lessives peaux sensibles</div>
+        <div class="lessive-detail">Formulation hypoallergénique. Rinçage supplémentaire conseillé pour réduire les résidus.</div>
+      </div>
+      <div class="lessive-item">
+        <div class="lessive-name">Lessives spécifiques (noirs / blancs / laines)</div>
+        <div class="lessive-detail">Maintient la teinte, préserve les fibres selon le type de linge.</div>
+      </div>
+      <div class="lessive-item">
+        <div class="lessive-name">⚠️ Surdosage moussant</div>
+        <div class="lessive-warn">Ne pas surdoser → débordement de mousse + linge rêche après séchage.</div>
+      </div>
+      <div class="lessive-item">
+        <div class="lessive-name">☀️ Séchage au soleil</div>
+        <div class="lessive-warn">Éviter pour le linge blanc — le soleil jaunit les fibres blanches.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entretien -->
+  <div class="entretien">
+    <div class="section-title">Entretien de la machine</div>
+    <div class="entretien-steps">
+      <div class="ent-step">
+        <div class="ent-icon">🔌</div>
+        <div class="ent-title">Débrancher d'abord</div>
+        <div class="ent-desc">Toujours débrancher l'appareil avant toute opération d'entretien.</div>
+      </div>
+      <div class="ent-step">
+        <div class="ent-icon">🔩</div>
+        <div class="ent-title">Filtre / bouchon en bas</div>
+        <div class="ent-desc">Ouvrir régulièrement le bouchon en bas pour évacuer les résidus accumulés. Prévoir une serpillière.</div>
+      </div>
+      <div class="ent-step">
+        <div class="ent-icon">🧹</div>
+        <div class="ent-title">Nettoyage régulier</div>
+        <div class="ent-desc">Les résidus s'accumulent sous la cuve au fil des lavages. Entretien préventif indispensable.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Cours 13 · Le Lave-Linge · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Les Fours | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), var(--navy3)); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* Modes de cuisson */
+  .modes { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .modes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .mode-card { background: var(--navy3); border-radius: 10px; padding: 14px 12px; }
+  .mode-icon { font-size: 1.5rem; margin-bottom: 6px; }
+  .mode-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--gold-light); margin-bottom: 5px; }
+  .mode-resistance { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--blue-light); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+  .mode-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
+  .mode-usage { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--green-light); margin-top: 5px; font-style: italic; }
+
+  /* Paramètres clés */
+  .params { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .param-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 16px 12px; text-align: center; }
+  .param-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .param-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; color: var(--white); margin-bottom: 4px; }
+  .param-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Nettoyage */
+  .nettoyage { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .nett-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .nett-card { border-radius: 10px; padding: 18px 14px; }
+  .nett-card.manuel { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); }
+  .nett-card.catalyse { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.3); }
+  .nett-card.pyrolyse { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); }
+  .nett-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .nett-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
+  .nett-card.manuel .nett-name { color: var(--blue-light); }
+  .nett-card.catalyse .nett-name { color: var(--green-light); }
+  .nett-card.pyrolyse .nett-name { color: var(--red); }
+  .nett-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.74rem; color: var(--text-dim); line-height: 1.5; }
+  .nett-detail { font-family: 'Trebuchet MS', sans-serif; font-size: 0.70rem; margin-top: 6px; }
+  .nett-card.manuel .nett-detail { color: var(--blue-light); }
+  .nett-card.catalyse .nett-detail { color: var(--green-light); }
+  .nett-card.pyrolyse .nett-detail { color: #f5b8b3; }
+
+  /* Pyrolyse sécurité */
+  .pyro-securite { background: var(--navy2); border: 1px solid rgba(231,76,60,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .pyro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+  .pyro-item { background: var(--navy3); border-radius: 8px; padding: 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .pyro-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .pyro-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; color: var(--white); margin-bottom: 3px; }
+  .pyro-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Accessoires */
+  .accessoires { background: var(--navy2); border: 1px solid rgba(45,139,186,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .acc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .acc-card { background: var(--navy3); border-radius: 8px; padding: 12px 10px; text-align: center; }
+  .acc-icon { font-size: 1.3rem; margin-bottom: 5px; }
+  .acc-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; font-weight: bold; color: var(--white); margin-bottom: 4px; }
+  .acc-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.68rem; color: var(--text-dim); line-height: 1.4; }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 640px) {
+    .modes-grid, .nett-grid { grid-template-columns: 1fr; }
+    .params, .acc-grid { grid-template-columns: repeat(2, 1fr); }
+    .pyro-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Cours 8 · E2</div>
+    <span class="header-icon">🔥</span>
+    <h1>Les Fours Traditionnels</h1>
+    <p>Modes de cuisson · Nettoyage · Sécurité · Accessoires</p>
+  </div>
+
+  <!-- Paramètres clés -->
+  <div class="params">
+    <div class="param-card">
+      <div class="param-icon">🌡️</div>
+      <div class="param-name">Température</div>
+      <div class="param-desc">Réglée par le thermostat selon le mode et les aliments</div>
+    </div>
+    <div class="param-card">
+      <div class="param-icon">⏱️</div>
+      <div class="param-name">Durée</div>
+      <div class="param-desc">Variable selon le mode — chaleur brassée = plus rapide que convection naturelle</div>
+    </div>
+    <div class="param-card">
+      <div class="param-icon">🔄</div>
+      <div class="param-name">Transmission</div>
+      <div class="param-desc">Convection (air chaud) ou rayonnement (infrarouges)</div>
+    </div>
+    <div class="param-card">
+      <div class="param-icon">💧</div>
+      <div class="param-name">Hygrométrie</div>
+      <div class="param-desc">Taux d'humidité dans le moufle — joue un rôle prépondérant sur la cuisson</div>
+    </div>
+  </div>
+
+  <!-- Modes de cuisson -->
+  <div class="modes">
+    <div class="section-title">Les 6 modes de cuisson</div>
+    <div class="modes-grid">
+      <div class="mode-card">
+        <div class="mode-icon">🌊</div>
+        <div class="mode-name">Convection naturelle</div>
+        <div class="mode-resistance">Voûte (1/3) + Sole (2/3)</div>
+        <div class="mode-desc">L'air chaud monte naturellement sans turbine. Circulation lente et douce.</div>
+        <div class="mode-usage">Bain-marie, petits choux — plats au milieu</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">💨</div>
+        <div class="mode-name">Chaleur brassée / tournante</div>
+        <div class="mode-resistance">Voûte + Sole + Turbine</div>
+        <div class="mode-desc">La turbine force la chaleur horizontalement. Cuisson sur 2 ou 3 niveaux sans mélange d'odeurs.</div>
+        <div class="mode-usage">Cuissons simultanées, décongélation</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">🌡️</div>
+        <div class="mode-name">Grill</div>
+        <div class="mode-resistance">Voûte uniquement (rouge)</div>
+        <div class="mode-desc">Chaleur transmise par rayonnement infrarouge directement sur l'aliment. Porte fermée.</div>
+        <div class="mode-usage">Viandes, gratins, tournebroche</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">🔥</div>
+        <div class="mode-name">Barbecue</div>
+        <div class="mode-resistance">Voûte à puissance max</div>
+        <div class="mode-desc">Grill porte ouverte (~10 cm). Maximise le rayonnement infrarouge. La chaleur d'air s'échappe.</div>
+        <div class="mode-usage">Saisir rapidement en surface</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">🍗</div>
+        <div class="mode-name">Rôtisserie</div>
+        <div class="mode-resistance">Voûte + Turbine</div>
+        <div class="mode-desc">Infrarouges pour saisir + turbine pour cuire en profondeur. Sans tournebroche (projections).</div>
+        <div class="mode-usage">Viandes, gratins dauphinois</div>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">🍞</div>
+        <div class="mode-name">Fournil</div>
+        <div class="mode-resistance">Sole + Turbine</div>
+        <div class="mode-desc">Cuisson par le dessous avec maintien de l'humidité. Évacuation des vapeurs ralentie.</div>
+        <div class="mode-usage">Tartes, quiches, pizzas, brioches, soufflés</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nettoyage -->
+  <div class="nettoyage">
+    <div class="section-title">Les 3 types de nettoyage</div>
+    <div class="nett-grid">
+      <div class="nett-card manuel">
+        <div class="nett-icon">🧽</div>
+        <div class="nett-name">Manuel</div>
+        <div class="nett-desc">Détergents spéciaux + nettoyage à la main. Tendance à disparaître avec les fours autonettoyants.</div>
+        <div class="nett-detail">⚠️ Ne jamais nettoyer les joints en fibre de verre avec du détergent — risque de craquage coûteux</div>
+      </div>
+      <div class="nett-card catalyse">
+        <div class="nett-icon">⚗️</div>
+        <div class="nett-name">Catalyse</div>
+        <div class="nett-desc">Émail poreux catalytique sur les parois. Les graisses s'oxydent chimiquement dès 170°C en cours d'utilisation.</div>
+        <div class="nett-detail">3 étapes : étalage → fractionnement → oxydation. Cycle à vide si saturation (60–90 min).</div>
+      </div>
+      <div class="nett-card pyrolyse">
+        <div class="nett-icon">🔥</div>
+        <div class="nett-name">Pyrolyse ⭐ Haut de gamme</div>
+        <div class="nett-desc">Cycle dédié à 500°C pendant 1 à 3 heures. Détruit toutes les graisses par agitation moléculaire. Résultat : cendres blanches non toxiques.</div>
+        <div class="nett-detail">⚠️ Verrouillage porte dès 300°C · Catalyseur de fumées obligatoire</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pyrolyse sécurité -->
+  <div class="pyro-securite">
+    <div class="section-title">Sécurité · Pyrolyse & Porte</div>
+    <div class="pyro-grid">
+      <div class="pyro-item">
+        <div class="pyro-icon">🔒</div>
+        <div>
+          <div class="pyro-title">Verrouillage automatique dès 300°C</div>
+          <div class="pyro-desc">À 500°C, ouvrir la porte amènerait de l'oxygène qui provoquerait l'auto-inflammation des graisses. Le verrou se maintient même en cas de coupure de courant.</div>
+        </div>
+      </div>
+      <div class="pyro-item">
+        <div class="pyro-icon">🌡️</div>
+        <div>
+          <div class="pyro-title">Température de façade limitée à 80°C</div>
+          <div class="pyro-desc">La loi fixe à 80°C au-dessus de l'ambiante la température max des parois extérieures (≈ 100°C pour une cuisine à 20°C). Logo "porte froide" pour les fours plus performants.</div>
+        </div>
+      </div>
+      <div class="pyro-item">
+        <div class="pyro-icon">🪟</div>
+        <div>
+          <div class="pyro-title">Porte multi-vitrage (~4 couches)</div>
+          <div class="pyro-desc">Faces intérieures métallisées pour renvoyer la chaleur. Circulation d'air frais entre les couches. Maintient la façade à environ 40°C en cuisson et 65°C en pyrolyse.</div>
+        </div>
+      </div>
+      <div class="pyro-item">
+        <div class="pyro-icon">💨</div>
+        <div>
+          <div class="pyro-title">Catalyseur de fumées</div>
+          <div class="pyro-desc">Situé dans la cheminée d'évacuation. Transforme les gaz toxiques produits par la combustion des graisses en gaz carbonique non toxique.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accessoires -->
+  <div class="accessoires">
+    <div class="section-title">Accessoires</div>
+    <div class="acc-grid">
+      <div class="acc-card">
+        <div class="acc-icon">📦</div>
+        <div class="acc-name">Grande grille</div>
+        <div class="acc-desc">Pose des plats et moules pour tous les modes de cuisson</div>
+      </div>
+      <div class="acc-card">
+        <div class="acc-icon">🍰</div>
+        <div class="acc-name">Plaque à pâtisserie</div>
+        <div class="acc-desc">Métal — chauffe par conduction. Pâtisseries et cuissons groupées</div>
+      </div>
+      <div class="acc-card">
+        <div class="acc-icon">💧</div>
+        <div class="acc-name">Lèchefrite</div>
+        <div class="acc-desc">Recueille les jus en bas du four. Les jus ne carbonisent pas et servent à préparer des sauces</div>
+      </div>
+      <div class="acc-card">
+        <div class="acc-icon">🔄</div>
+        <div class="acc-name">Tournebroche</div>
+        <div class="acc-desc">Cuissons au gril pour volailles et gigots. À utiliser en mode grill uniquement</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Cours 8 · Les Fours Traditionnels · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

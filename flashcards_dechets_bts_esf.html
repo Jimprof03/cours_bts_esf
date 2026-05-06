@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards – Déchets BTS ESF</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --navy: #1A2E1A; --green: #2A7D4F; --light-green: #7ED8A0; --blue: #1B6CA8; --orange: #E8881A; --red: #E63946; --purple: #7B5EA7; --gray: #6A8A6A; --white: #FFFFFF; }
+  body { font-family: 'DM Sans', sans-serif; background: #1A2E1A; color: var(--white); min-height: 100vh; padding: 0 20px 60px; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 40% at 80% 5%, #2A7D4F22, transparent), radial-gradient(ellipse 40% 50% at 5% 90%, #7ED8A015, transparent); pointer-events: none; z-index: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+
+  .header { padding: 44px 0 32px; text-align: center; }
+  .header-tag { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--light-green); margin-bottom: 12px; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; margin-bottom: 6px; }
+  .header h1 span { color: var(--light-green); }
+  .header p { font-size: 14px; color: var(--gray); font-weight: 300; }
+
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
+  .filter-btn { padding: 6px 14px; border-radius: 100px; border: 1px solid #ffffff20; background: transparent; color: var(--gray); font-size: 12px; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover { color: var(--white); border-color: #ffffff40; }
+  .filter-btn.active { background: var(--green); border-color: var(--green); color: white; }
+
+  .progress-wrap { margin-bottom: 24px; }
+  .progress-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+  .progress-bar { height: 5px; background: #ffffff15; border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--light-green)); border-radius: 100px; transition: width 0.4s ease; }
+
+  .dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #ffffff20; cursor: pointer; transition: all 0.2s; }
+  .dot.active { background: var(--light-green); transform: scale(1.3); }
+  .dot.seen { background: #ffffff50; }
+
+  .card-scene { width: 100%; height: 300px; perspective: 1200px; cursor: pointer; margin-bottom: 20px; }
+  .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1); border-radius: 18px; }
+  .card-inner.flipped { transform: rotateY(180deg); }
+  .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 18px; padding: 28px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .card-front { background: #ffffff0D; border: 1px solid #ffffff18; }
+  .card-back { transform: rotateY(180deg); }
+
+  /* Back colors by category */
+  .cat-biodeg .card-back { background: linear-gradient(145deg, #0D3A20, #1A5C32); border: 1px solid #2A7D4F66; }
+  .cat-recyclable .card-back { background: linear-gradient(145deg, #0C3060, #1A4A8C); border: 1px solid #1B6CA866; }
+  .cat-inerte .card-back { background: linear-gradient(145deg, #2A2A2A, #404040); border: 1px solid #88888866; }
+  .cat-deee .card-back { background: linear-gradient(145deg, #3A2A00, #5C4200); border: 1px solid #E8881A66; }
+  .cat-dangereux .card-back { background: linear-gradient(145deg, #3A0D0D, #5C1515); border: 1px solid #E6394666; }
+  .cat-medicaments .card-back { background: linear-gradient(145deg, #2A1A40, #3C2860); border: 1px solid #7B5EA766; }
+  .cat-incineration .card-back { background: linear-gradient(145deg, #3A1A0D, #5C2A15); border: 1px solid #E8881A66; }
+  .cat-enfouissement .card-back { background: linear-gradient(145deg, #2A2A2A, #3A3A3A); border: 1px solid #88888866; }
+  .cat-compostage .card-back { background: linear-gradient(145deg, #1A3A0D, #2A5C15); border: 1px solid #2A7D4F66; }
+  .cat-methanisation .card-back { background: linear-gradient(145deg, #0D2A3A, #154260); border: 1px solid #1B6CA866; }
+  .cat-recyclage .card-back { background: linear-gradient(145deg, #0D3060, #154090); border: 1px solid #1B6CA866; }
+
+  .cat-tag { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; margin-bottom: 16px; }
+  .tag-biodeg { background: #2A7D4F25; color: var(--light-green); border: 1px solid var(--green); }
+  .tag-recyclable { background: #1B6CA825; color: #7DBFE8; border: 1px solid var(--blue); }
+  .tag-inerte { background: #88888825; color: #AAAAAA; border: 1px solid #888; }
+  .tag-deee { background: #E8881A25; color: #F4B85A; border: 1px solid var(--orange); }
+  .tag-dangereux { background: #E6394625; color: #ff8a94; border: 1px solid var(--red); }
+  .tag-medicaments { background: #7B5EA725; color: #C39BD3; border: 1px solid var(--purple); }
+  .tag-filiere { background: #E8881A25; color: #F4B85A; border: 1px solid var(--orange); }
+
+  .card-emoji { font-size: 40px; margin-bottom: 14px; }
+  .card-num { font-size: 12px; color: var(--gray); margin-bottom: 10px; font-family: 'Syne', sans-serif; font-weight: 600; }
+  .card-question { font-size: 18px; font-weight: 500; line-height: 1.45; color: var(--white); }
+  .card-hint { font-size: 12px; color: #ffffff40; margin-top: 16px; }
+  .card-answer { font-size: 14px; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.92); }
+  .card-answer strong { font-weight: 600; color: var(--white); }
+  .card-answer .examples { margin-top: 12px; padding: 10px 14px; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 13px; text-align: left; }
+  .card-answer .examples span { display: block; margin-bottom: 3px; }
+  .card-answer .where { margin-top: 10px; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.15); display: inline-block; }
+
+  .controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
+  .ctrl-btn { padding: 11px 24px; border-radius: 100px; border: 1px solid #ffffff25; background: #ffffff0A; color: var(--white); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+  .ctrl-btn:hover { background: #ffffff18; }
+  .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+  .flip-btn { padding: 11px 28px; background: var(--green); border: none; border-radius: 100px; color: white; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: opacity 0.2s; }
+  .flip-btn:hover { opacity: 0.85; }
+
+  .bottom-bar { display: flex; justify-content: center; gap: 12px; }
+  .shuffle-btn { padding: 8px 20px; border-radius: 100px; border: 1px solid #ffffff20; background: transparent; color: var(--gray); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .shuffle-btn:hover { color: var(--white); border-color: #ffffff40; }
+
+  .complete { display: none; text-align: center; padding: 48px 32px; background: #ffffff08; border: 1px solid #ffffff15; border-radius: 18px; margin-top: 16px; }
+  .complete.show { display: block; }
+  .complete-score { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; color: var(--light-green); margin: 12px 0 8px; }
+  .complete-label { font-size: 18px; font-weight: 500; margin-bottom: 20px; }
+  .restart-btn { padding: 12px 32px; background: var(--green); border: none; border-radius: 100px; color: white; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-tag">BTS ESF · Habitat Logement Environnement</div>
+    <h1>Flash<span>cards</span> Déchets</h1>
+    <p>Types de déchets · Exemples · Filières de traitement</p>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterCat('all', this)">Toutes (11)</button>
+    <button class="filter-btn" onclick="filterCat('type', this)">Types de déchets (6)</button>
+    <button class="filter-btn" onclick="filterCat('filiere', this)">Filières (5)</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top"><span id="progress-label">Carte 1 / 11</span><span id="progress-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:9%"></div></div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+
+  <div class="card-scene" onclick="flip()">
+    <div class="card-inner" id="card-inner">
+      <div class="card-face card-front">
+        <div class="cat-tag" id="front-tag"></div>
+        <div class="card-num" id="card-num"></div>
+        <div class="card-emoji" id="card-emoji"></div>
+        <div class="card-question" id="card-question"></div>
+        <div class="card-hint">Appuyez pour voir la réponse ↓</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="cat-tag" id="back-tag"></div>
+        <div class="card-answer" id="card-answer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="prev-btn" onclick="prevCard()" disabled>← Précédent</button>
+    <button class="flip-btn" onclick="flip()">Retourner</button>
+    <button class="ctrl-btn" id="next-btn" onclick="nextCard()">Suivant →</button>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="shuffle-btn" onclick="shuffleCards()">🔀 Mélanger</button>
+    <button class="shuffle-btn" onclick="restart()">↩ Recommencer</button>
+  </div>
+
+  <div class="complete" id="complete">
+    <div class="complete-score">11/11</div>
+    <div class="complete-label">Toutes les cartes vues ! 🎉</div>
+    <button class="restart-btn" onclick="restart()">Recommencer</button>
+  </div>
+</div>
+
+<script>
+const allCards = [
+  // ─── TYPES DE DÉCHETS ────────────────────────────────────────────────────
+  {
+    group: 'type', cat: 'cat-biodeg', label: 'Type de déchet', tagClass: 'tag-biodeg',
+    emoji: '🍎', q: "Les déchets biodégradables",
+    a: `<strong>Définition :</strong> Déchets organiques qui se décomposent naturellement grâce à des micro-organismes.<div class="examples"><span>🥕 Épluchures de légumes et fruits</span><span>☕ Marc de café, sachets de thé</span><span>🍽️ Restes alimentaires</span><span>🌿 Tontes de gazon, feuilles mortes</span><span>🥚 Coquilles d'œufs</span></div><div class="where">🟢 Bac biodéchets ou composteur</div>`
+  },
+  {
+    group: 'type', cat: 'cat-recyclable', label: 'Type de déchet', tagClass: 'tag-recyclable',
+    emoji: '♻️', q: "Les déchets recyclables",
+    a: `<strong>Définition :</strong> Déchets pouvant être transformés en nouvelles matières premières après traitement.<div class="examples"><span>🍾 Bouteilles en verre</span><span>📰 Journaux, magazines, papiers</span><span>📦 Cartons, boîtes d'emballage</span><span>🥫 Canettes et boîtes métal</span><span>🧴 Bouteilles plastique (PET, PEHD)</span></div><div class="where">🔵 Bac jaune / points de collecte</div>`
+  },
+  {
+    group: 'type', cat: 'cat-inerte', label: 'Type de déchet', tagClass: 'tag-inerte',
+    emoji: '🧱', q: "Les déchets inertes",
+    a: `<strong>Définition :</strong> Déchets ne subissant plus aucune transformation physique, chimique ou biologique. Ils ne se dégradent pas.<div class="examples"><span>🏗️ Gravats de démolition</span><span>🪟 Tuiles, briques cassées</span><span>🛣️ Béton, asphalte</span><span>🔩 Mâchefers (résidus d'incinération)</span></div><div class="where">⚫ Déchetterie · Valorisés pour les routes</div>`
+  },
+  {
+    group: 'type', cat: 'cat-deee', label: 'Type de déchet', tagClass: 'tag-deee',
+    emoji: '💻', q: "Les DEEE – Déchets d'Équipements Électriques et Électroniques",
+    a: `<strong>Définition :</strong> Appareils possédant une prise, une pile ou un accumulateur. Riches en métaux toxiques ET en matériaux valorisables.<div class="examples"><span>📱 Téléphones, tablettes</span><span>💻 Ordinateurs, écrans</span><span>🧺 Lave-linge, réfrigérateur</span><span>💡 Ampoules basse consommation</span><span>🔋 Piles et accumulateurs</span></div><div class="where">🟠 Déchetterie ou distributeur (1 pour 1)</div>`
+  },
+  {
+    group: 'type', cat: 'cat-dangereux', label: 'Type de déchet', tagClass: 'tag-dangereux',
+    emoji: '☠️', q: "Les déchets dangereux (hors DEEE)",
+    a: `<strong>Définition :</strong> Déchets présentant des propriétés dangereuses : toxique, inflammable, corrosif, cancérogène, écotoxique...<div class="examples"><span>🎨 Peintures et vernis</span><span>🌿 Pesticides, herbicides</span><span>🛢️ Huiles de vidange usagées</span><span>🏠 Produits contenant de l'amiante</span><span>🧪 Produits chimiques ménagers</span></div><div class="where">🔴 Déchetterie OBLIGATOIRE</div>`
+  },
+  {
+    group: 'type', cat: 'cat-medicaments', label: 'Type de déchet', tagClass: 'tag-medicaments',
+    emoji: '💊', q: "Les médicaments et déchets d'activité de soins",
+    a: `<strong>Définition :</strong> Déchets liés aux soins médicaux. Risque infectieux et de pollution si mal éliminés.<div class="examples"><span>💊 Médicaments périmés ou non utilisés</span><span>💉 Seringues usagées</span><span>🩹 Pansements souillés</span><span>📷 Radiographies</span><span>📦 Emballages de médicaments</span></div><div class="where">🟣 Pharmacie / boîtes DASRI</div>`
+  },
+
+  // ─── FILIÈRES DE TRAITEMENT ───────────────────────────────────────────────
+  {
+    group: 'filiere', cat: 'cat-incineration', label: 'Filière de traitement', tagClass: 'tag-filiere',
+    emoji: '🔥', q: "L'incinération avec valorisation énergétique",
+    a: `<strong>Définition :</strong> Traitement basé sur la combustion des déchets. La chaleur dégagée est récupérée pour produire de l'énergie.<div class="examples"><span>⚡ Production d'électricité</span><span>🏠 Chauffage urbain</span><span>✅ Réduit la quantité enfouis</span><span>❌ Émissions de CO2</span><span>❌ Résidus dangereux à enfouir</span></div><strong>Pour :</strong> Ordures ménagères · Déchets de soins à risques`
+  },
+  {
+    group: 'filiere', cat: 'cat-enfouissement', label: 'Filière de traitement', tagClass: 'tag-filiere',
+    emoji: '⛏️', q: "L'enfouissement (stockage)",
+    a: `<strong>Définition :</strong> Les déchets sont enterrés sans traitement préalable dans des installations de stockage contrôlées.<div class="examples"><span>✅ Nécessaire pour les déchets ultimes</span><span>❌ Aucune valorisation</span><span>❌ Production de méthane (CH4)</span><span>❌ Risque de pollution du sol et des nappes</span></div><strong>Pour :</strong> Déchets ultimes (ne pouvant plus être valorisés)`
+  },
+  {
+    group: 'filiere', cat: 'cat-compostage', label: 'Filière de traitement', tagClass: 'tag-filiere',
+    emoji: '🌱', q: "Le compostage",
+    a: `<strong>Définition :</strong> Traitement aérobie (en présence d'oxygène) des matières biodégradables par des micro-organismes et petits animaux → production de <strong>compost</strong>, un engrais organique naturel.<div class="examples"><span>✅ Engrais naturel pour le jardin</span><span>✅ Réduit les déchets enfouis</span><span>❌ Nécessite de la place extérieure</span><span>❌ Savoir-faire requis</span></div><strong>Pour :</strong> Déchets biodégradables uniquement`
+  },
+  {
+    group: 'filiere', cat: 'cat-methanisation', label: 'Filière de traitement', tagClass: 'tag-filiere',
+    emoji: '⚡', q: "La méthanisation",
+    a: `<strong>Définition :</strong> Procédé de fermentation anaérobie (sans oxygène) des déchets organiques produisant du <strong>biogaz</strong> (méthane) valorisable en énergie et un résidu solide compostable.<div class="examples"><span>✅ Énergie renouvelable (chaleur, électricité, carburant)</span><span>✅ Réduit l'enfouissement</span><span>❌ Procédé encore rare en France</span><span>❌ Combustion libère du CO2</span></div><strong>Pour :</strong> Matières biodégradables organiques`
+  },
+  {
+    group: 'filiere', cat: 'cat-recyclage', label: 'Filière de traitement', tagClass: 'tag-filiere',
+    emoji: '♻️', q: "Le recyclage en matière première",
+    a: `<strong>Définition :</strong> Transformation des déchets en nouvelles matières premières réutilisables dans la fabrication de nouveaux produits.<div class="examples"><span>✅ Préserve les ressources naturelles</span><span>✅ Réduit les émissions de CO2</span><span>✅ Économie d'énergie significative</span><span>❌ Tous les plastiques non encore recyclables</span><span>❌ Nécessite un tri rigoureux</span></div><strong>Pour :</strong> Emballages plastique, verre, papier, carton, métaux`
+  },
+];
+
+let cards = [...allCards];
+let current = 0;
+let flipped = false;
+let seenSet = new Set();
+
+function getCatClass(card) { return card.cat; }
+
+function renderCard() {
+  const c = cards[current];
+  document.getElementById('front-tag').textContent = c.label;
+  document.getElementById('front-tag').className = `cat-tag ${c.tagClass}`;
+  document.getElementById('back-tag').textContent = c.label;
+  document.getElementById('back-tag').className = `cat-tag ${c.tagClass}`;
+  document.getElementById('card-num').textContent = `Carte ${current + 1} sur ${cards.length}`;
+  document.getElementById('card-emoji').textContent = c.emoji;
+  document.getElementById('card-question').textContent = c.q;
+  document.getElementById('card-answer').innerHTML = c.a;
+  const inner = document.getElementById('card-inner');
+  inner.className = 'card-inner ' + getCatClass(c);
+  inner.classList.remove('flipped');
+  flipped = false;
+  seenSet.add(current);
+  updateProgress();
+  updateDots();
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = current === cards.length - 1;
+  if (seenSet.size === cards.length) setTimeout(() => document.getElementById('complete').classList.add('show'), 400);
+}
+
+function updateProgress() {
+  const pct = Math.round((current + 1) / cards.length * 100);
+  document.getElementById('progress-label').textContent = `Carte ${current + 1} / ${cards.length}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function updateDots() {
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = cards.map((_, i) => `<div class="dot ${i === current ? 'active' : seenSet.has(i) ? 'seen' : ''}" onclick="goTo(${i})"></div>`).join('');
+}
+
+function flip() {
+  flipped = !flipped;
+  document.getElementById('card-inner').classList.toggle('flipped', flipped);
+}
+
+function nextCard() { if (current < cards.length - 1) { current++; renderCard(); } }
+function prevCard() { if (current > 0) { current--; renderCard(); } }
+function goTo(i) { current = i; renderCard(); }
+
+function shuffleCards() {
+  cards = [...cards].sort(() => Math.random() - 0.5);
+  current = 0; seenSet.clear();
+  renderCard();
+}
+
+function filterCat(group, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  cards = group === 'all' ? [...allCards] : allCards.filter(c => c.group === group);
+  current = 0; seenSet.clear();
+  document.getElementById('complete').classList.remove('show');
+  renderCard();
+}
+
+function restart() {
+  current = 0; seenSet.clear();
+  document.getElementById('complete').classList.remove('show');
+  renderCard();
+}
+
+renderCard();
+</script>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Les Autocuiseurs | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --navy3: #1a3a5c;
+    --blue: #1e5f8e;
+    --blue-light: #2d8bba;
+    --gold: #c9a84c;
+    --gold-light: #f0c96b;
+    --white: #f0f4f8;
+    --text: #ccd6f6;
+    --text-dim: #8892b0;
+    --green: #27ae60;
+    --green-light: #2ecc71;
+    --red: #e74c3c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .page { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--navy2) 0%, var(--navy3) 100%);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 14px;
+    padding: 36px 30px;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.06);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(45,139,186,0.07);
+  }
+  .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--white);
+    font-weight: normal;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .header p {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+  }
+  .icon-main { font-size: 3rem; margin-bottom: 12px; display: block; }
+
+  /* Key stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 10px;
+    padding: 20px 14px;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Section title */
+  .section-title {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201,168,76,0.25);
+  }
+
+  /* Principe physique */
+  .principe {
+    background: var(--navy2);
+    border: 1px solid rgba(45,139,186,0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .pression-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .pression-card {
+    border-radius: 10px;
+    padding: 18px 14px;
+    text-align: center;
+    position: relative;
+  }
+  .pression-card.low { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); }
+  .pression-card.normal { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); }
+  .pression-card.high { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.3); }
+  .pression-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .pression-temp {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .pression-card.low .pression-temp { color: #e74c3c; }
+  .pression-card.normal .pression-temp { color: var(--blue-light); }
+  .pression-card.high .pression-temp { color: var(--green-light); }
+  .pression-name {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .pression-desc {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .principe-note {
+    margin-top: 16px;
+    background: rgba(201,168,76,0.08);
+    border-left: 3px solid var(--gold);
+    padding: 10px 14px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* Soupape steps */
+  .soupape {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .steps-flow {
+    display: flex;
+    gap: 0;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .step-item {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 14px 8px;
+    position: relative;
+  }
+  .step-item:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1.2rem;
+  }
+  .step-num {
+    width: 34px; height: 34px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    margin: 0 auto 10px;
+  }
+  .step-title {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.78rem;
+    color: var(--white);
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  .step-desc {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .soupape-warning {
+    margin-top: 14px;
+    background: rgba(231,76,60,0.1);
+    border: 1px solid rgba(231,76,60,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    color: #f5b8b3;
+    text-align: center;
+  }
+
+  /* Utilisation */
+  .utilisation {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .util-card {
+    background: var(--navy2);
+    border: 1px solid rgba(45,139,186,0.25);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .util-card h3 {
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .mode-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .mode-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .mode-name {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.82rem;
+    color: var(--gold-light);
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  .mode-desc {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .benefit-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .check { color: var(--green-light); font-weight: bold; flex-shrink: 0; font-size: 1rem; }
+  .benefit-text {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .benefit-text strong { color: var(--white); }
+
+  /* Choix */
+  .choix {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .choix-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .choix-block {
+    background: var(--navy3);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .choix-block h4 {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .contenance-items { display: flex; flex-direction: column; gap: 8px; }
+  .cont-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cont-vol {
+    font-weight: bold;
+    color: var(--gold-light);
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    min-width: 32px;
+  }
+  .cont-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(201,168,76,0.15);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .cont-fill { height: 100%; background: var(--gold); border-radius: 3px; }
+  .cont-label {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    min-width: 80px;
+    text-align: right;
+  }
+  .matiere-compare { display: flex; flex-direction: column; gap: 8px; }
+  .matiere-item {
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .matiere-name {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.8rem;
+    color: var(--white);
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .mat-pro { color: var(--green-light); font-size: 0.72rem; font-family: 'Trebuchet MS', sans-serif; }
+  .mat-con { color: #e74c3c; font-size: 0.72rem; font-family: 'Trebuchet MS', sans-serif; }
+  .badge-best {
+    display: inline-block;
+    background: rgba(39,174,96,0.2);
+    border: 1px solid var(--green-light);
+    color: var(--green-light);
+    font-size: 0.65rem;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-family: 'Trebuchet MS', sans-serif;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .options-list {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+  .options-list li { list-style: none; padding-left: 16px; position: relative; }
+  .options-list li::before { content: '•'; position: absolute; left: 0; color: var(--gold); }
+
+  /* Fermetures */
+  .fermetures {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .fermetures-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .ferm-card {
+    background: var(--navy3);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .ferm-num {
+    width: 28px; height: 28px;
+    background: var(--navy2);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+    color: var(--gold);
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .ferm-name {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    color: var(--white);
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .ferm-desc {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.77rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    margin-top: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .pression-grid { grid-template-columns: 1fr; }
+    .steps-flow { flex-direction: column; }
+    .step-item:not(:last-child)::after { content: '↓'; right: auto; left: 50%; top: auto; bottom: -10px; transform: translateX(-50%); }
+    .utilisation { grid-template-columns: 1fr; }
+    .choix-grid { grid-template-columns: 1fr; }
+    .fermetures-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">BTS ESF · Cours 11 · E2</div>
+    <span class="icon-main">🍲</span>
+    <h1>Les Autocuiseurs</h1>
+    <p>Fonctionnement · Utilisation · Choix · Types de fermeture</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num">1/3</div>
+      <div class="stat-label">de temps gagné vs casserole</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">70%</div>
+      <div class="stat-label">d'énergie économisée</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">90–95%</div>
+      <div class="stat-label">des nutriments préservés</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2 atm</div>
+      <div class="stat-label">pression intérieure</div>
+    </div>
+  </div>
+
+  <!-- Principe physique -->
+  <div class="principe">
+    <div class="section-title">Principe physique · La pression & la température</div>
+    <p style="font-family:'Trebuchet MS',sans-serif;font-size:0.88rem;color:var(--text-dim);">Plus la pression est élevée, plus l'eau bout à haute température — et donc la cuisson est plus rapide.</p>
+    <div class="pression-grid">
+      <div class="pression-card low">
+        <div class="pression-icon">🏔️</div>
+        <div class="pression-temp">90°C</div>
+        <div class="pression-name">En altitude</div>
+        <div class="pression-desc">Pression basse → ébullition précoce</div>
+      </div>
+      <div class="pression-card normal">
+        <div class="pression-icon">🌊</div>
+        <div class="pression-temp">100°C</div>
+        <div class="pression-name">Au niveau de la mer</div>
+        <div class="pression-desc">1 atm · référence standard</div>
+      </div>
+      <div class="pression-card high">
+        <div class="pression-icon">⚡</div>
+        <div class="pression-temp">120°C+</div>
+        <div class="pression-name">Autocuiseur</div>
+        <div class="pression-desc">2 atm · cuisson ultra-rapide</div>
+      </div>
+    </div>
+    <div class="principe-note">💡 Inventé par Denis Papin en 1679, popularisé après 1945.</div>
+  </div>
+
+  <!-- Soupape -->
+  <div class="soupape">
+    <div class="section-title">La soupape de sécurité · Fonctionnement</div>
+    <p style="font-family:'Trebuchet MS',sans-serif;font-size:0.85rem;color:var(--text-dim);margin-bottom:4px;">La soupape régule en permanence la pression pour éviter tout risque d'explosion.</p>
+    <div class="steps-flow">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-title">Montée en pression</div>
+        <div class="step-desc">La vapeur s'accumule jusqu'à 2 atm</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-title">Cuisson sous pression</div>
+        <div class="step-desc">L'eau bout à 120°C+</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-title">Sifflement</div>
+        <div class="step-desc">La valve évacue l'excès de vapeur</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-title">Équilibre</div>
+        <div class="step-desc">Pression stable, cuisson sûre</div>
+      </div>
+    </div>
+    <div class="soupape-warning">⚠️ Le temps de cuisson se chronomètre à partir du sifflement de la soupape !</div>
+  </div>
+
+  <!-- Utilisation & bénéfices -->
+  <div class="utilisation">
+    <div class="util-card">
+      <h3>🍳 Modes de cuisson</h3>
+      <div class="mode-item">
+        <div class="mode-icon">💨</div>
+        <div>
+          <div class="mode-name">Vapeur</div>
+          <div class="mode-desc">Légumes, poissons — préserve nutriments et couleur</div>
+        </div>
+      </div>
+      <div class="mode-item">
+        <div class="mode-icon">🍲</div>
+        <div>
+          <div class="mode-name">À l'étouffée</div>
+          <div class="mode-desc">Viandes, ragoûts, blanquettes — saveurs concentrées</div>
+        </div>
+      </div>
+      <div class="mode-item">
+        <div class="mode-icon">🥣</div>
+        <div>
+          <div class="mode-name">Mijoté</div>
+          <div class="mode-desc">Légumineuses, soupes — résultats fondants rapides</div>
+        </div>
+      </div>
+    </div>
+    <div class="util-card">
+      <h3>💚 Bénéfices nutritionnels</h3>
+      <div class="benefit-item">
+        <div class="check">✓</div>
+        <div class="benefit-text"><strong>Goût préservé</strong> — arômes emprisonnés dans la cuve fermée</div>
+      </div>
+      <div class="benefit-item">
+        <div class="check">✓</div>
+        <div class="benefit-text"><strong>Vitamines conservées</strong> — 90 à 95% des nutriments préservés</div>
+      </div>
+      <div class="benefit-item">
+        <div class="check">✓</div>
+        <div class="benefit-text"><strong>Couleur maintenue</strong> — les légumes gardent leur aspect naturel</div>
+      </div>
+      <div class="benefit-item">
+        <div class="check">✓</div>
+        <div class="benefit-text"><strong>Sans matières grasses</strong> — la vapeur suffit, cuisine saine</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Critères de choix -->
+  <div class="choix">
+    <div class="section-title">Critères de choix</div>
+    <div class="choix-grid">
+      <div class="choix-block">
+        <h4>Contenance</h4>
+        <div class="contenance-items">
+          <div class="cont-row">
+            <span class="cont-vol">4 L</span>
+            <div class="cont-bar"><div class="cont-fill" style="width:40%"></div></div>
+            <span class="cont-label">1-2 pers.</span>
+          </div>
+          <div class="cont-row">
+            <span class="cont-vol">6 L</span>
+            <div class="cont-bar"><div class="cont-fill" style="width:60%"></div></div>
+            <span class="cont-label">3-4 pers.</span>
+          </div>
+          <div class="cont-row">
+            <span class="cont-vol">8 L</span>
+            <div class="cont-bar"><div class="cont-fill" style="width:80%"></div></div>
+            <span class="cont-label">5-6 pers.</span>
+          </div>
+          <div class="cont-row">
+            <span class="cont-vol">10 L</span>
+            <div class="cont-bar"><div class="cont-fill" style="width:100%"></div></div>
+            <span class="cont-label">Famille+/Pro</span>
+          </div>
+        </div>
+      </div>
+      <div class="choix-block">
+        <h4>Matière</h4>
+        <div class="matiere-compare">
+          <div class="matiere-item">
+            <div class="matiere-name">Aluminium</div>
+            <div class="mat-pro">✓ Léger et facile à manier</div>
+            <div class="mat-con">✗ Moins résistant, garde moins la chaleur</div>
+          </div>
+          <div class="matiere-item">
+            <div class="matiere-name">Acier inoxydable <span class="badge-best">Recommandé</span></div>
+            <div class="mat-pro">✓ Excellente chaleur, durable</div>
+            <div class="mat-con">✗ Plus lourd</div>
+          </div>
+        </div>
+      </div>
+      <div class="choix-block">
+        <h4>Options & accessoires</h4>
+        <ul class="options-list">
+          <li>Minuteur intégré</li>
+          <li>Écran LCD</li>
+          <li>Capteur de température interne</li>
+          <li>Robots multifonctions (Cookéo, Thermomix, Monsieur Cuisine Plus) — même principe</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fermetures -->
+  <div class="fermetures">
+    <div class="section-title">Les 4 types de fermetures</div>
+    <div class="fermetures-grid">
+      <div class="ferm-card">
+        <div class="ferm-num">1</div>
+        <div>
+          <div class="ferm-name">Fermeture à étrier</div>
+          <div class="ferm-desc">Bouton de serrage + étrier sur le couvercle. Tourner le bouton pour abaisser l'étrier et verrouiller.</div>
+        </div>
+      </div>
+      <div class="ferm-card">
+        <div class="ferm-num">2</div>
+        <div>
+          <div class="ferm-name">Couvercle rentrant</div>
+          <div class="ferm-desc">Système coulissant : faire glisser le couvercle dans la bonne position pour le verrouiller.</div>
+        </div>
+      </div>
+      <div class="ferm-card">
+        <div class="ferm-num">3</div>
+        <div>
+          <div class="ferm-name">Bouton poussoir</div>
+          <div class="ferm-desc">Mâchoires sur les bords de la cuve. Fermeture par pression sur un bouton ou levier.</div>
+        </div>
+      </div>
+      <div class="ferm-card">
+        <div class="ferm-num">4</div>
+        <div>
+          <div class="ferm-name">Fermeture à baïonnette</div>
+          <div class="ferm-desc">Flèches de repérage sur couvercle et cuve. Tourner en poussant jusqu'à l'alignement des flèches. (Modèles récents)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Cours 11 · Les Autocuiseurs · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

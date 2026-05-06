@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scénario – L'adoucisseur d'eau BTS ESF</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --navy: #0D1B2A; --blue: #1B6CA8; --accent: #E63946; --gold: #F4A261; --green: #2A9D8F; --gray: #8A9BB0; --white: #FFFFFF; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; padding: 0 20px 80px; }
+  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 40% at 80% 5%, #1B6CA822, transparent), radial-gradient(ellipse 40% 50% at 5% 90%, #F4A26115, transparent); pointer-events: none; z-index: 0; }
+  .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+
+  .header { padding: 44px 0 32px; text-align: center; }
+  .header-tag { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+  .header h1 span { color: var(--gold); }
+  .header p { font-size: 14px; color: var(--gray); font-weight: 300; }
+
+  /* SELECTOR */
+  .sc-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 36px; }
+  .sc-tab { padding: 16px 14px; border-radius: 14px; border: 1px solid #ffffff20; background: #ffffff08; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .sc-tab:hover { background: #ffffff15; }
+  .sc-tab.active { border-color: var(--gold); background: #F4A26115; }
+  .sc-tab-num { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; color: var(--gray); }
+  .sc-tab.active .sc-tab-num { color: var(--gold); }
+  .sc-tab-title { font-size: 13px; font-weight: 500; line-height: 1.35; color: var(--gray); }
+  .sc-tab.active .sc-tab-title { color: var(--white); }
+
+  /* PANEL */
+  .sc-panel { display: none; }
+  .sc-panel.active { display: block; }
+
+  /* HERO */
+  .sc-hero { border-radius: 16px; padding: 22px; margin-bottom: 24px; border: 1px solid; }
+  .sc-hero.martin { background: #1B6CA812; border-color: #1B6CA855; }
+  .sc-hero.dupont { background: #F4A26112; border-color: #F4A26155; }
+  .hero-tag { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .martin .hero-tag { color: var(--blue); }
+  .dupont .hero-tag { color: var(--gold); }
+  .hero-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .hero-situation { font-size: 14px; color: rgba(255,255,255,0.82); line-height: 1.65; font-weight: 300; }
+  .hero-situation strong { color: var(--white); font-weight: 500; }
+
+  /* PROGRESS */
+  .sc-progress-wrap { margin-bottom: 20px; }
+  .sc-progress-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+  .sc-bar { height: 5px; background: #ffffff15; border-radius: 100px; overflow: hidden; }
+  .sc-fill { height: 100%; border-radius: 100px; transition: width 0.4s; }
+  .martin-fill { background: var(--blue); }
+  .dupont-fill { background: var(--gold); }
+
+  /* STEPS */
+  .sc-step { margin-bottom: 20px; }
+  .sc-question { font-size: 16px; font-weight: 500; line-height: 1.5; margin-bottom: 14px; }
+  .sc-choices { display: flex; flex-direction: column; gap: 9px; }
+  .sc-choice { padding: 13px 16px; border-radius: 10px; border: 1.5px solid #ffffff20; background: #ffffff06; color: var(--white); font-size: 14px; font-family: 'DM Sans', sans-serif; text-align: left; cursor: pointer; line-height: 1.45; transition: all 0.15s; width: 100%; }
+  .sc-choice:hover:not(:disabled) { border-color: #ffffff40; background: #ffffff10; }
+  .sc-choice:disabled { cursor: default; }
+  .sc-choice.correct { border-color: var(--green); background: #2A9D8F20; color: #7ae8df; }
+  .sc-choice.wrong { border-color: var(--accent); background: #E6394620; color: #ff8a94; }
+  .sc-choice.show-correct { border-color: var(--green); background: #2A9D8F15; color: #7ae8df; }
+
+  .sc-feedback { margin-top: 12px; padding: 12px 16px; border-radius: 10px; font-size: 13px; line-height: 1.55; display: none; }
+  .sc-feedback.ok { background: #2A9D8F20; border: 1px solid var(--green); color: #7ae8df; }
+  .sc-feedback.ko { background: #E6394618; border: 1px solid var(--accent); color: #ff8a94; }
+
+  .sc-next-btn { display: none; margin-top: 14px; padding: 11px 24px; border-radius: 100px; border: none; color: white; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: opacity 0.2s; }
+  .sc-next-btn:hover { opacity: 0.85; }
+  .martin-btn { background: var(--blue); }
+  .dupont-btn { background: var(--gold); color: var(--navy); }
+
+  /* SCORE */
+  .sc-score { display: none; text-align: center; padding: 40px 28px; background: #ffffff08; border: 1px solid #ffffff15; border-radius: 16px; }
+  .sc-score-num { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; line-height: 1; margin: 10px 0 8px; }
+  .sc-score-label { font-size: 18px; font-weight: 500; margin-bottom: 10px; }
+  .sc-score-bilan { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.65; margin-bottom: 24px; background: #ffffff08; border-radius: 10px; padding: 14px 16px; text-align: left; }
+  .sc-score-bilan strong { color: var(--white); }
+  .restart-btn { padding: 12px 28px; border-radius: 100px; border: none; color: white; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+
+  @media (max-width: 480px) {
+    .sc-selector { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-tag">BTS ESF · Cas pratiques</div>
+    <h1>Scénarios <span>interactifs</span></h1>
+    <p>L'adoucisseur d'eau · Conseil à l'usager</p>
+  </div>
+
+  <div class="sc-selector">
+    <div class="sc-tab active" onclick="showScenario(0)">
+      <div class="sc-tab-num">Scénario 1</div>
+      <div class="sc-tab-title">Madame Martin<br>Bébé 6 mois + régime sans sel</div>
+    </div>
+    <div class="sc-tab" onclick="showScenario(1)">
+      <div class="sc-tab-num">Scénario 2</div>
+      <div class="sc-tab-title">Monsieur Dupont<br>Retraité cardiaque seul</div>
+    </div>
+  </div>
+
+  <!-- SCÉNARIO 1 : Mme Martin -->
+  <div class="sc-panel active" id="panel-0">
+    <div class="sc-hero martin">
+      <div class="hero-tag">Scénario 1 · Conseil à l'usager</div>
+      <div class="hero-name">Madame Martin, 34 ans</div>
+      <div class="hero-situation">
+        Madame Martin vient d'emménager dans une maison en zone très calcaire. Elle a un <strong>bébé de 6 mois</strong> et suit elle-même un <strong>régime pauvre en sel</strong> prescrit par son médecin. Son conjoint lui a conseillé d'installer un adoucisseur d'eau. Elle vous consulte en tant que TESF pour avoir votre avis.
+      </div>
+    </div>
+
+    <div class="sc-progress-wrap">
+      <div class="sc-progress-top"><span id="prog-label-0">Étape 1 / 5</span><span id="prog-pct-0">20%</span></div>
+      <div class="sc-bar"><div class="sc-fill martin-fill" id="fill-0" style="width:20%"></div></div>
+    </div>
+
+    <div id="steps-0">
+      <div class="sc-step" id="s0-0">
+        <div class="sc-question">Mme Martin vous demande si l'eau adoucie est meilleure pour la santé. Que lui répondez-vous ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,0,0)">Oui, l'eau adoucie est plus saine et recommandée pour toute la famille</button>
+          <button class="sc-choice" onclick="ans(0,0,1)">Non, l'adoucisseur protège le logement, pas la santé. Il remplace le calcium par du sodium et n'élimine ni bactéries ni polluants</button>
+          <button class="sc-choice" onclick="ans(0,0,2)">L'eau adoucie est neutre, elle n'a aucun effet sur la santé dans un sens ou dans l'autre</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-0"></div>
+        <button class="sc-next-btn martin-btn" id="next-0-0" onclick="showSt(0,1)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-1" style="display:none">
+        <div class="sc-question">Mme Martin veut utiliser l'eau adoucie pour préparer les biberons de son bébé car "elle est plus douce". Quelle est votre réaction ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,1,0)">C'est une bonne idée, l'eau moins calcaire est meilleure pour le biberon</button>
+          <button class="sc-choice" onclick="ans(0,1,1)">C'est formellement déconseillé : l'eau adoucie est riche en sodium, ce qui est dangereux pour le nourrisson dont les reins sont immatures</button>
+          <button class="sc-choice" onclick="ans(0,1,2)">Ce n'est pas idéal mais acceptable si l'eau est bouillie avant</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-1"></div>
+        <button class="sc-next-btn martin-btn" id="next-0-1" onclick="showSt(0,2)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-2" style="display:none">
+        <div class="sc-question">Mme Martin suit un régime sans sel. Peut-elle boire l'eau adoucie sans risque ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,2,0)">Oui, la quantité de sodium ajoutée est négligeable</button>
+          <button class="sc-choice" onclick="ans(0,2,1)">Non, l'eau adoucie apporte du sodium supplémentaire, incompatible avec un régime sans sel prescrit par un médecin</button>
+          <button class="sc-choice" onclick="ans(0,2,2)">Oui, mais uniquement en petite quantité</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-2"></div>
+        <button class="sc-next-btn martin-btn" id="next-0-2" onclick="showSt(0,3)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-3" style="display:none">
+        <div class="sc-question">Mme Martin décide tout de même d'installer l'adoucisseur pour protéger ses appareils. Quelle installation lui recommandez-vous ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,3,0)">Installer l'adoucisseur sur tout le réseau, y compris la cuisine</button>
+          <button class="sc-choice" onclick="ans(0,3,1)">Installer l'adoucisseur avec un by-pass et conserver un robinet d'eau non adoucie à la cuisine pour la boisson, la cuisine et les biberons</button>
+          <button class="sc-choice" onclick="ans(0,3,2)">Installer l'adoucisseur uniquement sur le lave-linge et le lave-vaisselle</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-3"></div>
+        <button class="sc-next-btn martin-btn" id="next-0-3" onclick="showSt(0,4)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s0-4" style="display:none">
+        <div class="sc-question">Quelques mois plus tard, Mme Martin vous appelle : l'adoucisseur ne semble plus fonctionner. Quelle est la première cause à vérifier ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(0,4,0)">La résine est peut-être cassée et doit être remplacée</button>
+          <button class="sc-choice" onclick="ans(0,4,1)">Elle a probablement oublié de remettre du sel — sans sel, pas de régénération, la résine est saturée et l'adoucisseur ne fonctionne plus</button>
+          <button class="sc-choice" onclick="ans(0,4,2)">Le calcaire de la région est trop fort pour l'adoucisseur</button>
+        </div>
+        <div class="sc-feedback" id="fb-0-4"></div>
+        <button class="sc-next-btn martin-btn" id="next-0-4" onclick="showScore(0)">Voir le bilan →</button>
+      </div>
+    </div>
+
+    <div class="sc-score" id="score-0">
+      <div class="hero-tag" style="color:var(--blue)">Bilan · Scénario 1</div>
+      <div class="sc-score-num" id="num-0" style="color:var(--blue)"></div>
+      <div class="sc-score-label" id="label-0"></div>
+      <div class="sc-score-bilan">
+        <strong>Points clés à retenir :</strong> L'adoucisseur protège le logement, pas la santé · Eau adoucie formellement déconseillée pour les biberons (reins immatures du nourrisson) · Incompatible avec un régime sans sel · By-pass indispensable pour conserver un point d'eau non adoucie · Sans sel = pas de régénération = adoucisseur inefficace.
+      </div>
+      <button class="restart-btn" style="background:var(--blue)" onclick="restart(0)">Recommencer</button>
+    </div>
+  </div>
+
+  <!-- SCÉNARIO 2 : M. Dupont -->
+  <div class="sc-panel" id="panel-1">
+    <div class="sc-hero dupont">
+      <div class="hero-tag">Scénario 2 · Conseil à l'usager</div>
+      <div class="hero-name">Monsieur Dupont, 72 ans</div>
+      <div class="hero-situation">
+        Monsieur Dupont est retraité, il vit seul dans une maison individuelle. Il est suivi pour une <strong>insuffisance cardiaque</strong> et prend des médicaments pour réduire sa rétention d'eau et de sel. Son fils lui a offert un adoucisseur d'eau pour son anniversaire car l'eau du robinet laisse beaucoup de calcaire. Il vous contacte avant de l'installer.
+      </div>
+    </div>
+
+    <div class="sc-progress-wrap">
+      <div class="sc-progress-top"><span id="prog-label-1">Étape 1 / 5</span><span id="prog-pct-1">20%</span></div>
+      <div class="sc-bar"><div class="sc-fill dupont-fill" id="fill-1" style="width:20%"></div></div>
+    </div>
+
+    <div id="steps-1">
+      <div class="sc-step" id="s1-0">
+        <div class="sc-question">M. Dupont veut utiliser l'eau adoucie pour boire et cuisiner. Quelle est votre position ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,0,0)">C'est possible, l'adoucisseur rend l'eau plus saine</button>
+          <button class="sc-choice" onclick="ans(1,0,1)">C'est déconseillé : avec son insuffisance cardiaque et son traitement, le sodium supplémentaire apporté par l'eau adoucie peut aggraver son état de santé</button>
+          <button class="sc-choice" onclick="ans(1,0,2)">Ce n'est pas idéal mais acceptable à petite dose</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-0"></div>
+        <button class="sc-next-btn dupont-btn" id="next-1-0" onclick="showSt(1,1)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-1" style="display:none">
+        <div class="sc-question">M. Dupont vous demande si l'adoucisseur peut améliorer la qualité sanitaire de son eau (éliminer les bactéries). Que lui dites-vous ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,1,0)">Oui, l'adoucisseur filtre toutes les impuretés y compris les bactéries</button>
+          <button class="sc-choice" onclick="ans(1,1,1)">Non, l'adoucisseur n'élimine ni les bactéries ni les polluants chimiques. Il agit uniquement sur la dureté de l'eau</button>
+          <button class="sc-choice" onclick="ans(1,1,2)">Oui partiellement, il élimine certaines bactéries grâce à la résine</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-1"></div>
+        <button class="sc-next-btn dupont-btn" id="next-1-1" onclick="showSt(1,2)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-2" style="display:none">
+        <div class="sc-question">M. Dupont souhaite tout de même installer l'adoucisseur pour protéger ses appareils et son chauffe-eau. Que lui recommandez-vous ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,2,0)">Installer l'adoucisseur sur tout le réseau de la maison</button>
+          <button class="sc-choice" onclick="ans(1,2,1)">Installer l'adoucisseur avec un by-pass obligatoire et conserver impérativement un robinet d'eau non adoucie pour sa consommation personnelle</button>
+          <button class="sc-choice" onclick="ans(1,2,2)">Ne pas installer l'adoucisseur du tout car c'est trop dangereux pour lui</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-2"></div>
+        <button class="sc-next-btn dupont-btn" id="next-1-2" onclick="showSt(1,3)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-3" style="display:none">
+        <div class="sc-question">M. Dupont veut savoir comment entretenir son adoucisseur. Quel est le point le plus important à lui communiquer ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,3,0)">Il faut changer la résine tous les ans</button>
+          <button class="sc-choice" onclick="ans(1,3,1)">Il doit vérifier régulièrement le niveau de sel dans le bac et en remettre quand nécessaire pour que la régénération fonctionne</button>
+          <button class="sc-choice" onclick="ans(1,3,2)">Il faut faire réviser l'adoucisseur par un professionnel chaque mois</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-3"></div>
+        <button class="sc-next-btn dupont-btn" id="next-1-3" onclick="showSt(1,4)">Étape suivante →</button>
+      </div>
+
+      <div class="sc-step" id="s1-4" style="display:none">
+        <div class="sc-question">En tant que TESF, quelle est votre recommandation finale à M. Dupont concernant l'usage de l'adoucisseur ?</div>
+        <div class="sc-choices">
+          <button class="sc-choice" onclick="ans(1,4,0)">Il peut utiliser l'eau adoucie pour tout, c'est sans danger pour un adulte</button>
+          <button class="sc-choice" onclick="ans(1,4,1)">L'adoucisseur peut être installé pour protéger les appareils, mais M. Dupont ne doit jamais consommer l'eau adoucie. Il doit en informer son médecin et conserver un point d'eau non adoucie pour tous ses usages alimentaires</button>
+          <button class="sc-choice" onclick="ans(1,4,2)">L'adoucisseur est inutile pour lui car il vit seul et n'a pas beaucoup d'appareils</button>
+        </div>
+        <div class="sc-feedback" id="fb-1-4"></div>
+        <button class="sc-next-btn dupont-btn" id="next-1-4" onclick="showScore(1)">Voir le bilan →</button>
+      </div>
+    </div>
+
+    <div class="sc-score" id="score-1">
+      <div class="hero-tag" style="color:var(--gold)">Bilan · Scénario 2</div>
+      <div class="sc-score-num" id="num-1" style="color:var(--gold)"></div>
+      <div class="sc-score-label" id="label-1"></div>
+      <div class="sc-score-bilan">
+        <strong>Points clés à retenir :</strong> L'adoucisseur est incompatible avec la consommation pour les personnes cardiaques ou sous traitement diurétique · Il n'élimine pas les bactéries ni les polluants · By-pass obligatoire pour conserver un point d'eau non adoucie · Informer le médecin traitant · Entretien régulier du sel indispensable.
+      </div>
+      <button class="restart-btn" style="background:var(--gold);color:var(--navy)" onclick="restart(1)">Recommencer</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const scenarios = [
+  {
+    steps: 5,
+    answers: [1, 1, 1, 1, 1],
+    feedbacks: [
+      ["Non. C'est l'idée reçue la plus répandue. L'adoucisseur protège le logement, pas la santé : il remplace le calcaire (calcium/magnésium) par du sodium et n'élimine aucune bactérie ni polluant.", "Exactement ! L'adoucisseur agit uniquement sur la dureté de l'eau. Il modifie sa composition chimique mais ne la rend pas plus saine. C'est le message essentiel à transmettre à l'usager.", "Faux. L'eau adoucie n'est pas neutre : elle contient plus de sodium que l'eau d'origine, ce qui peut être problématique pour certains publics."],
+      ["Non, c'est une idée reçue dangereuse. L'eau moins calcaire n'est pas meilleure pour le biberon — c'est le contraire : l'eau adoucie est plus riche en sodium, ce qui est nocif pour les reins immatures du nourrisson.", "Exactement ! C'est formellement déconseillé. Les reins d'un nourrisson de 6 mois ne peuvent pas éliminer correctement le sodium. L'eau adoucie pour les biberons peut provoquer une hypernatrémie.", "Non. L'ébullition ne supprime pas le sodium. L'eau adoucie reste inappropriée pour le biberon quelle que soit la préparation."],
+      ["Non. Même en petite quantité, l'eau adoucie apporte du sodium supplémentaire qui peut compromettre l'efficacité d'un régime sans sel prescrit médicalement.", "Exact ! Le régime sans sel est prescrit pour une raison médicale. L'eau adoucie contenant du sodium supplémentaire est incompatible avec ce type de régime.", "Non. Il n'y a pas de 'petite quantité acceptable' quand il s'agit d'un régime médical strict. L'eau adoucie doit être totalement évitée pour la consommation alimentaire."],
+      ["Non. Cela priverait Mme Martin et son bébé de tout accès à de l'eau non adoucie, ce qui est dangereux.", "Parfait ! C'est la solution adaptée. Le by-pass permet de dériver une partie du réseau sans passer par l'adoucisseur. Le robinet de cuisine reste en eau non adoucie pour la boisson, la cuisine et les biberons.", "Non. L'adoucisseur protège aussi le chauffe-eau et les canalisations, pas uniquement l'électroménager. Et cette solution ne résout pas le problème du point d'eau non adoucie."],
+      ["Non. La résine ne casse pas spontanément. La première cause à vérifier est toujours le niveau de sel.", "Exactement ! C'est la cause la plus fréquente de panne. Sans sel, la régénération ne peut pas avoir lieu, la résine reste saturée et l'adoucisseur perd totalement son efficacité.", "Non. L'adoucisseur est conçu pour fonctionner même dans les zones très calcaires, à condition d'être bien entretenu."]
+    ]
+  },
+  {
+    steps: 5,
+    answers: [1, 1, 1, 1, 1],
+    feedbacks: [
+      ["Non. L'adoucisseur ne rend pas l'eau plus saine, il ajoute du sodium. Pour quelqu'un atteint d'insuffisance cardiaque et sous traitement, ce sodium supplémentaire peut aggraver la rétention d'eau et compromettre le traitement.", "Exact ! L'insuffisance cardiaque nécessite souvent une restriction sodée stricte. L'eau adoucie plus riche en sodium est contre-indiquée pour la consommation alimentaire de M. Dupont.", "Non. Il n'y a pas de dose acceptable quand une pathologie cardiaque et un traitement médicamenteux sont en jeu."],
+      ["Non. C'est une confusion fréquente. L'adoucisseur n'est pas un filtre à eau. Il ne retient ni bactéries, ni virus, ni polluants chimiques.", "Exact ! L'adoucisseur agit uniquement par échange d'ions pour réduire la dureté. Pour améliorer la qualité sanitaire, il faudrait un autre dispositif (filtre, osmoseur...).", "Non. La résine échangeuse d'ions ne filtre pas les bactéries, elle échange uniquement des ions calcium/magnésium contre des ions sodium."],
+      ["Non. Cela priverait M. Dupont de tout accès à de l'eau non adoucie pour boire et cuisiner, ce qui est dangereux pour sa santé.", "Excellent ! Le by-pass est la solution qui permet de concilier la protection des appareils et la sécurité de M. Dupont. Il doit toujours avoir accès à de l'eau non adoucie pour sa consommation.", "Non. L'adoucisseur peut tout à fait être installé pour protéger ses appareils et son chauffe-eau, à condition de ne pas l'utiliser pour boire ou cuisiner."],
+      ["Non. La résine dure plusieurs années et ne nécessite pas de remplacement annuel systématique.", "Parfait ! Le niveau de sel est le point de vigilance essentiel. Sans sel, pas de régénération, la résine se sature et l'adoucisseur devient inefficace. Pour une personne âgée vivant seule, c'est important de le rappeler.", "Non. Un entretien mensuel par un professionnel n'est pas nécessaire ni préconisé. La surveillance du sel est suffisante au quotidien."],
+      ["Non. Pour un patient cardiaque sous traitement, la consommation d'eau adoucie n'est pas anodine. Il ne peut pas l'utiliser comme un adulte en bonne santé.", "Exact ! C'est la recommandation complète et adaptée au profil de M. Dupont : l'adoucisseur peut rendre service pour les appareils, mais M. Dupont doit être informé clairement et son médecin consulté.", "Non. Un retraité seul a tout autant besoin de protéger son chauffe-eau et ses canalisations du calcaire."]
+    ]
+  }
+];
+
+let state = [
+  { answered: [false,false,false,false,false], scores: [false,false,false,false,false] },
+  { answered: [false,false,false,false,false], scores: [false,false,false,false,false] },
+];
+
+function showScenario(i) {
+  document.querySelectorAll('.sc-panel').forEach((p,j) => p.classList.toggle('active', j===i));
+  document.querySelectorAll('.sc-tab').forEach((t,j) => t.classList.toggle('active', j===i));
+}
+
+function ans(sc, step, choice) {
+  if (state[sc].answered[step]) return;
+  state[sc].answered[step] = true;
+  const correct = scenarios[sc].answers[step];
+  const btns = document.querySelectorAll(`#s${sc}-${step} .sc-choice`);
+  btns.forEach((b,i) => { b.disabled = true; if (i === correct) b.classList.add('show-correct'); if (i === choice && choice !== correct) b.classList.add('wrong'); if (i === choice && choice === correct) b.classList.add('correct'); });
+  const isCorrect = choice === correct;
+  state[sc].scores[step] = isCorrect;
+  const fb = document.getElementById(`fb-${sc}-${step}`);
+  fb.style.display = 'block';
+  fb.className = `sc-feedback ${isCorrect ? 'ok' : 'ko'}`;
+  fb.textContent = (isCorrect ? '✓ ' : '✗ ') + scenarios[sc].feedbacks[step][choice];
+  document.getElementById(`next-${sc}-${step}`).style.display = 'inline-block';
+}
+
+function showSt(sc, step) {
+  document.getElementById(`s${sc}-${step}`).style.display = 'block';
+  const pct = Math.round((step+1) / scenarios[sc].steps * 100);
+  document.getElementById(`prog-label-${sc}`).textContent = `Étape ${step+1} / ${scenarios[sc].steps}`;
+  document.getElementById(`prog-pct-${sc}`).textContent = pct + '%';
+  document.getElementById(`fill-${sc}`).style.width = pct + '%';
+  document.getElementById(`s${sc}-${step}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showScore(sc) {
+  document.getElementById(`steps-${sc}`).style.display = 'none';
+  const total = state[sc].scores.filter(Boolean).length;
+  const max = scenarios[sc].steps;
+  document.getElementById(`score-${sc}`).style.display = 'block';
+  document.getElementById(`num-${sc}`).textContent = `${total}/${max}`;
+  document.getElementById(`label-${sc}`).textContent = total === max ? 'Parfait ! Vous maîtrisez ce scénario.' : total >= 3 ? 'Bien ! Quelques points à consolider.' : 'À retravailler — relisez le cours.';
+}
+
+function restart(sc) {
+  state[sc] = { answered: [false,false,false,false,false], scores: [false,false,false,false,false] };
+  document.getElementById(`steps-${sc}`).style.display = 'block';
+  document.getElementById(`score-${sc}`).style.display = 'none';
+  document.getElementById(`fill-${sc}`).style.width = '20%';
+  document.getElementById(`prog-label-${sc}`).textContent = 'Étape 1 / 5';
+  document.getElementById(`prog-pct-${sc}`).textContent = '20%';
+  for (let i = 0; i < 5; i++) {
+    const step = document.getElementById(`s${sc}-${i}`);
+    if (!step) continue;
+    step.style.display = i === 0 ? 'block' : 'none';
+    step.querySelectorAll('.sc-choice').forEach(b => { b.disabled = false; b.className = 'sc-choice'; });
+    const fb = document.getElementById(`fb-${sc}-${i}`);
+    if (fb) fb.style.display = 'none';
+    const nx = document.getElementById(`next-${sc}-${i}`);
+    if (nx) nx.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

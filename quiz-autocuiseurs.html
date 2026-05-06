@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Les Autocuiseurs | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --navy3: #1a3a5c;
+    --blue: #1e5f8e;
+    --blue-light: #2d8bba;
+    --gold: #c9a84c;
+    --gold-light: #f0c96b;
+    --white: #f0f4f8;
+    --text: #ccd6f6;
+    --text-dim: #8892b0;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15);
+    --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    margin-bottom: 30px;
+  }
+  .subtitle {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--white);
+    font-weight: normal;
+    line-height: 1.2;
+  }
+  .meta {
+    margin-top: 10px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* Progress */
+  .progress-bar {
+    background: var(--navy2);
+    border-radius: 4px;
+    height: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-align: right;
+    margin-bottom: 20px;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+  .question-num {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--white);
+    margin-bottom: 22px;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    background: var(--navy3);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px 18px;
+    cursor: pointer;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .option:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--white);
+    background: rgba(201,168,76,0.1);
+  }
+  .option.correct {
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: #a8f5c9;
+  }
+  .option.wrong {
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: #f5b8b3;
+  }
+  .option:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+
+  /* Nav buttons */
+  .nav { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+  .btn {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.88rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .btn.primary:hover { background: var(--gold-light); }
+
+  /* Score */
+  .score-panel {
+    display: none;
+    text-align: center;
+    padding: 50px 20px;
+    animation: fadeIn 0.5s ease;
+  }
+  .score-panel.show { display: block; }
+  .score-circle {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    margin: 0 auto 30px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--navy2);
+  }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+  .btn-restart { font-size: 1rem; padding: 12px 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Cours 11</div>
+    <h1>Les Autocuiseurs</h1>
+    <div class="meta">Quiz de révision · 20 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label">Question 1 / 20</div>
+    <div id="question-container"></div>
+    <div class="nav">
+      <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button>
+    </div>
+  </div>
+
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary btn-restart" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Qui a inventé l'autocuiseur et en quelle année ?",
+    opts: ["James Watt en 1765","Denis Papin en 1679","Louis Pasteur en 1850","Antoine Lavoisier en 1780"],
+    ans: 1,
+    fb: "Denis Papin inventa le « digesteur de Papin » en 1679. L'autocuiseur a ensuite été popularisé après 1945."
+  },
+  {
+    q: "Quelle est la pression intérieure typique d'un autocuiseur en fonctionnement ?",
+    opts: ["0,5 atm","1 atm","2 atm","5 atm"],
+    ans: 2,
+    fb: "Un autocuiseur fonctionne à environ 2 atm (atmosphères), soit le double de la pression atmosphérique normale."
+  },
+  {
+    q: "À quelle température l'eau bout-elle dans un autocuiseur ?",
+    opts: ["100°C","110°C","120°C ou plus","150°C"],
+    ans: 2,
+    fb: "À 2 atm de pression, l'eau bout à 120°C et plus, ce qui accélère considérablement la cuisson."
+  },
+  {
+    q: "À quelle température l'eau bout-elle au niveau de la mer, sans pression supplémentaire ?",
+    opts: ["90°C","100°C","110°C","120°C"],
+    ans: 1,
+    fb: "Au niveau de la mer, la pression atmosphérique est de 1 atm et l'eau bout à 100°C."
+  },
+  {
+    q: "Quel est le gain de temps approximatif d'un autocuiseur par rapport à une casserole classique ?",
+    opts: ["1/5 du temps","1/3 du temps","Moitié du temps","2/3 du temps"],
+    ans: 1,
+    fb: "L'autocuiseur permet de gagner environ 1/3 du temps de cuisson par rapport à une cuisson classique."
+  },
+  {
+    q: "Quel pourcentage d'énergie est économisé grâce à l'autocuiseur ?",
+    opts: ["30%","50%","70%","90%"],
+    ans: 2,
+    fb: "L'autocuiseur économise environ 70% d'énergie grâce à la cuisson sous pression qui est beaucoup plus rapide."
+  },
+  {
+    q: "Quel pourcentage de nutriments est préservé lors d'une cuisson en autocuiseur ?",
+    opts: ["50 à 60%","70 à 80%","90 à 95%","100%"],
+    ans: 2,
+    fb: "La cuisson sous pression préserve 90 à 95% des nutriments et minéraux des aliments."
+  },
+  {
+    q: "Quel est le rôle de la soupape de sécurité ?",
+    opts: ["Chauffer les aliments plus vite","Réguler la pression en évacuant l'excès de vapeur","Empêcher l'eau de bouillir","Maintenir la température à 100°C"],
+    ans: 1,
+    fb: "La soupape évacue l'excès de vapeur pour maintenir une pression stable et sécurisée à l'intérieur de l'autocuiseur."
+  },
+  {
+    q: "À quel moment doit-on commencer à chronométrer le temps de cuisson ?",
+    opts: ["Dès qu'on allume le feu","Quand l'eau commence à bouillir","Quand la soupape siffle","Quand on ferme le couvercle"],
+    ans: 2,
+    fb: "Le temps de cuisson commence à partir du moment où la soupape siffle, signe que la pression de 2 atm est atteinte."
+  },
+  {
+    q: "Que faut-il faire quand la soupape commence à siffler ?",
+    opts: ["Augmenter le feu","Éteindre complètement le feu","Réduire le feu et démarrer le chronomètre","Ouvrir le couvercle pour vérifier"],
+    ans: 2,
+    fb: "Au sifflement, on réduit le feu pour maintenir la pression stable, puis on démarre le chronomètre."
+  },
+  {
+    q: "Quelle est la première étape d'utilisation d'un autocuiseur ?",
+    opts: ["Fermer le couvercle","Placer les aliments et le liquide","Allumer sur feu fort","Attendre la pression"],
+    ans: 1,
+    fb: "La première étape est de placer les aliments (ingrédients, arômes) et le liquide (eau, bouillon, lait) dans la cuve."
+  },
+  {
+    q: "Quels aliments sont particulièrement adaptés à la cuisson à la vapeur en autocuiseur ?",
+    opts: ["Viandes mijotées et ragoûts","Légumes et poissons","Légumineuses et soupes","Gâteaux et pâtisseries"],
+    ans: 1,
+    fb: "La cuisson à la vapeur convient particulièrement aux légumes et aux poissons, en préservant leurs nutriments et leur couleur."
+  },
+  {
+    q: "Quel mode de cuisson est idéal pour les blanquettes et ragoûts ?",
+    opts: ["Cuisson à la vapeur","Cuisson à l'étouffée","Cuisson mijotée","Cuisson à sec"],
+    ans: 1,
+    fb: "La cuisson à l'étouffée est idéale pour les viandes mijotées, ragoûts et blanquettes car elle concentre les saveurs."
+  },
+  {
+    q: "Quelle contenance est recommandée pour un foyer de 3-4 personnes ?",
+    opts: ["4 litres","6 litres","8 litres","10 litres"],
+    ans: 1,
+    fb: "Un autocuiseur de 6 litres est adapté pour 3 à 4 personnes."
+  },
+  {
+    q: "Quel matériau est considéré comme supérieur pour un autocuiseur ?",
+    opts: ["Aluminium","Acier inoxydable","Fonte","Plastique"],
+    ans: 1,
+    fb: "L'acier inoxydable est préféré : meilleur conducteur de chaleur, plus résistant et durable, bien que plus lourd que l'aluminium."
+  },
+  {
+    q: "Quel est l'avantage principal de l'aluminium pour un autocuiseur ?",
+    opts: ["Meilleure conservation de la chaleur","Plus résistant","Plus léger et facile à manier","Moins cher à l'achat"],
+    ans: 2,
+    fb: "L'aluminium est léger et facile à manier, même s'il est moins résistant et conserve moins bien la chaleur que l'inox."
+  },
+  {
+    q: "Comment fonctionne le système de fermeture à baïonnette ?",
+    opts: ["Par pression sur un bouton latéral","En glissant le couvercle","En tournant et poussant jusqu'à l'alignement des flèches","Par serrage d'un étrier"],
+    ans: 2,
+    fb: "La fermeture à baïonnette utilise des flèches de repérage : on tourne en poussant jusqu'à ce que les flèches du couvercle et de la cuve s'alignent."
+  },
+  {
+    q: "Quel système de fermeture utilise des mâchoires sur les bords de la cuve ?",
+    opts: ["Fermeture à étrier","Couvercle rentrant","Bouton poussoir","Fermeture à baïonnette"],
+    ans: 2,
+    fb: "Le bouton poussoir utilise des mâchoires sur les bords de la cuve. La fermeture se fait par pression sur un bouton ou levier."
+  },
+  {
+    q: "Pourquoi l'eau bout-elle à une température plus basse en altitude ?",
+    opts: ["À cause du froid ambiant","Parce que la pression atmosphérique est plus faible","Parce que l'air est plus sec","Parce que le vent refroidit l'eau"],
+    ans: 1,
+    fb: "En altitude, la pression atmosphérique est plus basse, ce qui abaisse le point d'ébullition de l'eau (moins de 100°C)."
+  },
+  {
+    q: "Lequel de ces appareils utilise le même principe de fonctionnement que l'autocuiseur ?",
+    opts: ["Four traditionnel","Grille-pain","Cookéo / Thermomix","Plaque à induction classique"],
+    ans: 2,
+    fb: "Les robots multifonctions comme le Cookéo, Thermomix ou Monsieur Cuisine Plus utilisent le principe de la cuisson sous pression."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+let shuffled = [];
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function init() {
+  shuffled = shuffle(questions);
+  current = 0; score = 0; answered = false;
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('score-panel').classList.remove('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  document.getElementById('btn-next').disabled = true;
+  const q = shuffled[current];
+  const pct = (current / shuffled.length) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} / ${shuffled.length}`;
+
+  const container = document.getElementById('question-container');
+  container.innerHTML = `
+    <div class="question-card">
+      <div class="question-num">Question ${current + 1}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options" id="options">
+        ${q.opts.map((o, i) => `<button class="option" onclick="answer(${i})">${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  `;
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[current];
+  const btns = document.querySelectorAll('.option');
+  btns.forEach(b => b.disabled = true);
+  btns[idx].classList.add(idx === q.ans ? 'correct' : 'wrong');
+  if (idx !== q.ans) btns[q.ans].classList.add('correct');
+  if (idx === q.ans) score++;
+  const fb = document.getElementById('feedback');
+  fb.textContent = (idx === q.ans ? '✓ ' : '✗ ') + q.fb;
+  fb.className = 'feedback show ' + (idx === q.ans ? 'correct-fb' : 'wrong-fb');
+  document.getElementById('btn-next').disabled = false;
+  if (current === shuffled.length - 1) {
+    document.getElementById('btn-next').textContent = 'Voir mon score →';
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) {
+    showScore();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showScore() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const panel = document.getElementById('score-panel');
+  panel.classList.add('show');
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-tot').textContent = '/ ' + shuffled.length;
+  const pct = Math.round((score / shuffled.length) * 100);
+  document.getElementById('score-pct').textContent = pct + '% de bonnes réponses';
+  let msg;
+  if (pct >= 90) msg = '🏆 Excellent ! Maîtrise complète du cours.';
+  else if (pct >= 75) msg = '👍 Bon résultat ! Quelques points à revoir.';
+  else if (pct >= 60) msg = '📖 Passable. Relire le cours s\'impose.';
+  else msg = '⚠️ Des lacunes importantes à combler.';
+  document.getElementById('score-msg').textContent = msg;
+}
+
+function restart() { init(); }
+
+init();
+</script>
+</body>
+</html>

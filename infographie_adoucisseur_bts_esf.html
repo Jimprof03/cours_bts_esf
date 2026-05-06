@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'adoucisseur d'eau – BTS ESF</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #EFF4FB; color: #0D1B2A; min-height: 100vh; padding: 0 16px 60px; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, #0D1B2A, #1A3A5C); border-radius: 0 0 20px 20px; padding: 36px 28px 32px; margin-bottom: 32px; text-align: center; color: white; }
+  .header-tag { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #7DBFE8; margin-bottom: 10px; }
+  .header h1 { font-family: 'Syne', sans-serif; font-size: clamp(22px, 5vw, 34px); font-weight: 900; margin-bottom: 8px; }
+  .header h1 span { color: #7DBFE8; }
+  .header p { font-size: 14px; color: #8A9BB0; font-weight: 300; }
+
+  .section-title { display: flex; align-items: center; gap: 12px; margin: 28px 0 16px; }
+  .section-title .icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .section-title h2 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; }
+  .section-title .line { flex: 1; height: 2px; border-radius: 1px; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .card { background: white; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(13,27,42,0.08); border-top: 3px solid; }
+  .card-emoji { font-size: 22px; margin-bottom: 8px; }
+  .card h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+  .card p { font-size: 13px; color: #445; line-height: 1.5; font-weight: 300; }
+
+  /* Schéma fonctionnement */
+  .schema { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(13,27,42,0.08); margin-bottom: 8px; }
+  .schema-steps { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
+  .schema-step { text-align: center; padding: 12px 8px; min-width: 100px; }
+  .schema-step .s-icon { font-size: 28px; margin-bottom: 6px; }
+  .schema-step .s-label { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+  .schema-step .s-desc { font-size: 11px; color: #667; line-height: 1.35; }
+  .schema-arrow { font-size: 20px; color: #1B6CA8; padding: 0 4px; }
+
+  /* Usages */
+  .usage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .usage-box { border-radius: 12px; padding: 16px; }
+  .usage-box h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .usage-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 8px; }
+  .usage-item:last-child { border-bottom: none; }
+
+  /* Publics */
+  .public-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .public-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(13,27,42,0.07); text-align: center; border: 2px solid #FEF0F0; }
+  .public-card .p-icon { font-size: 28px; margin-bottom: 6px; }
+  .public-card h4 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #E63946; margin-bottom: 3px; }
+  .public-card p { font-size: 12px; color: #7A1A22; line-height: 1.4; }
+
+  /* Erreurs fréquentes */
+  .error-list { background: white; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(13,27,42,0.08); }
+  .error-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
+  .error-item:last-child { border-bottom: none; }
+  .error-x { font-size: 16px; color: #E63946; flex-shrink: 0; margin-top: 2px; }
+  .error-text { font-size: 13px; color: #334; line-height: 1.45; }
+
+  /* Bonnes pratiques */
+  .tip-list { background: white; border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(13,27,42,0.08); }
+  .tip-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
+  .tip-item:last-child { border-bottom: none; }
+  .tip-check { font-size: 16px; color: #2A9D8F; flex-shrink: 0; margin-top: 2px; }
+  .tip-text { font-size: 13px; color: #334; line-height: 1.45; }
+  .tip-text strong { color: #1A3A5C; }
+
+  /* À retenir */
+  .retenir { background: linear-gradient(135deg, #0D1B2A, #1A3A5C); border-radius: 14px; padding: 20px; color: white; text-align: center; }
+  .retenir h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: #7DBFE8; margin-bottom: 14px; letter-spacing: 2px; text-transform: uppercase; }
+  .retenir p { font-size: 14px; font-weight: 500; line-height: 1.7; }
+  .retenir p span { color: #7DBFE8; font-weight: 700; }
+
+  .c-blue { color: #1B6CA8; } .c-green { color: #2A9D8F; } .c-red { color: #E63946; } .c-orange { color: #E8881A; }
+  .icon-blue { background: #E0F0FB; } .icon-green { background: #E0F5F2; } .icon-red { background: #FEF0F0; } .icon-orange { background: #FEF3E8; }
+  .border-blue { border-top-color: #1B6CA8; } .border-green { border-top-color: #2A9D8F; } .border-red { border-top-color: #E63946; } .border-orange { border-top-color: #E8881A; }
+
+  .footer { text-align: center; font-size: 12px; color: #8A9BB0; margin-top: 40px; padding-top: 20px; border-top: 1px solid #DDE6F0; }
+
+  @media (max-width: 500px) {
+    .usage-grid { grid-template-columns: 1fr; }
+    .schema-steps { gap: 0; }
+    .schema-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-tag">BTS ESF · Habitat Logement Environnement</div>
+    <h1>L'<span>adoucisseur</span> d'eau</h1>
+    <p>Fonctionnement · Usages · Publics fragiles · Conseils à l'usager</p>
+  </div>
+
+  <!-- POURQUOI ADOUCIR -->
+  <div class="section-title">
+    <div class="icon icon-blue">❓</div>
+    <h2 class="c-blue">Pourquoi adoucir l'eau ?</h2>
+    <div class="line" style="background:#1B6CA8"></div>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card border-blue">
+      <div class="card-emoji">💧</div>
+      <h3 class="c-blue">L'eau dure</h3>
+      <p>Une eau est dite "dure" quand elle contient beaucoup d'ions <strong>calcium (Ca²⁺)</strong> et <strong>magnésium (Mg²⁺)</strong>. Ces ions provoquent des dépôts de calcaire dans les canalisations et les appareils.</p>
+    </div>
+    <div class="card border-orange">
+      <div class="card-emoji">⚠️</div>
+      <h3 class="c-orange">Conséquences du calcaire</h3>
+      <p>Entartrage des appareils (chauffe-eau, lave-linge...), baisse de rendement, surconsommation d'énergie pouvant atteindre <strong>+30%</strong>, usure prématurée des installations.</p>
+    </div>
+  </div>
+
+  <!-- FONCTIONNEMENT -->
+  <div class="section-title" style="margin-top:28px">
+    <div class="icon icon-blue">⚙️</div>
+    <h2 class="c-blue">Comment fonctionne l'adoucisseur ?</h2>
+    <div class="line" style="background:#1B6CA8"></div>
+  </div>
+
+  <div class="schema">
+    <div class="schema-steps">
+      <div class="schema-step">
+        <div class="s-icon">🚿</div>
+        <div class="s-label" style="color:#1B6CA8">Eau dure</div>
+        <div class="s-desc">Riche en Ca²⁺ et Mg²⁺</div>
+      </div>
+      <div class="schema-arrow">→</div>
+      <div class="schema-step">
+        <div class="s-icon">🔬</div>
+        <div class="s-label" style="color:#1B6CA8">Résine</div>
+        <div class="s-desc">Chargée en ions Na⁺ (sodium)</div>
+      </div>
+      <div class="schema-arrow">→</div>
+      <div class="schema-step">
+        <div class="s-icon">🔄</div>
+        <div class="s-label" style="color:#2A9D8F">Échange d'ions</div>
+        <div class="s-desc">Ca²⁺ et Mg²⁺ capturés<br>Na⁺ libérés</div>
+      </div>
+      <div class="schema-arrow">→</div>
+      <div class="schema-step">
+        <div class="s-icon">💧</div>
+        <div class="s-label" style="color:#2A9D8F">Eau adoucie</div>
+        <div class="s-desc">Moins de calcaire<br>Plus de sodium</div>
+      </div>
+      <div class="schema-arrow">→</div>
+      <div class="schema-step">
+        <div class="s-icon">🧂</div>
+        <div class="s-label" style="color:#E8881A">Régénération</div>
+        <div class="s-desc">Saumure (eau+sel) recharge la résine en Na⁺</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:#667;margin-top:14px;font-style:italic;">⚠️ Sans sel → pas de régénération → l'adoucisseur ne fonctionne plus</p>
+  </div>
+
+  <!-- USAGES -->
+  <div class="section-title" style="margin-top:28px">
+    <div class="icon icon-green">✅</div>
+    <h2 class="c-green">Usages adaptés et déconseillés</h2>
+    <div class="line" style="background:#2A9D8F"></div>
+  </div>
+
+  <div class="usage-grid">
+    <div class="usage-box" style="background:#E8F5EE;">
+      <h3 class="c-green">✅ Usages adaptés</h3>
+      <div class="usage-item"><span>🚿</span><span>Douche et bain</span></div>
+      <div class="usage-item"><span>🧺</span><span>Lave-linge</span></div>
+      <div class="usage-item"><span>🍽️</span><span>Lave-vaisselle</span></div>
+      <div class="usage-item"><span>🔥</span><span>Chauffe-eau</span></div>
+      <div class="usage-item"><span>🔧</span><span>Réseau sanitaire</span></div>
+    </div>
+    <div class="usage-box" style="background:#FEF0F0;">
+      <h3 class="c-red">🚫 Usages déconseillés</h3>
+      <div class="usage-item" style="border-color:#FCCDD0"><span>🚱</span><span style="color:#7A1A22">Boisson</span></div>
+      <div class="usage-item" style="border-color:#FCCDD0"><span>🍳</span><span style="color:#7A1A22">Cuisine</span></div>
+      <div class="usage-item" style="border-color:#FCCDD0"><span>🍼</span><span style="color:#7A1A22">Préparation des biberons</span></div>
+      <div style="margin-top:10px;font-size:12px;color:#E63946;font-style:italic;">Trop riche en sodium pour ces usages</div>
+    </div>
+  </div>
+
+  <!-- PUBLICS FRAGILES -->
+  <div class="section-title" style="margin-top:28px">
+    <div class="icon icon-red">⚠️</div>
+    <h2 class="c-red">Publics pour lesquels la vigilance est nécessaire</h2>
+    <div class="line" style="background:#E63946"></div>
+  </div>
+
+  <div class="public-grid">
+    <div class="public-card">
+      <div class="p-icon">👶</div>
+      <h4>Nourrissons</h4>
+      <p>Ne jamais utiliser l'eau adoucie pour les biberons — trop riche en sodium</p>
+    </div>
+    <div class="public-card">
+      <div class="p-icon">🧂</div>
+      <h4>Régime sans sel</h4>
+      <p>L'eau adoucie augmente l'apport en sodium, incompatible avec ce régime</p>
+    </div>
+    <div class="public-card">
+      <div class="p-icon">🫀</div>
+      <h4>Pathologies cardio-vasculaires et rénales</h4>
+      <p>Le sodium supplémentaire peut aggraver ces pathologies</p>
+    </div>
+    <div class="public-card">
+      <div class="p-icon">👴</div>
+      <h4>Personnes âgées fragiles</h4>
+      <p>Vigilance accrue sur la consommation d'eau adoucie pour la boisson</p>
+    </div>
+  </div>
+
+  <!-- AVANTAGES / LIMITES -->
+  <div class="section-title" style="margin-top:28px">
+    <div class="icon icon-orange">⚖️</div>
+    <h2 class="c-orange">Avantages et limites</h2>
+    <div class="line" style="background:#E8881A"></div>
+  </div>
+
+  <div class="usage-grid">
+    <div class="usage-box" style="background:#E8F5EE;">
+      <h3 class="c-green">✔️ Avantages</h3>
+      <div class="usage-item"><span>🔧</span><span>Protection des appareils</span></div>
+      <div class="usage-item"><span>⚡</span><span>Économies d'énergie</span></div>
+      <div class="usage-item"><span>🧴</span><span>Moins de détergents</span></div>
+      <div class="usage-item"><span>👕</span><span>Linge plus doux</span></div>
+      <div class="usage-item"><span>🏠</span><span>Durée de vie des installations prolongée</span></div>
+    </div>
+    <div class="usage-box" style="background:#FEF3E8;">
+      <h3 class="c-orange">⚠️ Limites</h3>
+      <div class="usage-item" style="border-color:#F4D4AA"><span>🧂</span><span style="color:#5A3A00">Augmentation du sodium</span></div>
+      <div class="usage-item" style="border-color:#F4D4AA"><span>💶</span><span style="color:#5A3A00">~2 000 € d'installation</span></div>
+      <div class="usage-item" style="border-color:#F4D4AA"><span>🔧</span><span style="color:#5A3A00">Entretien régulier obligatoire</span></div>
+      <div class="usage-item" style="border-color:#F4D4AA"><span>🦠</span><span style="color:#5A3A00">N'élimine pas les bactéries</span></div>
+      <div class="usage-item" style="border-color:#F4D4AA"><span>☣️</span><span style="color:#5A3A00">N'élimine pas les polluants</span></div>
+    </div>
+  </div>
+
+  <!-- ERREURS & BONNES PRATIQUES -->
+  <div class="section-title" style="margin-top:28px">
+    <div class="icon icon-red">❌</div>
+    <h2 class="c-red">Erreurs fréquentes des usagers</h2>
+    <div class="line" style="background:#E63946"></div>
+  </div>
+
+  <div class="error-list">
+    <div class="error-item"><div class="error-x">✗</div><div class="error-text">Croire que l'eau adoucie est meilleure pour la santé</div></div>
+    <div class="error-item"><div class="error-x">✗</div><div class="error-text">Utiliser l'eau adoucie pour boire, cuisiner ou préparer des biberons</div></div>
+    <div class="error-item"><div class="error-x">✗</div><div class="error-text">Oublier de remettre du sel → l'adoucisseur ne fonctionne plus</div></div>
+    <div class="error-item"><div class="error-x">✗</div><div class="error-text">Ne pas entretenir l'adoucisseur → risque de biofilms</div></div>
+    <div class="error-item"><div class="error-x">✗</div><div class="error-text">Installer sans by-pass → plus de point d'eau non adoucie</div></div>
+  </div>
+
+  <div class="section-title" style="margin-top:20px">
+    <div class="icon icon-green">✅</div>
+    <h2 class="c-green">Bonnes pratiques à recommander</h2>
+    <div class="line" style="background:#2A9D8F"></div>
+  </div>
+
+  <div class="tip-list">
+    <div class="tip-item"><div class="tip-check">✓</div><div class="tip-text"><strong>Installer un by-pass</strong> pour conserver un point d'eau non adoucie</div></div>
+    <div class="tip-item"><div class="tip-check">✓</div><div class="tip-text"><strong>Vérifier régulièrement</strong> le niveau de sel dans le bac</div></div>
+    <div class="tip-item"><div class="tip-check">✓</div><div class="tip-text"><strong>Respecter les consignes</strong> du fabricant pour la régénération</div></div>
+    <div class="tip-item"><div class="tip-check">✓</div><div class="tip-text"><strong>Adapter les conseils</strong> aux publics fragiles présents dans le foyer</div></div>
+    <div class="tip-item"><div class="tip-check">✓</div><div class="tip-text"><strong>Ne jamais utiliser</strong> l'eau adoucie pour les biberons ou les personnes sous régime sans sel</div></div>
+  </div>
+
+  <!-- À RETENIR -->
+  <div style="margin-top:24px">
+    <div class="retenir">
+      <h3>À retenir</h3>
+      <p>L'adoucisseur <span>protège le logement</span>, pas la santé · Il remplace le calcaire par du <span>sodium</span> · Il n'élimine ni bactéries ni polluants · Il est <span>déconseillé pour la boisson</span> et les biberons · <span>By-pass obligatoire</span> · Entretien régulier indispensable</p>
+    </div>
+  </div>
+
+  <div class="footer">BTS ESF · Habitat Logement Environnement · L'adoucisseur d'eau</div>
+</div>
+</body>
+</html>

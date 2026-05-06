@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Le Lave-Vaisselle | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --navy3: #1a3a5c;
+    --blue: #1e5f8e;
+    --blue-light: #2d8bba;
+    --gold: #c9a84c;
+    --gold-light: #f0c96b;
+    --white: #f0f4f8;
+    --text: #ccd6f6;
+    --text-dim: #8892b0;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15);
+    --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; line-height: 1.2; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .btn.primary:hover { background: var(--gold-light); }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+  .btn-restart { font-size: 1rem; padding: 12px 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Cours 12</div>
+    <h1>Le Lave-Vaisselle</h1>
+    <div class="meta">Quiz de révision · 20 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label">Question 1 / 20</div>
+    <div id="question-container"></div>
+    <div class="nav">
+      <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button>
+    </div>
+  </div>
+
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary btn-restart" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Quel est le principe de fonctionnement général du lave-vaisselle concernant l'eau ?",
+    opts: ["L'eau est renouvelée à chaque étape du cycle","L'eau circule en circuit fermé entre la cuve et les bras d'aspersion","L'eau est chauffée uniquement en fin de cycle","L'eau est puisée directement du robinet pendant tout le cycle"],
+    ans: 1,
+    fb: "Le lave-vaisselle fonctionne en circuit fermé : l'eau circule en boucle entre la cuve et les bras d'aspersion pendant toute la durée du programme."
+  },
+  {
+    q: "Quel organe joue le rôle de 'robinet' en régulant l'arrivée d'eau dans le lave-vaisselle ?",
+    opts: ["Le pressostat","La pompe de cyclage","L'électrovanne","Le répartiteur"],
+    ans: 2,
+    fb: "L'électrovanne règle le débit d'eau entrant dans l'appareil. Elle s'ouvre et se ferme électroniquement selon les besoins du programme."
+  },
+  {
+    q: "Quelle est la fonction du bras d'aspersion inférieur ?",
+    opts: ["Laver la vaisselle fragile à faible pression","Évacuer les eaux usées","Projeter l'eau à haute pression sur la vaisselle très sale","Chauffer l'eau en début de cycle"],
+    ans: 2,
+    fb: "Le bras inférieur projette de l'eau à haute pression pour traiter les pièces les plus sales : assiettes, casseroles, plats."
+  },
+  {
+    q: "Pourquoi le bras supérieur fonctionne-t-il à faible vitesse ?",
+    opts: ["Pour économiser de l'énergie","Pour ménager la vaisselle fragile (verres, cristallerie, plastiques)","Parce que la résistance est éloignée","Pour éviter le bruit"],
+    ans: 1,
+    fb: "Le bras supérieur traite la vaisselle fragile (verres, cristallerie, plastiques) avec une eau à faible vitesse pour éviter la casse."
+  },
+  {
+    q: "Quelle est la première étape d'un cycle de lavage classique ?",
+    opts: ["Lavage à chaud","Rinçage tiède","Prélavage à froid","Séchage"],
+    ans: 2,
+    fb: "Le prélavage à froid est la première étape : il humidifie la vaisselle et décolle les résidus alimentaires les plus faciles."
+  },
+  {
+    q: "À quelle température s'effectue le lavage principal ?",
+    opts: ["20 à 30°C","45 à 70°C","80 à 90°C","100°C"],
+    ans: 1,
+    fb: "Le lavage à chaud se fait entre 45 et 70°C. Cette chaleur permet la diffusion du produit lessiviel et un dégraissage en profondeur."
+  },
+  {
+    q: "À quel moment le produit de rinçage est-il libéré dans le cycle ?",
+    opts: ["Dès le début du prélavage","Au moment du lavage principal","En dernière phase du rinçage tiède","Pendant le séchage"],
+    ans: 2,
+    fb: "Le produit de rinçage est libéré en dernière phase du rinçage tiède, quand l'eau refroidit."
+  },
+  {
+    q: "Quels sont les trois modes de séchage possibles selon le modèle ?",
+    opts: ["Ventilation, résistance ou condensation","Vapeur, air chaud ou infrarouge","Pompe, turbine ou convection","Résistance, UV ou micro-ondes"],
+    ans: 0,
+    fb: "Le séchage peut se faire par condensation, ventilation ou résistance, selon la technologie du modèle."
+  },
+  {
+    q: "Quel organe interne oriente le circuit vers le lavage ou la régénération de l'adoucisseur ?",
+    opts: ["Le thermostat","Le répartiteur","La pompe de vidange","L'électrovanne"],
+    ans: 1,
+    fb: "Le répartiteur est l'organe qui oriente le flux d'eau soit vers le circuit de lavage, soit vers la régénération de l'adoucisseur."
+  },
+  {
+    q: "Quel est le rôle des résines dans l'adoucisseur intégré ?",
+    opts: ["Chauffer l'eau","Filtrer les résidus alimentaires","Capter le calcaire pour adoucir l'eau","Doser automatiquement le produit lessivier"],
+    ans: 2,
+    fb: "Les résines captent les ions calcaire de l'eau dure. Elles sont régénérées grâce au sel adoucisseur. Cela prévient les traces blanches et protège la résistance."
+  },
+  {
+    q: "Quel produit de lavage est décrit comme le meilleur rapport qualité/prix et idéal pour les cycles courts ?",
+    opts: ["Les tablettes","La lessive liquide","La poudre","Les capsules"],
+    ans: 2,
+    fb: "La poudre permet un dosage précis, est idéale pour les cycles courts et est bon marché, même si elle est encombrante à stocker."
+  },
+  {
+    q: "Quel est l'inconvénient principal des tablettes tout-en-un ?",
+    opts: ["Elles ne conviennent pas aux cycles éco","Elles sont moins pratiques à stocker","Leur coût à l'achat est plus élevé","Elles laissent des traces sur les verres"],
+    ans: 2,
+    fb: "Les tablettes sont pratiques mais leur coût à l'achat est plus élevé que la poudre ou les capsules."
+  },
+  {
+    q: "Quelle panne est liée à une résistance défaillante ?",
+    opts: ["La cuve se remplit trop","Pas d'eau du tout","L'eau ne chauffe pas","La machine ne démarre pas"],
+    ans: 2,
+    fb: "Si la résistance est défaillante, l'eau ne chauffe pas, ce qui compromet l'efficacité du lavage."
+  },
+  {
+    q: "Quelle est la cause probable si la machine ne démarre pas du tout ?",
+    opts: ["Filtre bouché","Résistance grillée","Cordon débranché, sécurité porte ou interrupteur","Bras d'aspersion cassé"],
+    ans: 2,
+    fb: "Si la machine ne démarre pas, vérifier en premier : le cordon d'alimentation, la sécurité anti-ouverture de porte et l'interrupteur."
+  },
+  {
+    q: "Quelle est la cause la plus probable si la cuve se remplit trop ?",
+    opts: ["Électrovanne défaillante","Détecteur de niveau ou débitmètre défaillant","Pompe de vidange bloquée","Joints de porte usés"],
+    ans: 1,
+    fb: "Un remplissage excessif de la cuve est généralement dû à un détecteur de niveau ou un débitmètre défaillant."
+  },
+  {
+    q: "Quel produit ménager simple est recommandé pour nettoyer les joints de porte ?",
+    opts: ["Eau de Javel","Bicarbonate de soude","Vinaigre blanc","Liquide vaisselle concentré"],
+    ans: 2,
+    fb: "Le vinaigre blanc avec un chiffon humide est recommandé pour nettoyer les joints de porte et diverses surfaces internes."
+  },
+  {
+    q: "Quelle pratique d'entretien permet de désinfecter et détartrer le lave-vaisselle ?",
+    opts: ["Nettoyage des filtres à l'eau froide","Cycle à vide à température maximale","Démontage des bras d'aspersion chaque semaine","Utilisation de liquide vaisselle classique"],
+    ans: 1,
+    fb: "Lancer un cycle à vide à température maximale régulièrement permet de désinfecter la cuve et d'éliminer le tartre."
+  },
+  {
+    q: "Quelle vaisselle NE doit PAS passer au lave-vaisselle ?",
+    opts: ["Assiettes plates en céramique","Verres décorés et argenterie de valeur","Couverts en inox","Casseroles sans revêtement anti-adhésif"],
+    ans: 1,
+    fb: "Les verres décorés, l'argenterie de valeur et les récipients brûlés ou noircis doivent être lavés à la main."
+  },
+  {
+    q: "Que se passe-t-il si on surcharge trop le lave-vaisselle ?",
+    opts: ["Le cycle dure plus longtemps","Les bras d'aspersion n'arrosent pas correctement toute la vaisselle","L'eau chauffe trop","La machine se met en sécurité automatiquement"],
+    ans: 1,
+    fb: "Si l'appareil est trop chargé, les bras d'aspersion sont bloqués ou gênés et n'arrosent pas correctement la vaisselle."
+  },
+  {
+    q: "Quelle précaution est recommandée après la fin d'un cycle ?",
+    opts: ["Ouvrir immédiatement et décharger par le haut","Attendre 15 min, puis décharger en commençant par le panier du bas","Relancer un cycle de rinçage supplémentaire","Débrancher l'appareil avant d'ouvrir"],
+    ans: 1,
+    fb: "Il est recommandé d'attendre 15 minutes avant de décharger (pour éviter les brûlures et finir le séchage), puis de commencer par le panier du bas."
+  }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function init() {
+  shuffled = shuffle(questions);
+  current = 0; score = 0; answered = false;
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('score-panel').classList.remove('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  document.getElementById('btn-next').disabled = true;
+  const q = shuffled[current];
+  document.getElementById('progress').style.width = (current / shuffled.length * 100) + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML = `
+    <div class="question-card">
+      <div class="question-num">Question ${current + 1}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">${q.opts.map((o, i) => `<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div>
+      <div class="feedback" id="feedback"></div>
+    </div>`;
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[current];
+  const btns = document.querySelectorAll('.option');
+  btns.forEach(b => b.disabled = true);
+  btns[idx].classList.add(idx === q.ans ? 'correct' : 'wrong');
+  if (idx !== q.ans) btns[q.ans].classList.add('correct');
+  if (idx === q.ans) score++;
+  const fb = document.getElementById('feedback');
+  fb.textContent = (idx === q.ans ? '✓ ' : '✗ ') + q.fb;
+  fb.className = 'feedback show ' + (idx === q.ans ? 'correct-fb' : 'wrong-fb');
+  document.getElementById('btn-next').disabled = false;
+  if (current === shuffled.length - 1) document.getElementById('btn-next').textContent = 'Voir mon score →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) showScore();
+  else renderQuestion();
+}
+
+function showScore() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const panel = document.getElementById('score-panel');
+  panel.classList.add('show');
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-tot').textContent = '/ ' + shuffled.length;
+  const pct = Math.round(score / shuffled.length * 100);
+  document.getElementById('score-pct').textContent = pct + '% de bonnes réponses';
+  const msgs = ['⚠️ Des lacunes importantes à combler.','📖 Passable. Relire le cours s\'impose.','👍 Bon résultat ! Quelques points à revoir.','🏆 Excellent ! Maîtrise complète du cours.'];
+  document.getElementById('score-msg').textContent = pct >= 90 ? msgs[3] : pct >= 75 ? msgs[2] : pct >= 60 ? msgs[1] : msgs[0];
+}
+
+function restart() { init(); }
+init();
+</script>
+</body>
+</html>

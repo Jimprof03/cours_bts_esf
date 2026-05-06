@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Les Fours | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Cours 8</div>
+    <h1>Les Fours Traditionnels</h1>
+    <div class="meta">Quiz de révision · 20 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  // MODES DE CUISSON
+  { q: "Quels sont les 3 principaux paramètres qui déterminent le résultat d'une cuisson au four ?", opts: ["La couleur, la taille et le poids des aliments","Le mode de transmission de la chaleur, la température et la durée de cuisson","La puissance électrique, le nombre de résistances et le thermostat","Le niveau de grille, la ventilation et l'hygrométrie"], ans: 1, fb: "Les 3 paramètres clés sont : le mode de transmission de la chaleur, la température et la durée de cuisson. L'hygrométrie joue aussi un rôle prépondérant." },
+  { q: "En mode convection naturelle, comment l'air chaud circule-t-il dans le four ?", opts: ["La turbine le force à circuler horizontalement","Il est propulsé par la résistance circulaire du fond","Il monte naturellement car l'air chaud est moins dense que l'air froid","Il est aspiré par le bas et rejeté par le haut"], ans: 2, fb: "En convection naturelle, l'air s'échauffe au contact des résistances et monte spontanément car l'air chaud est moins dense. C'est le mode le plus ancien, sans turbine." },
+  { q: "Quelle est la répartition de puissance entre voûte et sole en convection naturelle ?", opts: ["50% voûte / 50% sole","1/3 voûte / 2/3 sole","2/3 voûte / 1/3 sole","100% voûte uniquement"], ans: 1, fb: "En convection naturelle, la puissance est répartie à 1/3 voûte et 2/3 sole, ce qui correspond à environ 800W voûte et 1600W sole." },
+  { q: "Quel est l'avantage principal de la chaleur brassée par rapport à la convection naturelle ?", opts: ["Elle consomme moins d'électricité","Elle permet des cuissons simultanées sur plusieurs niveaux sans mélange d'odeurs","Elle est plus adaptée aux bains-marie","Elle utilise uniquement la résistance de voûte"], ans: 1, fb: "La chaleur brassée permet de cuire sur 2 ou 3 niveaux simultanément sans mélange d'odeurs ni altération des saveurs, grâce à la turbine qui répartit uniformément la chaleur." },
+  { q: "En mode grill, quelle résistance fonctionne et comment la chaleur est-elle transmise ?", opts: ["La résistance de sole, par conduction","La résistance de voûte uniquement, par rayonnement infrarouge","Les deux résistances, par convection forcée","La résistance circulaire, par convection naturelle"], ans: 1, fb: "En mode grill, seule la résistance de voûte fonctionne. Portée au rouge, elle émet des infrarouges qui transmettent la chaleur directement sur l'aliment par rayonnement." },
+  { q: "Quelle est la différence entre le mode barbecue et le mode grill ?", opts: ["Le barbecue utilise la résistance de sole, le grill celle de voûte","Le barbecue fonctionne porte ouverte à puissance maximale ; le grill fonctionne porte fermée","Le barbecue utilise la turbine, le grill non","Le barbecue est plus doux et lent que le grill"], ans: 1, fb: "Le barbecue est un grill 'porte ouverte' (10 cm environ) à puissance maximale. La chaleur rayonnante des infrarouges saisit l'aliment en surface. La porte ouverte évacue la chaleur d'air." },
+  { q: "Pour quels plats le mode 'fournil' est-il particulièrement recommandé ?", opts: ["Les viandes grillées et poissons","Les tartes, quiches, pizzas, brioches, soufflés — toutes préparations à base de pâte","Les gratins et plats en sauce","Les décongélations rapides"], ans: 1, fb: "Le mode fournil cuit par le dessous (résistance de sole + turbine) en maintenant de l'humidité. Il évite le dessèchement des pâtes et favorise leur levée. Idéal pour tartes, quiches, pizzas, brioches." },
+  { q: "En mode rôtisserie, quelle combinaison est utilisée ?", opts: ["Résistance de sole + turbine","Résistance de voûte + turbine","Les deux résistances sans turbine","Résistance circulaire uniquement"], ans: 1, fb: "La rôtisserie combine la résistance de voûte (infrarouges pour saisir et gratiner) avec la turbine qui répartit la chaleur en profondeur. Recommandé pour viandes et gratins dauphinois." },
+  { q: "Pourquoi déconseille-t-on d'utiliser le tournebroche en mode rôtisserie ?", opts: ["Le tournebroche est incompatible électriquement avec la turbine","La turbine augmente les projections de graisse sur les parois","Le tournebroche dépasse la capacité du moufle","La chaleur brassée cuit le dessous trop vite"], ans: 1, fb: "En mode rôtisserie, la turbine augmente les projections de graisse sur les parois, ce qui génère plus de salissures. Le tournebroche est à réserver au mode grill." },
+  // ACCESSOIRES
+  { q: "À quoi sert la plaque à lèchefrite ?", opts: ["À cuire les pâtisseries par conduction","À recueillir les jus de cuisson placée en bas du four","À griller les aliments directement sur la résistance","À séparer deux niveaux de cuisson"], ans: 1, fb: "La lèchefrite recueille les jus de cuisson. Placée en bas du moufle, les jus sont éloignés de la source de chaleur : ils ne carbonisent pas et peuvent servir à confectionner des sauces." },
+  // NETTOYAGE
+  { q: "Quels sont les 3 types de nettoyage d'un four ?", opts: ["Vapeur, chimique, mécanique","Manuel, à catalyse, à pyrolyse","Enzymatique, électrique, thermique","Par absorption, brossage, nettoyage vapeur"], ans: 1, fb: "Les 3 types de nettoyage sont : manuel, à catalyse (émail autonettoyant en fonctionnement) et à pyrolyse (cycle à haute température). La pyrolyse est la solution haut de gamme." },
+  { q: "Comment fonctionne la catalyse dans un four ?", opts: ["Elle brûle les graisses à 500°C pendant un cycle dédié","Un émail poreux catalytique oxyde chimiquement les graisses dès 170°C en cours de fonctionnement","Elle utilise de la vapeur d'eau pour décoller les graisses","Un nettoyant chimique est diffusé automatiquement"], ans: 1, fb: "La catalyse utilise un émail spécial poreux : les graisses s'étalent, se fractionnent et s'oxydent chimiquement. La réaction se déclenche à partir de 170°C, en cours d'utilisation normale du four." },
+  { q: "À quelle température la pyrolyse détruit-elle les résidus alimentaires et combien de temps dure le cycle ?", opts: ["À 250°C pendant 30 minutes","À 350°C pendant 2 à 4 heures","À 500°C pendant 1 à 3 heures","À 300°C pendant 45 minutes"], ans: 2, fb: "La pyrolyse maintient le four à 500°C pour briser les liaisons moléculaires des corps gras. Le cycle dure de 1 à 3 heures. Il ne reste ensuite que des cendres blanchâtres non toxiques." },
+  { q: "Pourquoi la porte d'un four à pyrolyse se verrouille-t-elle automatiquement ?", opts: ["Pour économiser l'énergie pendant le cycle","Pour éviter que l'apport d'oxygène en cas d'ouverture ne provoque l'auto-inflammation des graisses à 500°C","Pour protéger les enfants","Pour maintenir la pression intérieure"], ans: 1, fb: "À 500°C, la combustion des graisses est incomplète. Si on ouvre la porte, l'oxygène entrant provoquerait l'auto-inflammation des graisses — très dangereux. Le verrouillage est déclenché dès 300°C." },
+  { q: "Quel est le rôle du catalyseur de fumées en pyrolyse ?", opts: ["Filtrer les odeurs de cuisson normale","Transformer les gaz toxiques produits en gaz carbonique non toxique","Réduire la consommation électrique du cycle","Accélérer la montée en température"], ans: 1, fb: "Le catalyseur de fumées est situé dans la cheminée d'évacuation. Il filtre les produits de pyrolyse et transforme les gaz toxiques (comme le CO) en gaz carbonique non toxique." },
+  { q: "Pourquoi ne faut-il pas nettoyer les joints d'étanchéité du four avec du détergent ?", opts: ["Le détergent les décolore irrémédiablement","Les joints sont en fibre de verre : le détergent les fait craquer, provoquant une surconsommation d'énergie et un remplacement coûteux","Le détergent réagit avec l'émail catalytique","Les joints se dilatent et bloquent la porte"], ans: 1, fb: "Les joints sont en fibre de verre. Le détergent les fait craquer, ce qui crée des fuites thermiques, augmente la consommation d'énergie et oblige à un remplacement coûteux." },
+  // SÉCURITÉ & TEMPÉRATURE PORTE
+  { q: "Quelle température maximale est imposée par la loi sur la paroi extérieure d'un four en fonctionnement ?", opts: ["60°C au-dessus de la température ambiante","80°C au-dessus de la température ambiante (soit environ 100°C pour une cuisine à 20°C)","50°C en valeur absolue","120°C au-dessus de la température ambiante"], ans: 1, fb: "La loi fixe à 80°C au-dessus de la température ambiante la température maximale des parois extérieures, soit environ 100°C si la cuisine est à 20°C." },
+  { q: "Comment maintient-on la porte d'un four à pyrolyse à environ 40°C pendant la cuisson ?", opts: ["Une plaque métallique absorbante extérieure","Plusieurs épaisseurs de verre avec faces métallisées et circulation d'air frais entre les couches","Un ventilateur intégré dans la poignée","Un revêtement thermorégulant sur la façade"], ans: 1, fb: "La porte pyrolyse est isolée par plusieurs couches de verre (environ 4), dont les faces intérieures sont métallisées pour renvoyer la chaleur. De l'air frais circule entre les couches de verre." },
+  // VENTILATION
+  { q: "Pourquoi réduit-on parfois la vitesse de la turbine pendant certaines cuissons ?", opts: ["Pour économiser l'électricité","La turbine asséchant l'air, on la ralentit pour conserver l'humidité nécessaire à certaines cuissons (ex : mode fournil)","Pour éviter les vibrations qui perturbent la levée des pâtes","Pour réduire le bruit"], ans: 1, fb: "La ventilation tend à assécher l'air dans le moufle. Pour les cuissons qui nécessitent de l'humidité (comme le mode fournil pour les pâtes), on réduit la vitesse de la turbine." },
+  { q: "Quel est le rôle de la ventilation externe (turbine extérieure) d'un four encastrable ?", opts: ["Aspirer les fumées vers l'extérieur de la cuisine","Refroidir les parois extérieures et la platine électronique pour protéger l'appareil et les meubles","Répartir la chaleur dans le moufle","Réguler la température intérieure du four"], ans: 1, fb: "La turbine externe aspire l'air frais par l'avant-bas et le rejette par le dessus, en enveloppant l'appareil. Elle refroidit les parois et la platine électronique, permettant d'encastrer le four dans des niches fermées." },
+  { q: "Quel accessoire permet de cuire des volailles à la broche en mode grill ?", opts: ["La plaque à pâtisserie","La grande grille","La lèchefrite","Le tournebroche"], ans: 3, fb: "Le tournebroche permet les cuissons au gril pour les volailles et gigots. En tournant, il évite d'exposer toujours la même face au rayonnement de chaleur." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  const q=shuffled[current];
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=shuffled[current];const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>

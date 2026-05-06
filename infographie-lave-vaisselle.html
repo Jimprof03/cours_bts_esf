@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Le Lave-Vaisselle | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --navy3: #1a3a5c;
+    --gold: #c9a84c;
+    --gold-light: #f0c96b;
+    --white: #f0f4f8;
+    --text: #ccd6f6;
+    --text-dim: #8892b0;
+    --blue-light: #2d8bba;
+    --green: #27ae60;
+    --green-light: #2ecc71;
+    --red: #e74c3c;
+    --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 920px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--navy2), var(--navy3));
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 14px;
+    padding: 36px 30px;
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* Circuit schéma */
+  .circuit {
+    background: var(--navy2);
+    border: 1px solid rgba(45,139,186,0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .circuit-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0;
+  }
+  .circuit-node {
+    background: var(--navy3);
+    border: 1px solid rgba(45,139,186,0.4);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 0.75rem;
+  }
+  .circuit-node .cn-icon { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+  .circuit-node .cn-label { color: var(--white); font-weight: bold; display: block; }
+  .circuit-node .cn-sub { color: var(--text-dim); font-size: 0.68rem; }
+  .circuit-arrow { color: var(--gold); font-size: 1.1rem; }
+  .circuit-note { background: rgba(45,139,186,0.1); border-left: 3px solid var(--blue-light); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.83rem; color: var(--text-dim); margin-top: 12px; }
+
+  /* Bras de lavage */
+  .bras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .bras-card { border-radius: 10px; padding: 16px 18px; }
+  .bras-card.inf { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); }
+  .bras-card.sup { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); }
+  .bras-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; }
+  .bras-card.inf .bras-title { color: var(--gold-light); }
+  .bras-card.sup .bras-title { color: var(--blue-light); }
+  .bras-detail { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* Cycles */
+  .cycles {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .cycles-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .cycle-step { background: var(--navy3); border-radius: 10px; padding: 16px 12px; text-align: center; position: relative; }
+  .cycle-step::after { content: '→'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1rem; z-index: 1; }
+  .cycle-step:last-child::after { display: none; }
+  .cycle-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; font-weight: bold; margin: 0 auto 8px; }
+  .cycle-step:nth-child(1) .cycle-num { background: rgba(45,139,186,0.3); color: var(--blue-light); border: 1px solid var(--blue-light); }
+  .cycle-step:nth-child(2) .cycle-num { background: rgba(231,76,60,0.2); color: #e74c3c; border: 1px solid #e74c3c; }
+  .cycle-step:nth-child(3) .cycle-num { background: rgba(39,174,96,0.2); color: var(--green-light); border: 1px solid var(--green-light); }
+  .cycle-step:nth-child(4) .cycle-num { background: rgba(201,168,76,0.2); color: var(--gold-light); border: 1px solid var(--gold); }
+  .cycle-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--white); margin-bottom: 4px; }
+  .cycle-temp { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; margin-bottom: 6px; font-weight: bold; }
+  .cycle-step:nth-child(1) .cycle-temp { color: var(--blue-light); }
+  .cycle-step:nth-child(2) .cycle-temp { color: #e74c3c; }
+  .cycle-step:nth-child(3) .cycle-temp { color: var(--green-light); }
+  .cycle-step:nth-child(4) .cycle-temp { color: var(--gold-light); }
+  .cycle-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+  .cycle-note { margin-top: 12px; background: rgba(201,168,76,0.08); border-left: 3px solid var(--gold); padding: 10px 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.83rem; color: var(--gold-light); border-radius: 0 6px 6px 0; }
+
+  /* Organes */
+  .organes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .organe-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 20px; }
+  .organe-card h3 { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--white); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .organe-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; }
+  .organe-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 5px; }
+  .organe-text { font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text); line-height: 1.4; }
+  .organe-text strong { color: var(--white); }
+
+  /* Produits */
+  .produits {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .produits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .produit-card { background: var(--navy3); border-radius: 10px; padding: 14px 12px; text-align: center; }
+  .produit-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .produit-name { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; font-weight: bold; color: var(--white); margin-bottom: 8px; }
+  .produit-pro { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--green-light); margin-bottom: 3px; text-align: left; }
+  .produit-con { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: #e74c3c; text-align: left; }
+  .badge-best-p { display: inline-block; background: rgba(39,174,96,0.2); border: 1px solid var(--green-light); color: var(--green-light); font-size: 0.62rem; padding: 1px 6px; border-radius: 10px; font-family: 'Trebuchet MS', sans-serif; margin-top: 4px; }
+  .sel-box { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.3); border-radius: 10px; padding: 14px 16px; margin-top: 12px; display: flex; gap: 12px; align-items: center; }
+  .sel-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .sel-text { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--text); line-height: 1.5; }
+  .sel-text strong { color: var(--blue-light); }
+
+  /* Entretien & pannes */
+  .entretien-pannes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .entretien-card, .pannes-card { background: var(--navy2); border-radius: 12px; padding: 20px; }
+  .entretien-card { border: 1px solid rgba(39,174,96,0.25); }
+  .pannes-card { border: 1px solid rgba(231,76,60,0.25); }
+  .entretien-card h3 { color: var(--green-light); }
+  .pannes-card h3 { color: #e74c3c; }
+  .entretien-card h3, .pannes-card h3 { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .entretien-item { display: flex; gap: 8px; margin-bottom: 9px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; }
+  .entretien-item .check { color: var(--green-light); flex-shrink: 0; }
+  .panne-item { margin-bottom: 10px; }
+  .panne-cause { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--white); font-weight: bold; margin-bottom: 2px; }
+  .panne-solution { font-family: 'Trebuchet MS', sans-serif; font-size: 0.73rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Disposition */
+  .disposition {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .dispo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  .dispo-item { background: var(--navy3); border-radius: 8px; padding: 14px; display: flex; gap: 10px; }
+  .dispo-item .di-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .dispo-item .di-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--white); font-weight: bold; margin-bottom: 3px; }
+  .dispo-item .di-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.74rem; color: var(--text-dim); line-height: 1.4; }
+  .innov-box { margin-top: 12px; background: rgba(201,168,76,0.07); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 0 6px 6px 0; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--text-dim); }
+  .innov-box strong { color: var(--gold-light); }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 620px) {
+    .cycles-flow { grid-template-columns: repeat(2, 1fr); }
+    .cycle-step::after { display: none; }
+    .produits-grid { grid-template-columns: repeat(2, 1fr); }
+    .organes, .entretien-pannes, .bras-grid { grid-template-columns: 1fr; }
+    .dispo-grid { grid-template-columns: 1fr; }
+    .circuit-flow { flex-direction: column; }
+    .circuit-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF · Cours 12 · E2</div>
+    <span class="header-icon">🍽️</span>
+    <h1>Le Lave-Vaisselle</h1>
+    <p>Fonctionnement · Cycles · Organes · Produits · Entretien</p>
+  </div>
+
+  <!-- Circuit de l'eau -->
+  <div class="circuit">
+    <div class="section-title">Principe de fonctionnement · Circuit de l'eau</div>
+    <div class="circuit-flow">
+      <div class="circuit-node"><span class="cn-icon">🚰</span><span class="cn-label">Arrivée eau</span><span class="cn-sub">extérieure</span></div>
+      <div class="circuit-arrow">→</div>
+      <div class="circuit-node"><span class="cn-icon">⚡</span><span class="cn-label">Électrovanne</span><span class="cn-sub">régule le débit</span></div>
+      <div class="circuit-arrow">→</div>
+      <div class="circuit-node"><span class="cn-icon">🧂</span><span class="cn-label">Adoucisseur</span><span class="cn-sub">pot à sel</span></div>
+      <div class="circuit-arrow">→</div>
+      <div class="circuit-node"><span class="cn-icon">🔥</span><span class="cn-label">Résistance</span><span class="cn-sub">chauffante</span></div>
+      <div class="circuit-arrow">→</div>
+      <div class="circuit-node"><span class="cn-icon">💦</span><span class="cn-label">Bras d'aspersion</span><span class="cn-sub">rotatifs</span></div>
+      <div class="circuit-arrow">→</div>
+      <div class="circuit-node"><span class="cn-icon">🔄</span><span class="cn-label">Cuve</span><span class="cn-sub">circuit fermé</span></div>
+      <div class="circuit-arrow">→</div>
+      <div class="circuit-node"><span class="cn-icon">🚿</span><span class="cn-label">Vidange</span><span class="cn-sub">tuyau évacuation</span></div>
+    </div>
+    <div class="circuit-note">💡 Circuit fermé : l'eau circule en boucle entre la cuve et les bras d'aspersion pendant tout le programme.</div>
+    <div class="bras-grid" style="margin-top:16px;">
+      <div class="bras-card inf">
+        <div class="bras-title">⬇ Bras inférieur — Haute pression</div>
+        <div class="bras-detail">Vaisselle très sale : assiettes, casseroles, plats. Jet puissant pour décoller les résidus tenaces.</div>
+      </div>
+      <div class="bras-card sup">
+        <div class="bras-title">⬆ Bras supérieur — Faible vitesse</div>
+        <div class="bras-detail">Vaisselle fragile : verres, plastiques, cristallerie. Eau douce pour éviter la casse.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cycles -->
+  <div class="cycles">
+    <div class="section-title">Les 4 étapes d'un cycle de lavage</div>
+    <div class="cycles-flow">
+      <div class="cycle-step">
+        <div class="cycle-num">1</div>
+        <div class="cycle-name">Prélavage</div>
+        <div class="cycle-temp">Froid</div>
+        <div class="cycle-desc">Humidifie et décolle les résidus alimentaires les plus faciles</div>
+      </div>
+      <div class="cycle-step">
+        <div class="cycle-num">2</div>
+        <div class="cycle-name">Lavage</div>
+        <div class="cycle-temp">45–70°C</div>
+        <div class="cycle-desc">Diffusion du lessiviel, dégraissage en profondeur</div>
+      </div>
+      <div class="cycle-step">
+        <div class="cycle-num">3</div>
+        <div class="cycle-name">Rinçage</div>
+        <div class="cycle-temp">Tiède</div>
+        <div class="cycle-desc">Libération du produit de rinçage en dernière phase</div>
+      </div>
+      <div class="cycle-step">
+        <div class="cycle-num">4</div>
+        <div class="cycle-name">Séchage</div>
+        <div class="cycle-temp">Chaud</div>
+        <div class="cycle-desc">Condensation, ventilation ou résistance selon le modèle</div>
+      </div>
+    </div>
+    <div class="cycle-note">💡 Programmes spéciaux selon les modèles : casseroles, fragiles, cycle court, éco…</div>
+  </div>
+
+  <!-- Organes -->
+  <div class="organes">
+    <div class="organe-card">
+      <h3>⚙️ Éléments externes</h3>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Porte frontale</strong> — sécurité anti-ouverture en cours de cycle</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Bandeau électronique</strong> — boutons, sélection des programmes</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Affichage codes erreur</strong> — diagnostic à distance</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Tuyau d'arrivée</strong> — amenée de l'eau depuis le réseau</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Tuyau d'évacuation</strong> — rejet des eaux usées</div></div>
+    </div>
+    <div class="organe-card">
+      <h3>🔩 Organes internes</h3>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Électrovanne</strong> — règle le débit d'eau entrant</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Répartiteur</strong> — oriente vers lavage ou régénération</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Adoucisseur + résines</strong> — anti-tartre, régénérées par le sel</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Pompe de cyclage + résistance</strong> — fait circuler et chauffe l'eau</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Thermostat + pressostat</strong> — contrôle températures et niveaux</div></div>
+      <div class="organe-item"><div class="organe-dot"></div><div class="organe-text"><strong>Pompe de vidange</strong> — évacuation finale des eaux usées</div></div>
+    </div>
+  </div>
+
+  <!-- Produits -->
+  <div class="produits">
+    <div class="section-title">Produits de lavage · Comparatif</div>
+    <div class="produits-grid">
+      <div class="produit-card">
+        <div class="produit-icon">🟦</div>
+        <div class="produit-name">Tablettes</div>
+        <div class="produit-pro">✓ Pratiques, compartiment dédié</div>
+        <div class="produit-con">✗ Coût élevé</div>
+      </div>
+      <div class="produit-card">
+        <div class="produit-icon">🧴</div>
+        <div class="produit-name">Liquide</div>
+        <div class="produit-pro">✓ Très concentré</div>
+        <div class="produit-con">✗ Traces sur verres, prix élevé</div>
+      </div>
+      <div class="produit-card">
+        <div class="produit-icon">🫙</div>
+        <div class="produit-name">Poudre <span class="badge-best-p">Recommandée</span></div>
+        <div class="produit-pro">✓ Dosage précis, cycles courts, bon marché</div>
+        <div class="produit-con">✗ Encombrant</div>
+      </div>
+      <div class="produit-card">
+        <div class="produit-icon">💊</div>
+        <div class="produit-name">Capsules</div>
+        <div class="produit-pro">✓ Dissolution rapide, économiques</div>
+        <div class="produit-con">✗ Dosage moins flexible</div>
+      </div>
+    </div>
+    <div class="sel-box">
+      <div class="sel-icon">🧂</div>
+      <div class="sel-text"><strong>Sel adoucisseur (bac à sel)</strong> — À remplir régulièrement. Régénère les résines pour adoucir l'eau calcaire. Prévient les traces blanches et protège la résistance du tartre.</div>
+    </div>
+  </div>
+
+  <!-- Entretien & Pannes -->
+  <div class="entretien-pannes">
+    <div class="entretien-card">
+      <h3>🧹 Entretien régulier</h3>
+      <div class="entretien-item"><span class="check">✓</span><span>Nettoyer les bras d'aspersion et leurs trous</span></div>
+      <div class="entretien-item"><span class="check">✓</span><span>Nettoyage régulier du filtre (fond de cuve)</span></div>
+      <div class="entretien-item"><span class="check">✓</span><span>Contrôler et déboucher les tuyaux</span></div>
+      <div class="entretien-item"><span class="check">✓</span><span>Nettoyer les joints de porte au vinaigre blanc</span></div>
+      <div class="entretien-item"><span class="check">✓</span><span>Cycle à vide à T° max : désinfecte et détartre</span></div>
+      <div class="entretien-item"><span class="check">💡</span><span>Attendre 15 min après cycle, décharger par le bas en premier</span></div>
+    </div>
+    <div class="pannes-card">
+      <h3>⚠️ Pannes courantes</h3>
+      <div class="panne-item">
+        <div class="panne-cause">Machine ne démarre pas</div>
+        <div class="panne-solution">Cordon débranché, sécurité porte, interrupteur</div>
+      </div>
+      <div class="panne-item">
+        <div class="panne-cause">Cuve se remplit trop</div>
+        <div class="panne-solution">Détecteur de niveau ou débitmètre défaillant</div>
+      </div>
+      <div class="panne-item">
+        <div class="panne-cause">Pas d'eau du tout</div>
+        <div class="panne-solution">Robinet coupé, tuyau débranché, électrovanne HS</div>
+      </div>
+      <div class="panne-item">
+        <div class="panne-cause">Eau ne chauffe pas</div>
+        <div class="panne-solution">Résistance défaillante</div>
+      </div>
+      <div class="panne-item">
+        <div class="panne-cause">Fuites</div>
+        <div class="panne-solution">Porte défectueuse, joints usés, moulinet fendu</div>
+      </div>
+      <div class="panne-item">
+        <div class="panne-cause">Vaisselle mal lavée</div>
+        <div class="panne-solution">Bras d'aspersion cassés ou appareil trop chargé</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disposition -->
+  <div class="disposition">
+    <div class="section-title">Règles de disposition & innovations</div>
+    <div class="dispo-grid">
+      <div class="dispo-item">
+        <div class="di-icon">⬇</div>
+        <div><div class="di-title">Panier inférieur</div><div class="di-desc">Pièces très sales : assiettes, plats, casseroles. Eau haute pression.</div></div>
+      </div>
+      <div class="dispo-item">
+        <div class="di-icon">⬆</div>
+        <div><div class="di-title">Panier supérieur</div><div class="di-desc">Pièces fragiles : verres, cristallerie, plastiques. Eau douce.</div></div>
+      </div>
+      <div class="dispo-item">
+        <div class="di-icon">⚖️</div>
+        <div><div class="di-title">Ne pas surcharger</div><div class="di-desc">Les bras d'aspersion doivent pouvoir tourner librement pour arroser correctement.</div></div>
+      </div>
+      <div class="dispo-item">
+        <div class="di-icon">✋</div>
+        <div><div class="di-title">Laver à la main</div><div class="di-desc">Verres décorés, argenterie de valeur, récipients brûlés ou noircis.</div></div>
+      </div>
+    </div>
+    <div class="innov-box"><strong>Innovations récentes :</strong> anti-débordement, insonorisation accrue, programmes diversifiés, démarrage différé.</div>
+  </div>
+
+  <div class="footer">BTS ESF · Cours 12 · Le Lave-Vaisselle · Épreuve E2 — Conseil et Expertise Technologiques</div>
+</div>
+</body>
+</html>

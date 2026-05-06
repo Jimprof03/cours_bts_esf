@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Confort Acoustique | BTS ESF</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF — Habitat Logement</div>
+    <h1>Confort Acoustique</h1>
+    <div class="meta">Quiz de révision · 25 questions · E2 Conseil & Expertise Technologiques</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 25</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  // PERCEPTION DU BRUIT
+  { q: "En quelle unité mesure-t-on l'intensité sonore ?", opts: ["Hertz (Hz)","Décibels (dB)","Watts (W)","Pascals (Pa)"], ans: 1, fb: "L'intensité sonore (aussi appelée niveau sonore) se mesure en décibels (dB) à l'aide d'un sonomètre." },
+  { q: "Qu'est-ce que le seuil d'audibilité ?", opts: ["Le niveau à partir duquel le bruit devient douloureux","Le niveau minimum que l'oreille humaine peut percevoir (0 dB)","Le niveau sonore moyen d'une rue animée","Le niveau réglementaire dans les logements"], ans: 1, fb: "0 dB correspond au seuil d'audibilité : le minimum que l'oreille humaine peut percevoir. Le seuil de douleur est à 120 dB." },
+  { q: "À partir de quel niveau sonore l'oreille peut-elle subir des dommages, même sans douleur ?", opts: ["60 dB","70 dB","85 dB","100 dB"], ans: 2, fb: "L'oreille commence à souffrir à partir de 85 dB pendant 8 heures, bien avant le seuil de douleur situé à 120 dB." },
+  { q: "Que se passe-t-il si on double le nombre de sources sonores identiques (ex : 70 dB + 70 dB) ?", opts: ["Le niveau double : 140 dB","Le niveau augmente de 3 dB : 73 dB","Le niveau augmente de 10 dB : 80 dB","Le niveau reste identique : 70 dB"], ans: 1, fb: "Les décibels sont logarithmiques et ne s'additionnent pas linéairement. Doubler la source n'ajoute que 3 dB au niveau initial." },
+  { q: "Quelle est la fréquence de perception de l'oreille humaine ?", opts: ["Entre 1 Hz et 1 000 Hz","Entre 20 Hz et 20 000 Hz","Entre 100 Hz et 10 000 Hz","Entre 50 Hz et 50 000 Hz"], ans: 1, fb: "L'oreille humaine perçoit les sons entre 20 Hz (très grave) et 20 000 Hz (très aigu). En deçà : infrasons. Au-delà : ultrasons." },
+  { q: "Un son grave correspond à quelle fréquence ?", opts: ["Fréquence élevée","Fréquence faible","Amplitude élevée","Amplitude faible"], ans: 1, fb: "À fréquence faible correspond un son grave, à fréquence élevée un son aigu. La fréquence se mesure en Hertz (Hz)." },
+  // ANATOMIE DE L'OREILLE
+  { q: "Quel est le rôle de l'oreille externe ?", opts: ["Transformer les vibrations en influx nerveux","Collecter, amplifier et diriger les ondes sonores vers le tympan","Maintenir l'équilibre de l'organisme","Contenir la cochlée et l'organe de Corti"], ans: 1, fb: "L'oreille externe (pavillon + conduit auditif) collecte, localise, amplifie et dirige les ondes sonores vers le tympan." },
+  { q: "Quel est le rôle de la chaîne des osselets (marteau, enclume, étrier) ?", opts: ["Transformer l'énergie acoustique en influx nerveux","Équilibrer la pression de l'oreille","Transformer les vibrations aériennes en vibrations solidiennes","Amplifier les sons aigus uniquement"], ans: 2, fb: "Les osselets de l'oreille moyenne transforment mécaniquement les vibrations aériennes en vibrations solidiennes transmises à l'oreille interne." },
+  { q: "Où se trouvent les cellules ciliées qui captent l'énergie acoustique ?", opts: ["Dans le conduit auditif externe","Dans le tympan","Dans l'organe de Corti (cochlée)","Dans les canaux semi-circulaires"], ans: 2, fb: "Les cellules ciliées se trouvent dans l'organe de Corti, au sein de la cochlée (oreille interne). Elles transforment l'énergie acoustique en influx nerveux." },
+  // TYPES DE BRUITS
+  { q: "Un bruit de pas dans l'appartement du dessus est un exemple de quel type de bruit ?", opts: ["Bruit aérien extérieur","Bruit aérien intérieur","Bruit d'impact ou de choc","Bruit d'équipement"], ans: 2, fb: "Les bruits de pas, de meubles déplacés, d'objets qui tombent sont des bruits d'impact : ils mettent en vibration la structure du bâtiment et se propagent très vite et loin." },
+  { q: "Le bruit d'un réfrigérateur ou d'un ascenseur appartient à quelle catégorie ?", opts: ["Bruit aérien extérieur","Bruit d'impact","Bruit d'équipement","Bruit solidien de choc"], ans: 2, fb: "Les bruits provenant des appareils électroménagers, VMC, ascenseurs, tuyauteries sont des bruits d'équipement — ils peuvent être aériens ou d'impact." },
+  { q: "Comment se propage principalement un bruit aérien ?", opts: ["À travers la structure du bâtiment (planchers, murs)","Dans l'air, puis en faisant vibrer les parois","Uniquement par conduction solidienne","Par rayonnement infrarouge"], ans: 1, fb: "Les bruits aériens (voix, TV, trafic) se propagent dans l'air puis font vibrer les parois qui les transmettent aux locaux adjacents." },
+  { q: "Qu'est-ce que la réverbération ?", opts: ["La transmission directe du son à travers une cloison","La réflexion des ondes sur les parois qui entretient et amplifie le bruit","L'absorption du son par un matériau isolant","La propagation solidienne d'un bruit d'impact"], ans: 1, fb: "La réverbération : les ondes sonores rebondissent sur les parois et continuent à se propager dans le local, augmentant ainsi le niveau sonore perçu." },
+  // EFFETS DU BRUIT
+  { q: "Qu'est-ce que la fatigue auditive ?", opts: ["Une perte auditive irréversible due au bruit","Une élévation temporaire des seuils d'audition — signal d'alarme réversible","Un acouphène permanent","Une surdité de transmission"], ans: 1, fb: "La fatigue auditive est une élévation temporaire des seuils d'audition (5 à 10 dB). C'est réversible si on se repose, mais c'est un signal d'alarme à ne pas ignorer." },
+  { q: "Que sont les acouphènes ?", opts: ["Une perte totale de l'audition","Des sifflements ou bourdonnements perçus sans source sonore externe — signe de traumatisme","Une hypersensibilité aux sons aigus uniquement","Un type de surdité de transmission traitable"], ans: 1, fb: "Les acouphènes sont des sifflements ou bourdonnements dans les oreilles sans source externe. Ils signalent un traumatisme sonore et sont très invalidants." },
+  { q: "Quelle différence y a-t-il entre surdité de transmission et surdité de perception ?", opts: ["Elles sont identiques, seule la terminologie change","La surdité de transmission touche l'oreille interne et est irréversible ; la surdité de perception touche l'oreille externe","La surdité de transmission (oreille externe/moyenne) est souvent traitable ; la surdité de perception (oreille interne) est souvent irréversible","La surdité de perception est toujours héréditaire"], ans: 2, fb: "La surdité de transmission (bouchon, otite...) touche l'oreille externe ou moyenne et est souvent traitable. La surdité de perception touche l'oreille interne (traumatisme sonore) et est souvent irréversible." },
+  { q: "Quel niveau sonore l'OMS recommande-t-elle la nuit pour un sommeil de qualité ?", opts: ["20 dB","30 dB","40 dB","50 dB"], ans: 1, fb: "L'OMS recommande un niveau inférieur à 30 dB en moyenne pendant la nuit pour un sommeil de bonne qualité." },
+  { q: "Au rang des maladies professionnelles, à quelle place se situent les surdités professionnelles en France ?", opts: ["1ère place","2ème place","4ème place","8ème place"], ans: 2, fb: "Les surdités professionnelles se situent au 4ème rang des maladies professionnelles en France. Plus de 3 millions de salariés sont exposés à des niveaux nocifs." },
+  // ISOLATION PHONIQUE
+  { q: "Quelle est la Nouvelle Réglementation Acoustique (NRA) et depuis quand existe-t-elle ?", opts: ["Un label volontaire créé en 2010","La réglementation mise en place en 1996 fixant les niveaux maximum admis selon le type de bruit dans les bâtiments","Un décret européen de 2017 sur les aéroports uniquement","La première réglementation acoustique française de 1970"], ans: 1, fb: "La NRA (Nouvelle Réglementation Acoustique) date de 1996. Elle fixe pour les professionnels du bâtiment les niveaux maximum admis selon le type de bruit (58 dB impact, 53 dB aérien intérieur, 30 dB extérieur)." },
+  { q: "Quel est le principe du système 'masse-ressort-masse' en isolation phonique ?", opts: ["Une paroi très épaisse et lourde qui bloque le son","Deux parois (masses) séparées par un matériau absorbant ou de l'air (ressort) qui empêche les vibrations de se propager","Une paroi recouverte d'un revêtement mou","Un double mur en béton sans espace entre les deux"], ans: 1, fb: "Le principe masse-ressort-masse est le plus couramment utilisé : 2 parois séparées par un isolant ou de l'air. Le ressort absorbe les vibrations entre les deux masses. Applications : double vitrage, faux plafond, contre-cloison..." },
+  { q: "Quel est le principal inconvénient du principe de masse (paroi très épaisse) pour l'isolation ?", opts: ["Il ne fonctionne que contre les bruits aigus","Augmenter la masse réduit l'espace à vivre","Il est trop coûteux à mettre en oeuvre","Il nécessite des matériaux importés"], ans: 1, fb: "Le principe de masse est efficace (plus une paroi est épaisse et dense, moins le son passe) mais augmenter l'épaisseur réduit l'espace habitable." },
+  { q: "Quelle technique d'isolation est la plus efficace selon le cours ?", opts: ["Le principe de masse simple","Le système masse-ressort-masse","La désolidarisation (boîte dans la boîte)","Les dalles de polystyrène au plafond"], ans: 2, fb: "La désolidarisation ou 'boîte dans la boîte' est la technique la plus efficace : chaque élément de structure est désolidarisé des autres pour empêcher la propagation des vibrations." },
+  { q: "Quelle solution est recommandée pour améliorer l'isolation phonique des fenêtres ?", opts: ["Poser des rideaux épais","Remplacer le simple vitrage par un double vitrage ou poser un survitrage côté intérieur","Utiliser des joints en caoutchouc sur les bords","Remplacer les fenêtres par des briques"], ans: 1, fb: "Deux options pour les fenêtres : remplacer le simple vitrage par un double vitrage, ou conserver le simple en posant un survitrage côté intérieur. Les deux appliquent le principe masse-ressort-masse." },
+  { q: "Qu'est-ce que l'indice Rw d'un isolant ?", opts: ["L'indice d'affaiblissement acoustique pour les bruits d'impact","L'indice d'affaiblissement acoustique pour les bruits aériens","La résistance thermique du matériau","Le niveau sonore maximal autorisé par la NRA"], ans: 1, fb: "L'indice Rw mesure la capacité d'un isolant à atténuer les bruits aériens. L'indice Lw concerne les bruits d'impact. Plus ces indices sont élevés, plus l'isolant est performant." },
+  { q: "Quel niveau sonore extérieur ne doit pas être dépassé à l'intérieur d'un logement le jour, selon la réglementation ?", opts: ["20 dB","30 dB","35 dB","50 dB"], ans: 2, fb: "La réglementation acoustique impose un niveau maximal de 35 dB le jour à l'intérieur du logement (30 dB la nuit, 20 dB pour une chambre au calme)." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function init() {
+  shuffled = shuffle(questions); current = 0; score = 0; answered = false;
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('score-panel').classList.remove('show');
+  renderQuestion();
+}
+function renderQuestion() {
+  answered = false;
+  document.getElementById('btn-next').disabled = true;
+  const q = shuffled[current];
+  document.getElementById('progress').style.width = (current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent = `Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML = `
+    <div class="question-card">
+      <div class="question-num">Question ${current+1}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div>
+      <div class="feedback" id="feedback"></div>
+    </div>`;
+}
+function answer(idx) {
+  if (answered) return; answered = true;
+  const q = shuffled[current];
+  const btns = document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);
+  btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if (idx!==q.ans) btns[q.ans].classList.add('correct');
+  if (idx===q.ans) score++;
+  const fb = document.getElementById('feedback');
+  fb.textContent = (idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className = 'feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled = false;
+  if (current===shuffled.length-1) document.getElementById('btn-next').textContent = 'Voir mon score →';
+}
+function nextQuestion() { current++; current>=shuffled.length ? showScore() : renderQuestion(); }
+function showScore() {
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;
+  document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);
+  document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart() { init(); }
+init();
+</script>
+</body>
+</html>
