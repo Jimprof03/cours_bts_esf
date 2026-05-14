@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Le Système Respiratoire | BTS ESF SAH</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --green: #2ecc71; --red: #e74c3c;
+    --green-bg: rgba(46,204,113,0.15); --red-bg: rgba(231,76,60,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; padding: 20px; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { text-align: center; padding: 40px 20px 30px; border-bottom: 1px solid rgba(201,168,76,0.3); margin-bottom: 30px; }
+  .subtitle { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--white); font-weight: normal; }
+  .meta { margin-top: 10px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
+  .progress-bar { background: var(--navy2); border-radius: 4px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; color: var(--text-dim); text-align: right; margin-bottom: 20px; }
+  .question-card { background: var(--navy2); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 28px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .question-num { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .question-text { font-size: 1.05rem; line-height: 1.6; color: var(--white); margin-bottom: 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { background: var(--navy3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 18px; cursor: pointer; font-family: 'Trebuchet MS', sans-serif; font-size: 0.92rem; color: var(--text); text-align: left; transition: all 0.2s; }
+  .option:hover:not(:disabled) { border-color: var(--gold); color: var(--white); background: rgba(201,168,76,0.1); }
+  .option.correct { background: var(--green-bg); border-color: var(--green); color: #a8f5c9; }
+  .option.wrong { background: var(--red-bg); border-color: var(--red); color: #f5b8b3; }
+  .option:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.5; display: none; }
+  .feedback.show { display: block; animation: fadeIn 0.2s ease; }
+  .feedback.correct-fb { background: var(--green-bg); border-left: 3px solid var(--green); color: #a8f5c9; }
+  .feedback.wrong-fb { background: var(--red-bg); border-left: 3px solid var(--red); color: #f5b8b3; }
+  .nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 24px; border-radius: 6px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+  .btn:hover { background: var(--gold); color: var(--navy); }
+  .btn.primary { background: var(--gold); color: var(--navy); font-weight: bold; }
+  .score-panel { display: none; text-align: center; padding: 50px 20px; animation: fadeIn 0.5s ease; }
+  .score-panel.show { display: block; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--gold); margin: 0 auto 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--navy2); }
+  .score-number { font-size: 2.8rem; color: var(--gold-light); font-weight: bold; }
+  .score-total { font-size: 0.85rem; color: var(--text-dim); font-family: 'Trebuchet MS', sans-serif; }
+  .score-msg { font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
+  .score-pct { font-family: 'Trebuchet MS', sans-serif; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 30px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="subtitle">BTS ESF · SAH 1ère année</div>
+    <h1>Le Système Respiratoire</h1>
+    <div class="meta">Quiz de révision · 20 questions · Ventilation · Hématose · Échanges gazeux</div>
+  </header>
+  <div id="quiz-area">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+    <div id="question-container"></div>
+    <div class="nav"><button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Question suivante →</button></div>
+  </div>
+  <div class="score-panel" id="score-panel">
+    <div class="score-circle">
+      <div class="score-number" id="score-num">0</div>
+      <div class="score-total" id="score-tot">/ 20</div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-pct" id="score-pct"></div>
+    <button class="btn primary" style="padding:12px 32px;font-size:1rem" onclick="restart()">Recommencer le quiz</button>
+  </div>
+</div>
+<script>
+const questions = [
+  { q: "Quels sont les deux processus assurés par l'appareil respiratoire ?", opts: ["La digestion et l'absorption","La ventilation et l'hématose","La circulation sanguine et la filtration rénale","La thermorégulation et la transpiration"], ans: 1, fb: "L'appareil respiratoire assure la VENTILATION (mouvement de l'air dans les poumons) et l'HÉMATOSE (transformation du sang veineux chargé de CO₂ en sang artériel chargé d'O₂)." },
+  { q: "Quels organes composent les voies aériennes supérieures ?", opts: ["La trachée, les bronches et les bronchioles","Les fosses nasales, le pharynx et le larynx","Les alvéoles, la plèvre et le diaphragme","Les poumons, les capillaires et les globules rouges"], ans: 1, fb: "Les voies aériennes SUPÉRIEURES sont : fosses nasales, pharynx et larynx. Leur rôle est d'arrêter les grosses particules grâce aux poils et au réflexe d'éternuement." },
+  { q: "Quel est le rôle des voies aériennes inférieures (trachée, bronches) ?", opts: ["Produire l'oxygène nécessaire à la respiration cellulaire","Arrêter les petites particules de 5 à 8 microns en les enrobant de mucus","Filtrer le sang et éliminer le CO₂ directement","Réguler la température et l'humidité de l'air inspiré"], ans: 1, fb: "Les voies aériennes inférieures arrêtent les petites particules (5 à 8 microns). Ces particules sont enrobées de mucus qui tapisse la trachée et les bronches, puis remontées vers le larynx en 2 à 4 heures." },
+  { q: "Combien de lobes possède le poumon droit, et combien le poumon gauche ?", opts: ["2 lobes à droite, 3 lobes à gauche","3 lobes à droite, 2 lobes à gauche (le gauche partage l'espace avec le cœur)","2 lobes chacun, car ils sont parfaitement symétriques","4 lobes à droite, 3 lobes à gauche"], ans: 1, fb: "Le poumon DROIT a 3 lobes, le poumon GAUCHE n'en a que 2 car il partage l'espace du thorax avec le cœur." },
+  { q: "Quelle est la surface totale des alvéoles pulmonaires des deux poumons réunis ?", opts: ["3 m² (environ la surface d'un lit)","5 000 m² (la surface d'un terrain de foot)","80 m² (environ la surface d'une maison)","1 m² (la surface d'une table)"], ans: 2, fb: "La surface totale des alvéoles pulmonaires est d'environ 80 m² — comparable à la surface d'une maison ! C'est cette immense surface qui permet des échanges gazeux très efficaces." },
+  { q: "Quel est le rôle du surfactant dans les alvéoles ?", opts: ["Transporter l'oxygène du sang vers les cellules","Stabiliser les alvéoles en position ouverte pour éviter leur affaissement","Lubrifier les parois de la trachée pour faciliter le passage de l'air","Produire le mucus qui capture les particules dans les bronches"], ans: 1, fb: "Le surfactant est une substance sécrétée par les pneumocytes (cellules de la paroi alvéolaire). Il stabilise les alvéoles en position ouverte, évitant leur affaissement à chaque expiration." },
+  { q: "Quelle est la membrane qui relie les poumons à la cage thoracique ?", opts: ["Le péricarde, qui entoure le cœur","Le péritoine, qui entoure les organes abdominaux","La plèvre, qui contient le liquide pleural","L'épithélium bronchique, qui tapisse les bronches"], ans: 2, fb: "La PLÈVRE est la membrane qui rend les poumons solidaires de la cage thoracique. Elle contient le liquide pleural qui réduit les frottements lors des mouvements respiratoires." },
+  { q: "Lors de l'inspiration, que se passe-t-il ?", opts: ["Les muscles se relâchent, le volume diminue et la pression augmente","Le diaphragme se contracte, la cage thoracique s'élève, le volume augmente et la pression baisse","Le diaphragme se relâche, la cage thoracique descend et l'air est expulsé","Les muscles abdominaux se contractent et compriment les poumons"], ans: 1, fb: "Lors de l'inspiration : contraction du DIAPHRAGME et des MUSCLES INTERCOSTAUX EXTERNES → cage thoracique s'élève → volume des poumons AUGMENTE → pression de l'air BAISSE → l'air s'engouffre (O₂ entre)." },
+  { q: "L'expiration normale est-elle active ou passive ?", opts: ["Active : les muscles expirateurs se contractent pour chasser l'air","Passive : les muscles se relâchent, la cage thoracique rétrécit et l'air est expulsé","Active : le diaphragme pousse activement l'air vers le haut","Passive : les alvéoles se vident automatiquement sous l'effet de la gravité"], ans: 1, fb: "L'expiration normale est PASSIVE : les muscles se relâchent simplement → taille des poumons rétrécit → pression de l'air augmente → l'air est expulsé. Aucune contraction musculaire n'est nécessaire au repos." },
+  { q: "Qu'est-ce que l'hématose ?", opts: ["Le trajet de l'air des narines jusqu'aux alvéoles pulmonaires","L'échange d'O₂ contre CO₂ au niveau des alvéoles : le sang veineux devient artériel","La fabrication des globules rouges dans la moelle osseuse rouge","Le filtrage des toxines par le foie au cours de la digestion"], ans: 1, fb: "L'HÉMATOSE est l'échange gazeux au niveau des alvéoles : l'O₂ passe de l'air alvéolaire vers le sang, et le CO₂ passe du sang vers les alvéoles pour être expiré. Le sang veineux devient ainsi du sang artériel." },
+  { q: "Quel est le rôle de l'hémoglobine dans la respiration ?", opts: ["Produire l'énergie (ATP) nécessaire aux cellules","Fixer et transporter l'O₂ dans le sang grâce à sa richesse en fer","Détruire les micro-organismes pathogènes présents dans le sang","Réguler le pH sanguin en neutralisant le CO₂ dissous"], ans: 1, fb: "L'HÉMOGLOBINE est une protéine riche en FER, présente dans les globules rouges. Elle fixe l'O₂ au niveau des alvéoles puis le libère au niveau des cellules des organes. C'est le principal transporteur d'oxygène du sang." },
+  { q: "Selon quel principe les gaz diffusent-ils lors des échanges respiratoires ?", opts: ["Les gaz passent toujours d'une basse pression vers une haute pression","Les gaz passent toujours d'une haute pression partielle vers une basse pression partielle","Les gaz se déplacent selon la température, du chaud vers le froid","Les gaz sont activement pompés par les contractions cardiaques"], ans: 1, fb: "Les échanges gazeux suivent le GRADIENT DE PRESSION PARTIELLE : un gaz diffuse toujours d'un compartiment où sa pression partielle est ÉLEVÉE vers un compartiment où elle est PLUS FAIBLE. C'est un mécanisme passif, sans dépense d'énergie." },
+  { q: "Au niveau des alvéoles, dans quel sens circule l'O₂ ?", opts: ["Du sang vers les alvéoles : le sang libère son O₂ dans l'air","Des alvéoles vers les capillaires sanguins : l'O₂ passe dans le sang","Des alvéoles directement vers les cellules des organes sans passer par le sang","Du sang vers l'air ambiant lors de chaque expiration"], ans: 1, fb: "Au niveau alvéolaire, l'O₂ est en HAUTE pression dans l'air inspiré, et en BASSE pression dans le sang veineux → l'O₂ diffuse des ALVÉOLES vers les CAPILLAIRES SANGUINS, où il se fixe sur l'hémoglobine." },
+  { q: "Que se passe-t-il lors des échanges gazeux dans les organes (niveau tissulaire) ?", opts: ["L'O₂ quitte les cellules vers le sang, et le CO₂ passe du sang vers les cellules","L'O₂ passe du sang vers les cellules, et le CO₂ passe des cellules vers le sang","Les échanges gazeux ont lieu uniquement au niveau des poumons","Le sang dépose directement le glucose dans les cellules, sans échange de gaz"], ans: 1, fb: "Au niveau TISSULAIRE : les cellules consomment l'O₂ (faible pression en O₂) → l'O₂ passe du sang vers les cellules. Les cellules produisent du CO₂ (forte pression en CO₂) → le CO₂ passe des cellules vers le sang pour être transporté aux poumons." },
+  { q: "Quelle est l'équation de la respiration cellulaire ?", opts: ["CO₂ + H₂O → Glucose + O₂ + Énergie","Glucose + O₂ → Énergie (ATP) + H₂O + CO₂","O₂ + ATP → Glucose + CO₂ + chaleur","Glucose → CO₂ + H₂O sans consommation d'O₂"], ans: 1, fb: "Respiration cellulaire : Glucose + O₂ → Énergie (ATP) + H₂O + CO₂. Le glucose et l'O₂ sont les réactifs. L'ATP (énergie), l'eau et le CO₂ sont les produits. Le CO₂ est un déchet expulsé lors de l'expiration." },
+  { q: "Qu'est-ce que l'ATP dans la respiration cellulaire ?", opts: ["Un gaz rejeté par les cellules lors de leur activité métabolique","La molécule d'énergie produite et utilisée par les cellules pour toutes leurs fonctions","Une protéine qui transporte l'oxygène dans les globules rouges du sang","Un déchet gazeux éliminé par les poumons lors de l'expiration"], ans: 1, fb: "L'ATP (Adénosine TriPhosphate) est la molécule d'ÉNERGIE produite lors de la respiration cellulaire. C'est la 'monnaie énergétique' des cellules : elles l'utilisent pour toutes leurs fonctions (contraction musculaire, synthèse de protéines...)." },
+  { q: "Quel gaz est qualifié de déchet lors de la respiration cellulaire ?", opts: ["L'oxygène (O₂), consommé par les cellules","L'eau (H₂O), produite lors de la réaction","Le dioxyde de carbone (CO₂), rejeté par les cellules","L'azote (N₂), présent en grande quantité dans l'air"], ans: 2, fb: "Le CO₂ (dioxyde de carbone) est le déchet de la respiration cellulaire. Produit par les cellules, il passe dans le sang, est transporté jusqu'aux poumons et éliminé lors de l'EXPIRATION." },
+  { q: "Quelle est la taille approximative d'un poumon adulte ?", opts: ["5 cm de haut et 3 cm de diamètre environ","20 cm de haut et 10 cm de diamètre environ","30 cm de haut et 20 cm de diamètre environ","10 cm de haut et 5 cm de diamètre environ"], ans: 1, fb: "Un poumon adulte mesure environ 20 cm de haut et 10 cm de diamètre." },
+  { q: "Quel est le rôle du mucus dans les bronches et la trachée ?", opts: ["Produire de l'O₂ pour alimenter les cellules bronchiques en énergie","Enrober les petites particules (5-8 microns) et les éliminer vers le larynx en 2 à 4 heures","Lubrifier les alvéoles pour faciliter les échanges gazeux avec le sang","Transporter le CO₂ des tissus vers les poumons pour l'expiration"], ans: 1, fb: "Le mucus qui tapisse la trachée et les bronches enrobe les petites particules inhalées (5 à 8 microns). Ces particules sont ensuite remontées vers le larynx en 2 à 4 heures grâce aux cils bronchiques, puis évacuées par déglutition ou expectoration." },
+  { q: "Où ont lieu les échanges gazeux de l'hématose ?", opts: ["Dans la trachée, grâce aux anneaux cartilagineux qui la rigidifient","Au niveau des alvéoles pulmonaires, entourées de capillaires sanguins","Dans le pharynx, lors du passage de l'air vers les poumons","Dans les bronches, grâce au mucus qui tapisse leurs parois"], ans: 1, fb: "L'hématose se déroule au niveau des ALVÉOLES PULMONAIRES. Leur paroi très fine et leur richesse en capillaires sanguins permettent les échanges rapides entre l'air alvéolaire et le sang. La surface de 80 m² maximise l'efficacité de ces échanges." }
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function init() { shuffled=shuffle(questions);current=0;score=0;answered=false;document.getElementById('quiz-area').style.display='block';document.getElementById('score-panel').classList.remove('show');renderQuestion(); }
+function shuffleOpts(q) {
+  const indices = q.opts.map((_,i) => i);
+  for(let i=indices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+  const newOpts = indices.map(i => q.opts[i]);
+  const newAns = indices.indexOf(q.ans);
+  return {...q, opts: newOpts, ans: newAns};
+}
+let currentQ = null;
+function renderQuestion() {
+  answered=false;document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent=`Question ${current+1} / ${shuffled.length}`;
+  document.getElementById('question-container').innerHTML=`<div class="question-card"><div class="question-num">Question ${current+1}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;
+}
+function answer(idx) {
+  if(answered)return;answered=true;
+  const q=currentQ;const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>b.disabled=true);btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  if(idx!==q.ans)btns[q.ans].classList.add('correct');if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');fb.textContent=(idx===q.ans?'✓ ':'✗ ')+q.fb;
+  fb.className='feedback show '+(idx===q.ans?'correct-fb':'wrong-fb');
+  document.getElementById('btn-next').disabled=false;
+  if(current===shuffled.length-1)document.getElementById('btn-next').textContent='Voir mon score →';
+}
+function nextQuestion(){current++;current>=shuffled.length?showScore():renderQuestion();}
+function showScore(){
+  document.getElementById('quiz-area').style.display='none';document.getElementById('score-panel').classList.add('show');
+  document.getElementById('score-num').textContent=score;document.getElementById('score-tot').textContent='/ '+shuffled.length;
+  const pct=Math.round(score/shuffled.length*100);document.getElementById('score-pct').textContent=pct+'% de bonnes réponses';
+  document.getElementById('score-msg').textContent=pct>=90?'🏆 Excellent ! Maîtrise complète du cours.':pct>=75?'👍 Bon résultat ! Quelques points à revoir.':pct>=60?'📖 Passable. Relire le cours s\'impose.':'⚠️ Des lacunes importantes à combler.';
+}
+function restart(){init();}
+init();
+</script>
+</body>
+</html>

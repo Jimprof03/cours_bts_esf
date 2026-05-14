@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographie – Le Système Respiratoire | BTS ESF SAH</title>
+<style>
+  :root {
+    --navy: #0a1628; --navy2: #112240; --navy3: #1a3a5c;
+    --gold: #c9a84c; --gold-light: #f0c96b;
+    --white: #f0f4f8; --text: #ccd6f6; --text-dim: #8892b0;
+    --blue-light: #2d8bba; --teal: #1abc9c;
+    --green: #27ae60; --green-light: #2ecc71;
+    --red: #e74c3c; --orange: #e67e22; --purple: #8e44ad;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Georgia', serif; padding: 20px; }
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { background: linear-gradient(135deg, var(--navy2), #0d2137); border: 1px solid rgba(201,168,76,0.4); border-radius: 14px; padding: 36px 30px; text-align: center; margin-bottom: 22px; }
+  .badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .header-icon { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+  .header h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--white); font-weight: normal; margin-bottom: 8px; }
+  .header p { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; color: var(--text-dim); }
+
+  .section-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+
+  /* Définition */
+  .definition { background: var(--navy2); border: 1px solid rgba(201,168,76,0.25); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+  .def-text { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; line-height: 1.7; color: var(--text); }
+  .def-eq { display: flex; align-items: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  .def-pill { background: var(--navy3); border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; padding: 10px 18px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--white); text-align: center; }
+  .def-pill span { display: block; font-size: 0.68rem; color: var(--text-dim); margin-top: 3px; }
+  .def-plus { color: var(--gold); font-size: 1.4rem; font-weight: bold; }
+
+  /* Schéma appareil respiratoire */
+  .schema { background: var(--navy2); border: 1px solid rgba(45,139,186,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .schema svg { width: 100%; height: auto; display: block; }
+
+  /* Voies aériennes */
+  .voies { background: var(--navy2); border: 1px solid rgba(45,139,186,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .voies-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .voie-card { border-radius: 10px; padding: 16px; }
+  .voie-card.sup { background: rgba(45,139,186,0.1); border: 1px solid rgba(45,139,186,0.4); }
+  .voie-card.inf { background: rgba(26,188,156,0.1); border: 1px solid rgba(26,188,156,0.4); }
+  .voie-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; }
+  .voie-card.sup .voie-title { color: var(--blue-light); }
+  .voie-card.inf .voie-title { color: var(--teal); }
+  .voie-item { font-family: 'Trebuchet MS', sans-serif; font-size: 0.76rem; color: var(--text-dim); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .voie-item:last-child { border-bottom: none; }
+  .voie-item strong { color: var(--white); }
+
+  /* Poumons */
+  .poumons { background: var(--navy2); border: 1px solid rgba(230,126,34,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .poumons-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .p-card { background: var(--navy3); border-radius: 10px; padding: 14px 12px; text-align: center; }
+  .p-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .p-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.8rem; font-weight: bold; color: var(--gold-light); margin-bottom: 4px; }
+  .p-desc { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* Ventilation */
+  .ventilation { background: var(--navy2); border: 1px solid rgba(39,174,96,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .vent-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .vent-card { border-radius: 10px; padding: 16px; }
+  .vent-card.inspi { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.4); }
+  .vent-card.expi { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.4); }
+  .vent-title { font-family: 'Trebuchet MS', sans-serif; font-size: 0.88rem; font-weight: bold; margin-bottom: 10px; }
+  .vent-card.inspi .vent-title { color: var(--green-light); }
+  .vent-card.expi .vent-title { color: var(--red); }
+  .vent-step { font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; color: var(--text-dim); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; }
+  .vent-step:last-child { border-bottom: none; }
+  .vent-arrow { flex-shrink: 0; }
+
+  /* Hématose */
+  .hematose { background: var(--navy2); border: 1px solid rgba(231,76,60,0.25); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .hema-schema { background: var(--navy3); border-radius: 10px; padding: 18px; margin-top: 14px; }
+  .hema-flow { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .hema-box { background: var(--navy2); border-radius: 8px; padding: 10px 14px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.75rem; text-align: center; }
+  .hema-box.alveole { border: 1px solid rgba(45,139,186,0.5); }
+  .hema-box.sang { border: 1px solid rgba(231,76,60,0.5); }
+  .hema-box.cellule { border: 1px solid rgba(39,174,96,0.5); }
+  .hema-box-label { font-size: 0.65rem; color: var(--text-dim); margin-bottom: 4px; }
+  .hema-box-val { font-weight: bold; }
+  .hema-box.alveole .hema-box-val { color: var(--blue-light); }
+  .hema-box.sang .hema-box-val { color: var(--red); }
+  .hema-box.cellule .hema-box-val { color: var(--green-light); }
+  .hema-arrow { color: var(--gold); font-size: 1.2rem; }
+  .hema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hema-item { background: var(--navy2); border-radius: 8px; padding: 12px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.76rem; color: var(--text-dim); line-height: 1.5; }
+  .hema-item strong { color: var(--white); display: block; margin-bottom: 4px; }
+
+  /* Respiration cellulaire */
+  .resp-cell { background: var(--navy2); border: 1px solid rgba(142,68,173,0.3); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .equation { background: var(--navy3); border-radius: 10px; padding: 18px; margin-top: 14px; text-align: center; }
+  .eq-formula { font-family: 'Trebuchet MS', sans-serif; font-size: 1rem; color: var(--white); margin-bottom: 8px; }
+  .eq-formula span.reactif { color: var(--green-light); }
+  .eq-formula span.produit { color: var(--gold-light); }
+  .eq-formula span.arrow { color: var(--gold); font-size: 1.2rem; margin: 0 10px; }
+  .eq-legend { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px; }
+  .eq-leg-item { font-family: 'Trebuchet MS', sans-serif; font-size: 0.72rem; color: var(--text-dim); }
+  .eq-leg-item strong { display: block; }
+
+  /* Gradient de pression */
+  .gradient { background: var(--navy3); border-radius: 8px; padding: 12px 16px; margin-top: 12px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.82rem; color: var(--gold-light); border-left: 3px solid var(--gold); }
+
+  .footer { text-align: center; padding: 20px; font-family: 'Trebuchet MS', sans-serif; font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid rgba(201,168,76,0.15); }
+
+  @media (max-width: 640px) {
+    .voies-grid, .vent-cols, .hema-grid { grid-template-columns: 1fr; }
+    .poumons-grid { grid-template-columns: 1fr 1fr; }
+    .hema-flow { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">BTS ESF</div>
+    <span class="header-icon">🫁</span>
+    <h1>Le Système Respiratoire</h1>
+    <p>Ventilation · Hématose · Échanges gazeux · Respiration cellulaire</p>
+  </div>
+
+  <!-- Définition -->
+  <div class="definition">
+    <div class="section-title">Définition · Appareil respiratoire</div>
+    <div class="def-text">Ensemble des organes assurant les premières étapes de la respiration :</div>
+    <div class="def-eq">
+      <div class="def-pill">🌬️ Ventilation<span>Mouvement de l'air dans les poumons</span></div>
+      <div class="def-plus">+</div>
+      <div class="def-pill">🔴 Hématose<span>Transformation du sang veineux (CO₂) en sang artériel (O₂)</span></div>
+    </div>
+  </div>
+
+  <!-- Schéma SVG de l'appareil respiratoire -->
+  
+
+  <!-- Voies aériennes -->
+  <div class="voies">
+    <div class="section-title">Les voies respiratoires · Rôles filtrants</div>
+    <div class="voies-grid">
+      <div class="voie-card sup">
+        <div class="voie-title">🔵 Voies aériennes supérieures</div>
+        <div class="voie-item"><strong>Organes :</strong> fosses nasales, pharynx, larynx</div>
+        <div class="voie-item"><strong>Rôle :</strong> arrêter les grosses particules</div>
+        <div class="voie-item"><strong>Mécanismes :</strong> rôle des poils des narines, réflexe d'éternuement</div>
+      </div>
+      <div class="voie-card inf">
+        <div class="voie-title">🟢 Voies aériennes inférieures</div>
+        <div class="voie-item"><strong>Organes :</strong> trachée, bronches</div>
+        <div class="voie-item"><strong>Rôle :</strong> arrêter les petites particules (5 à 8 microns)</div>
+        <div class="voie-item"><strong>Mécanisme :</strong> particules enrobées de mucus, remontées vers le larynx en 2 à 4h</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Poumons -->
+  <div class="poumons">
+    <div class="section-title">Les poumons · Structure</div>
+    <div class="poumons-grid">
+      <div class="p-card">
+        <div class="p-icon">📐</div>
+        <div class="p-title">Dimensions</div>
+        <div class="p-desc">≈ 20 cm de haut × 10 cm de diamètre chez l'adulte</div>
+      </div>
+      <div class="p-card">
+        <div class="p-icon">🫁</div>
+        <div class="p-title">Lobes</div>
+        <div class="p-desc"><strong style="color:#f0f4f8">Droit : 3 lobes</strong><br>Gauche : 2 lobes<br>(partage l'espace avec le cœur)</div>
+      </div>
+      <div class="p-card">
+        <div class="p-icon">🧱</div>
+        <div class="p-title">Plèvre</div>
+        <div class="p-desc">Membrane reliant les poumons à la cage thoracique. Contient le liquide pleural.</div>
+      </div>
+      <div class="p-card">
+        <div class="p-icon">🫧</div>
+        <div class="p-title">Alvéoles</div>
+        <div class="p-desc">Petits sacs d'air au bout des bronchioles. Surface totale : <strong style="color:#f0c96b">80 m²</strong> (= une maison !)</div>
+      </div>
+      <div class="p-card">
+        <div class="p-icon">💊</div>
+        <div class="p-title">Surfactant</div>
+        <div class="p-desc">Substance sécrétée par les pneumocytes. Stabilise les alvéoles en position ouverte.</div>
+      </div>
+      <div class="p-card">
+        <div class="p-icon">🩸</div>
+        <div class="p-title">Capillaires</div>
+        <div class="p-desc">Les alvéoles sont richement vascularisées pour permettre les échanges gazeux.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventilation -->
+  <div class="ventilation">
+    <div class="section-title">La Ventilation · Inspiration et Expiration</div>
+    <div class="vent-cols">
+      <div class="vent-card inspi">
+        <div class="vent-title">🌬️ Inspiration (active)</div>
+        <div class="vent-step"><span class="vent-arrow">1️⃣</span><span>Contraction du <strong style="color:#fff">diaphragme</strong> et des <strong style="color:#fff">muscles intercostaux externes</strong></span></div>
+        <div class="vent-step"><span class="vent-arrow">2️⃣</span><span>La cage thoracique <strong style="color:#fff">s'élève</strong> → volume des poumons <strong style="color:#2ecc71">augmente ↑</strong></span></div>
+        <div class="vent-step"><span class="vent-arrow">3️⃣</span><span>La pression de l'air <strong style="color:#2ecc71">baisse ↓</strong></span></div>
+        <div class="vent-step"><span class="vent-arrow">4️⃣</span><span>L'air <strong style="color:#fff">s'engouffre</strong> dans les poumons (O₂ entre)</span></div>
+      </div>
+      <div class="vent-card expi">
+        <div class="vent-title">💨 Expiration (passive)</div>
+        <div class="vent-step"><span class="vent-arrow">1️⃣</span><span>Les muscles se <strong style="color:#fff">relâchent</strong></span></div>
+        <div class="vent-step"><span class="vent-arrow">2️⃣</span><span>La taille des poumons <strong style="color:#e74c3c">rétrécit ↓</strong></span></div>
+        <div class="vent-step"><span class="vent-arrow">3️⃣</span><span>La pression de l'air <strong style="color:#e74c3c">augmente ↑</strong></span></div>
+        <div class="vent-step"><span class="vent-arrow">4️⃣</span><span>L'air est <strong style="color:#fff">expulsé</strong> (CO₂ sort)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hématose -->
+  <div class="hematose">
+    <div class="section-title">L'Hématose · Échanges gazeux</div>
+    <div class="hema-schema">
+      <div style="font-family:'Trebuchet MS',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-bottom:12px;text-align:center;">Les gaz diffusent toujours du compartiment à <strong style="color:#fff">haute pression partielle</strong> vers le compartiment à <strong style="color:#fff">basse pression partielle</strong> (gradient de pression).</div>
+      <div class="hema-flow">
+        <div class="hema-box alveole">
+          <div class="hema-box-label">🫧 Alvéoles</div>
+          <div class="hema-box-val">O₂ élevé<br>CO₂ faible</div>
+        </div>
+        <div class="hema-arrow">⇌</div>
+        <div class="hema-box sang">
+          <div class="hema-box-label">🩸 Capillaires sanguins</div>
+          <div class="hema-box-val">O₂ → Hémoglobine<br>CO₂ ← cellules</div>
+        </div>
+        <div class="hema-arrow">⇌</div>
+        <div class="hema-box cellule">
+          <div class="hema-box-label">🔬 Cellules des organes</div>
+          <div class="hema-box-val">O₂ faible<br>CO₂ élevé</div>
+        </div>
+      </div>
+      <div class="hema-grid">
+        <div class="hema-item">
+          <strong>🔵 Au niveau alvéolaire</strong>
+          L'O₂ de l'air inspiré diffuse des alvéoles vers les capillaires. Il se lie à l'<strong style="color:#fff">hémoglobine</strong> des globules rouges et est transporté dans le sang artériel.
+        </div>
+        <div class="hema-item">
+          <strong>🔴 Au niveau alvéolaire (CO₂)</strong>
+          Le CO₂ du sang veineux diffuse des capillaires vers les alvéoles et est expulsé lors de l'expiration.
+        </div>
+        <div class="hema-item">
+          <strong>🟢 Au niveau tissulaire</strong>
+          L'O₂ passe du sang vers les cellules des organes. Le CO₂ produit par les cellules passe dans le sang pour être transporté vers les poumons.
+        </div>
+        <div class="hema-item">
+          <strong>💛 L'hémoglobine</strong>
+          Protéine riche en fer, présente dans les globules rouges. Son rôle : <strong style="color:#fff">fixer et transporter l'O₂</strong> dans tout l'organisme.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Respiration cellulaire -->
+  <div class="resp-cell">
+    <div class="section-title">La Respiration Cellulaire · Équation bilan</div>
+    <div class="equation">
+      <div class="eq-formula">
+        <span class="reactif">Glucose</span>
+        <span style="color:#fff"> + </span>
+        <span class="reactif">O₂</span>
+        <span class="arrow">→</span>
+        <span class="produit">Énergie (ATP)</span>
+        <span style="color:#fff"> + </span>
+        <span class="produit">H₂O</span>
+        <span style="color:#fff"> + </span>
+        <span class="produit">CO₂</span>
+      </div>
+      <div class="eq-legend">
+        <div class="eq-leg-item"><strong style="color:#2ecc71">Glucose + O₂</strong>Réactifs (ce qui entre)</div>
+        <div class="eq-leg-item"><strong style="color:#f0c96b">ATP</strong>Énergie produite</div>
+        <div class="eq-leg-item"><strong style="color:#f0c96b">CO₂</strong>Déchet → expulsé par l'expiration</div>
+        <div class="eq-leg-item"><strong style="color:#f0c96b">H₂O</strong>Eau produite</div>
+      </div>
+    </div>
+    <div class="gradient">⚖️ <strong>Loi du gradient de pression :</strong> un gaz diffuse toujours d'un compartiment où sa pression partielle est <strong>élevée</strong> vers un compartiment où elle est <strong>plus faible</strong>. C'est ce mécanisme physique qui permet les échanges gazeux sans dépense d'énergie.</div>
+  </div>
+
+  <div class="footer">BTS ESF</div>
+</div>
+</body>
+</html>
+</body>
+</html>
