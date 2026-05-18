@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards – Politique d'aménagement du territoire</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  .counter{color:#8A9BB0;font-size:0.78rem;letter-spacing:1px;}
+  .card-wrap{perspective:1000px;width:100%;max-width:600px;height:260px;cursor:pointer;}
+  .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.5s;}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
+  .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;}
+  .card-front{background:#0f2040;border:2px solid #F4A261;}
+  .card-back{background:#1A3A5C;border:2px solid #2A9D8F;transform:rotateY(180deg);}
+  .card-label{position:absolute;top:14px;left:18px;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;opacity:0.5;}
+  .card-text{font-size:1rem;line-height:1.6;font-weight:500;}
+  .card-back .card-text{font-size:0.9rem;color:#e8c87a;}
+  .hint{color:#8A9BB0;font-size:0.72rem;}
+  .controls{display:flex;gap:12px;}
+  .btn{padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-size:0.82rem;font-weight:700;letter-spacing:1px;}
+  .btn-prev{background:#1A3A5C;color:#f0eada;}
+  .btn-next{background:#F4A261;color:#0D1B2A;}
+  .btn-shuffle{background:#2A9D8F;color:#fff;}
+  .btn:hover{opacity:0.85;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:5px;width:100%;max-width:600px;}
+  .progress-fill{background:#F4A261;height:5px;border-radius:10px;transition:width 0.3s;}
+</style>
+</head>
+<body>
+<h1>Flashcards – Politique d'aménagement du territoire</h1>
+<p class="subtitle">BTS ESF</p>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+<p class="counter" id="counter">Carte 1 / 8</p>
+<div class="card-wrap" id="card" onclick="flip()">
+  <div class="card-inner">
+    <div class="card-face card-front">
+      <span class="card-label">Notion</span>
+      <div class="card-text" id="front-text"></div>
+    </div>
+    <div class="card-face card-back">
+      <span class="card-label">Définition</span>
+      <div class="card-text" id="back-text"></div>
+    </div>
+  </div>
+</div>
+<p class="hint">Clique sur la carte pour révéler la définition</p>
+<div class="controls">
+  <button class="btn btn-prev" onclick="prev()">← Précédente</button>
+  <button class="btn btn-shuffle" onclick="shuffle()">🔀 Mélanger</button>
+  <button class="btn btn-next" onclick="next()">Suivante →</button>
+</div>
+<script>
+const cards = [
+  { term: "QPV (Quartiers Prioritaires de la Ville)", def: "Zones urbaines défavorisées ciblées par la politique de la ville. Délimitation basée sur le nombre et les revenus des habitants." },
+  { term: "Contrat de ville", def: "Principal outil de la politique de la ville. Formalise le partenariat État/communes pour agir dans les QPV (2024-2030 : 'engagement quartiers 2030')." },
+  { term: "ANRU", def: "Agence Nationale de Rénovation Urbaine : pilote le NPRU pour financer la rénovation des quartiers prioritaires." },
+  { term: "NPRU", def: "Nouveau Programme de Rénovation Urbaine : contrat entre commune, État et Action Logement pour rénover l'habitat dans les QPV." },
+  { term: "Loi LAMY (2014)", def: "Intervient sur les QPV, crée le contrat de ville et promeut la co-construction des politiques avec les habitants." },
+  { term: "ONPV", def: "Observatoire National de la Politique de la Ville : observe et évalue les effets des politiques dans les QPV." },
+  { term: "Objectifs de la politique de la ville", def: "Lutter contre les inégalités, garantir l'égalité d'accès aux droits et services, améliorer l'habitat, prévenir la délinquance, favoriser l'emploi." },
+  { term: "Agence de la cohésion des territoires (loi 2019)", def: "Soutient techniquement et financièrement les collectivités territoriales dans leurs projets d'aménagement." }
+];
+let deck=[...cards],idx=0;
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function show(){
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('front-text').textContent=deck[idx].term;
+  document.getElementById('back-text').textContent=deck[idx].def;
+  document.getElementById('counter').textContent='Carte '+(idx+1)+' / '+deck.length;
+  document.getElementById('prog').style.width=((idx+1)/deck.length*100)+'%';
+}
+function flip(){document.getElementById('card').classList.toggle('flipped');}
+function next(){idx=(idx+1)%deck.length;show();}
+function prev(){idx=(idx-1+deck.length)%deck.length;show();}
+function shuffle(){deck=shuffleArr(deck);idx=0;show();}
+show();
+</script>
+</body>
+</html>

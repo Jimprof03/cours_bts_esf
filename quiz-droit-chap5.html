@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Politique sociale du handicap</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Politique sociale du handicap</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "Quelle loi donne la définition légale du handicap en France ?", opts: ["La loi du 30 juin 1975 qui a reconnu pour la première fois les droits des personnes handicapées sur le territoire","La loi du 11 février 2005 sur l'égalité des droits, des chances, la participation et la citoyenneté des PH","La loi du 5 mars 2007 qui visait à éviter les mises sous tutelle jugées abusives des PH","La loi du 2 janvier 2002 qui a entièrement rénové l'action sociale et médico-sociale en France"], ans: 1, fb: "La loi du 11 février 2005 donne la définition légale du handicap : limitation d'activité ou restriction de participation à la vie en société due à une altération substantielle, durable ou définitive d'une ou plusieurs fonctions." },
+  { q: "Qu'est-ce que la MDPH ?", opts: ["Un service hospitalier spécialisé dans la prise en charge médicale du handicap lourd","La Maison Départementale des PH : guichet unique pour centraliser toutes les demandes liées au handicap","Un dispositif financier de compensation versé aux personnes reconnues handicapées","Un centre de rééducation professionnelle destiné aux adultes handicapés en milieu protégé pour les bénéficiaires"], ans: 1, fb: "La MDPH (Maison Départementale des Personnes Handicapées) est le guichet unique créé par la loi du 11 février 2005 pour centraliser toutes les demandes liées au handicap." },
+  { q: "Quel est le rôle de la CDAPH ?", opts: ["Elle gère les placements d'enfants en danger et la protection de l'enfance au niveau départemental sur le territoire","Elle attribue les droits et prestations aux PH (AAH, PCH, AEEH) et oriente vers les établissements adaptés","Elle finance directement par des subventions les structures d'accueil pour personnes handicapées","Elle contrôle régulièrement les entreprises pour vérifier le respect du quota de 6% de TH"], ans: 1, fb: "La CDAPH (Commission des Droits et de l'Autonomie des PH) attribue les droits et prestations (AAH, PCH, AEEH) et oriente vers les établissements adaptés." },
+  { q: "Qu'est-ce que la PCH ?", opts: ["La Prime de Compensation versée directement aux entreprises qui emploient des travailleurs handicapés","La Prestation de Compensation du Handicap versée par le CD pour couvrir les conséquences du handicap","Le Plan de Compensation individuel élaboré par la MDPH pour chaque personne handicapée","Le Programme de Compensation nationale financé par la CNSA pour les personnes dépendantes"], ans: 1, fb: "La PCH (Prestation de Compensation du Handicap) est versée par le Conseil Départemental pour compenser les conséquences du handicap dans la vie quotidienne." },
+  { q: "Qu'est-ce que le RQTH et quelle obligation crée-t-il ?", opts: ["Une carte spéciale accordant des droits à la retraite anticipée pour les travailleurs handicapés sur le territoire","La Reconnaissance de la Qualité de TH qui oblige les entreprises de plus de 20 salariés à employer 6% de TH","Un document officiel permettant aux PH d'obtenir une carte de stationnement réservé gratuite","Un agrément spécial délivré aux ESAT pour leur permettre d'employer des PH en milieu protégé"], ans: 1, fb: "Le RQTH oblige les entreprises de plus de 20 salariés à employer 6% de travailleurs handicapés, sous peine d'une amende versée à l'AGEFIPH." },
+  { q: "Qu'est-ce qu'un ESAT ?", opts: ["Un établissement scolaire spécialement adapté aux enfants en situation de handicap mental","Un Établissement et Service d'Aide par le Travail : structure de travail protégée pour adultes handicapés","Un service d'accompagnement à domicile pour adultes handicapés vivant de façon autonome","Un centre spécialisé de rééducation professionnelle pour personnes handicapées suite à un accident sur le territoire"], ans: 1, fb: "L'ESAT est une structure de travail en milieu protégé pour adultes handicapés, sur orientation de la CDAPH à partir de 20 ans." },
+  { q: "Qu'est-ce qu'un AESH ?", opts: ["Un professionnel médical qui évalue précisément le degré de handicap pour le compte de la CDAPH","Un Accompagnant d'Élèves en Situation de Handicap qui aide les élèves handicapés en milieu ordinaire","Un agent spécialisé dans l'adaptation technique des logements pour les personnes handicapées","Un assistant éducatif qui n'intervient que dans les seuls établissements spécialisés comme les IME en France"], ans: 1, fb: "L'AESH accompagne les élèves handicapés scolarisés en milieu ordinaire, sur décision de la CDAPH avec un Projet Personnalisé de Scolarisation (PPS)." },
+  { q: "Que prévoit la loi du 30 juin 1975 sur le handicap ?", opts: ["Elle crée la MDPH et institue le projet de vie personnalisé pour chaque personne handicapée","Elle reconnaît les droits des PH : prévention, soins, dépistage du handicap et garantie d'un minimum de ressources","Elle instaure l'obligation d'accessibilité universelle pour tous les établissements recevant du public sur le territoire","Elle crée l'AAH comme unique prestation monétaire pour toutes les personnes handicapées"], ans: 1, fb: "La loi du 30 juin 1975 est la première à reconnaître les droits des personnes handicapées : prévention, soin, dépistage du handicap et garantie d'un minimum de ressources." },
+  { q: "Qu'est-ce que la CNSA ?", opts: ["La Caisse Nationale de Solidarité pour l'Autonomie qui finance et conseille sur handicap et dépendance","La Commission Nationale de Suivi de l'Autonomie des personnes âgées et handicapées dépendantes","Le Comité National de Soutien aux Aidants familiaux des personnes en situation de handicap","La Caisse Nationale de Soutien financier aux Associations actives dans le secteur médico-social sur le territoire"], ans: 0, fb: "La CNSA (Caisse Nationale de Solidarité pour l'Autonomie) finance les politiques du handicap et de la perte d'autonomie, assure une expertise et informe et conseille." },
+  { q: "À quel âge la CDAPH oriente-t-elle généralement vers le milieu protégé pour adultes ?", opts: ["À partir de 16 ans pour les structures de travail en milieu protégé comme les ESAT","À partir de 20 ans pour les structures comme les ESAT, foyers de vie et logements spécialisés","À partir de 18 ans, conformément à l'âge légal de la majorité civile en droit français","À partir de 25 ans uniquement pour les structures d'hébergement médicalisées spécialisées en France"], ans: 1, fb: "En règle générale, les dispositifs en milieu protégé pour adultes handicapés sont sur orientation de la CDAPH à partir de 20 ans (ESAT, SAMSAH, foyer de vie...)." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>

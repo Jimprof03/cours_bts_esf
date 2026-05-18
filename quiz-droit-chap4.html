@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Politique de l'emploi</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Politique de l'emploi</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "Qu'est-ce que la politique de l'emploi ?", opts: ["Un ensemble de lois encadrant strictement les conditions de travail dans les entreprises privées","Un ensemble de politiques visant le plein-emploi avec soutien aux chômeurs et stimulation de la création d'emploi","Un plan national de formation continue des salariés aux nouvelles technologies numériques","Un dispositif géré exclusivement par les syndicats pour défendre les droits des travailleurs salariés sur le territoire"], ans: 1, fb: "La politique de l'emploi est l'ensemble des politiques visant à assurer le plein-emploi. Elle comprend des dispositifs de soutien aux chômeurs et des stratégies de création d'emploi." },
+  { q: "Quel est le rôle de France Travail ?", opts: ["Un ministère chargé de définir et piloter la politique nationale de l'emploi en France","Un organisme public qui accueille, oriente et forme les demandeurs d'emploi inscrits","Un fonds paritaire d'indemnisation chômage géré par les partenaires sociaux représentatifs","Une agence régionale qui contrôle le respect du droit du travail dans les entreprises"], ans: 1, fb: "France Travail (ex Pôle Emploi) accueille, oriente et forme les demandeurs d'emploi. Il collabore avec Cap Emploi pour les personnes handicapées." },
+  { q: "Qu'est-ce que l'UNEDIC ?", opts: ["Une union nationale d'employeurs chargée de négocier les conventions collectives de branche","Le gestionnaire paritaire de l'assurance chômage définissant les règles d'indemnisation des demandeurs d'emploi","Un organisme public de formation des demandeurs d'emploi vers les métiers en tension sur le marché","Une association nationale représentant les intérêts des travailleurs indépendants et auto-entrepreneurs sur le territoire"], ans: 1, fb: "L'UNEDIC est le gestionnaire paritaire (employeurs + syndicats) de l'assurance chômage en France. Il définit les règles d'indemnisation des demandeurs d'emploi." },
+  { q: "Que signifie DREETS ?", opts: ["Direction Régionale des Études sur l'Emploi et le Travail Social dans les régions","Direction Régionale de l'Économie, de l'Emploi, du Travail et des Solidarités","Délégation Régionale pour l'Emploi, l'Enseignement Technique et le Social","Direction Régionale pour l'Éducation, l'Emploi et toutes les Transitions Sociales"], ans: 1, fb: "La DREETS est la Direction Régionale de l'Économie, de l'Emploi, du Travail et des Solidarités. C'est le service déconcentré du ministère du Travail au niveau régional." },
+  { q: "Qu'est-ce que le RSA ?", opts: ["Un dispositif de retraite complémentaire réservé aux seuls salariés du secteur privé","Le Revenu de Solidarité Active, une aide conditionnée à des démarches d'insertion professionnelle","Une prime versée aux entreprises qui recrutent des personnes en situation de handicap reconnue en France","Une allocation versée automatiquement à tous les inscrits à France Travail sans conditions"], ans: 1, fb: "Le RSA (Revenu de Solidarité Active) est une aide pour les personnes sans ressources suffisantes, conditionnée à des démarches d'insertion professionnelle." },
+  { q: "Que sont les droits rechargeables au chômage ?", opts: ["Des droits supplémentaires automatiquement accordés aux chômeurs après deux ans d'indemnisation continue","La possibilité de recharger ses droits après avoir retrouvé un emploi puis l'avoir perdu à nouveau","Des droits spéciaux accordés aux chômeurs qui acceptent de suivre une formation pendant l'indemnisation","Des allocations spéciales versées uniquement aux demandeurs d'emploi arrivant en toute fin de droits"], ans: 1, fb: "Les droits rechargeables permettent au chômeur qui a retrouvé un emploi puis l'a reperdu de 'recharger' ses droits à l'indemnisation." },
+  { q: "Qui peut bénéficier de l'ARE ?", opts: ["Toute personne sans emploi, quelle que soit la raison ayant conduit à la perte de son emploi","Les personnes involontairement privées d'emploi ou ayant des motifs légitimes reconnus de démission","Uniquement les salariés licenciés pour motif économique ou technique par leur employeur","Tout salarié dont le contrat à durée déterminée s'est terminé après au moins six mois de travail en France"], ans: 1, fb: "L'ARE concerne les personnes involontairement privées d'emploi ou remplissant des conditions de démission pour motifs légitimes (ex : suivi d'un conjoint muté)." },
+  { q: "Qu'est-ce que la Garantie Jeunes ?", opts: ["Une aide personnalisée au logement spécialement destinée aux jeunes de moins de 25 ans sans ressources sur le territoire","Un dispositif d'accompagnement intensif pour les jeunes 16-25 ans en grande précarité vers l'emploi ou la formation","Une bourse d'études accordée aux étudiants boursiers issus de milieux socialement défavorisés","Un contrat de travail aidé permettant aux jeunes sans diplôme d'accéder à leur premier emploi"], ans: 1, fb: "La Garantie Jeunes est un dispositif d'accompagnement intensif pour les jeunes de 16 à 25 ans en grande précarité, pour les insérer dans l'emploi ou la formation." },
+  { q: "Quel est le rôle du Conseil Régional dans la politique de l'emploi ?", opts: ["Il gère directement et individuellement les dossiers de tous les demandeurs d'emploi de la région","Il intervient dans la formation professionnelle et le développement économique local de la région","Il finance intégralement et directement l'assurance chômage pour tous les habitants de la région","Il contrôle en permanence le strict respect du droit du travail dans toutes les entreprises régionales"], ans: 1, fb: "Le Conseil Régional intervient notamment dans la formation professionnelle et le développement économique local, en lien avec les services de l'État (DREETS)." },
+  { q: "Combien d'actifs occupés compte la France en 2024 ?", opts: ["Environ 20 millions d'actifs occupés recensés en France métropolitaine uniquement","Environ 27,4 millions d'actifs occupés sur l'ensemble du territoire français","Environ 35 millions d'actifs occupés comptabilisés sur la totalité du territoire national","Environ 15 millions d'actifs occupés recensés dans le seul secteur privé marchand"], ans: 1, fb: "En 2024, la France compte environ 27,4 millions d'actifs occupés (personnes en emploi rémunéré)." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>

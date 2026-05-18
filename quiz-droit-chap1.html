@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Introduction aux politiques sociales</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Introduction aux politiques sociales</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "Qu'est-ce qu'une politique sociale ?", opts: ["Une loi votée uniquement par le Parlement national","Une réponse des pouvoirs publics aux risques sociaux via textes et structures","Un dispositif géré exclusivement par les associations locales de quartier pour aider les personnes en grande difficulté sociale","Un plan économique visant à réduire le déficit budgétaire de l'État"], ans: 1, fb: "Une politique sociale est la réponse apportée par les pouvoirs publics, via des textes juridiques et structures, aux problématiques et risques sociaux de la population." },
+  { q: "Quels sont les trois objectifs des politiques sociales ?", opts: ["Croissance économique, équilibre budgétaire et maîtrise des dépenses publiques de l'État","Bien-être de la population, droits sociaux des citoyens et réduction des inégalités","Formation professionnelle, insertion dans l'emploi et accès au logement décent","Santé publique, éducation nationale et développement économique des territoires"], ans: 1, fb: "Les politiques sociales ont trois objectifs : améliorer le bien-être de la population, assurer les droits sociaux aux citoyens et réduire les inégalités sociales." },
+  { q: "Quelle est la caractéristique d'une politique sociale catégorielle ?", opts: ["Elle cible tous les citoyens sans distinction de situation personnelle ou sociale","Elle répond aux besoins spécifiques d'un public défini (PA, PH, enfants...)","Elle intervient sur des problématiques qui touchent l'ensemble de la société sans exception","Elle est définie au niveau local uniquement par les communes et CCAS"], ans: 1, fb: "Les politiques catégorielles répondent à des besoins spécifiques à certains publics : personnes âgées, enfance, personnes handicapées, migrants..." },
+  { q: "Quelle est la caractéristique d'une politique sociale sectorielle ?", opts: ["Elle cible un public précis et homogène défini à l'avance par les pouvoirs publics compétents","Elle répond à une problématique pouvant toucher différents publics","Elle regroupe simultanément plusieurs secteurs et plusieurs types de publics","Elle est financée uniquement par les cotisations sociales prélevées sur les actifs"], ans: 1, fb: "Les politiques sectorielles répondent à des problématiques sociales particulières (logement, emploi, soins, droits) pouvant toucher des publics variés." },
+  { q: "Qu'est-ce qu'une politique sociale transversale ?", opts: ["Une politique ciblant un seul type de public bien identifié à l'avance","Une politique concernant simultanément plusieurs secteurs et plusieurs publics","Une politique gérée par un seul ministère sans aucune coopération interministérielle possible","Une politique financée uniquement par les cotisations des seuls salariés du privé"], ans: 1, fb: "Les politiques transversales regroupent des mesures concernant en même temps plusieurs secteurs et plusieurs publics. Exemple : la politique de la ville." },
+  { q: "Pourquoi les politiques catégorielles tendent-elles à disparaître ?", opts: ["Parce qu'elles coûtent beaucoup trop cher aux collectivités locales et à l'État central","Parce que les situations sociales sont liées à l'environnement de vie global","Parce que les associations ont totalement remplacé les pouvoirs publics sur ce terrain","Parce que les besoins des publics ciblés ont tous été satisfaits et ont disparu"], ans: 1, fb: "Les politiques catégorielles tendent à disparaître car les situations sociales sont très liées à l'environnement de vie (logement, famille, territoire...)." },
+  { q: "Quel est un exemple de politique sociale transversale ?", opts: ["La politique en faveur des personnes âgées dépendantes dans les établissements spécialisés","La politique de la ville visant les quartiers urbains défavorisés et leurs habitants","La politique du handicap ciblant exclusivement les personnes reconnues handicapées","La politique de l'enfance concernant seulement les mineurs et leurs parents"], ans: 1, fb: "La politique de la ville est transversale : elle vise les populations des quartiers défavorisés et améliore leurs conditions de vie (logement, emploi, éducation...)." },
+  { q: "À partir de quelle période les politiques sociales se sont-elles vraiment structurées ?", opts: ["Depuis la Révolution française et la Déclaration des droits de l'homme de 1789","Depuis 1945, avec le développement de la protection sociale après-guerre","Depuis les années 1980, avec la décentralisation et la création des régions françaises","Depuis l'an 2000, avec la loi de modernisation sociale adoptée sous Jospin"], ans: 1, fb: "C'est depuis 1945, après la Seconde Guerre mondiale, que les politiques sociales se sont structurées avec le développement de la protection sociale." },
+  { q: "Quels sont les trois types de politiques sociales ?", opts: ["Nationale, régionale et locale, selon le niveau territorial d'intervention concerné","Catégorielle, sectorielle et transversale, selon le public ou le domaine ciblé","Préventive, curative et réparatrice, selon le type d'action mis en place","Économique, sociale et culturelle, selon le domaine d'intervention choisi"], ans: 1, fb: "Les trois types de politiques sociales sont : catégorielle (public ciblé), sectorielle (problématique spécifique) et transversale (plusieurs secteurs et publics)." },
+  { q: "Quel domaine est typique d'une politique sectorielle ?", opts: ["La protection exclusive des personnes âgées dans les EHPAD et résidences spécialisées","Les difficultés d'accès aux soins touchant des publics très différents et variés","Le financement des allocations familiales versées uniquement par les CAF","La scolarisation obligatoire des enfants handicapés dans tous les établissements"], ans: 1, fb: "Les politiques sectorielles couvrent des domaines comme les difficultés d'accès aux soins, au logement, à l'emploi ou aux droits, qui peuvent toucher différents publics." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards – Politique des personnes âgées</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  .counter{color:#8A9BB0;font-size:0.78rem;letter-spacing:1px;}
+  .card-wrap{perspective:1000px;width:100%;max-width:600px;height:260px;cursor:pointer;}
+  .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.5s;}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
+  .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;}
+  .card-front{background:#0f2040;border:2px solid #F4A261;}
+  .card-back{background:#1A3A5C;border:2px solid #2A9D8F;transform:rotateY(180deg);}
+  .card-label{position:absolute;top:14px;left:18px;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;opacity:0.5;}
+  .card-text{font-size:1rem;line-height:1.6;font-weight:500;}
+  .card-back .card-text{font-size:0.9rem;color:#e8c87a;}
+  .hint{color:#8A9BB0;font-size:0.72rem;}
+  .controls{display:flex;gap:12px;}
+  .btn{padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-size:0.82rem;font-weight:700;letter-spacing:1px;}
+  .btn-prev{background:#1A3A5C;color:#f0eada;}
+  .btn-next{background:#F4A261;color:#0D1B2A;}
+  .btn-shuffle{background:#2A9D8F;color:#fff;}
+  .btn:hover{opacity:0.85;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:5px;width:100%;max-width:600px;}
+  .progress-fill{background:#F4A261;height:5px;border-radius:10px;transition:width 0.3s;}
+</style>
+</head>
+<body>
+<h1>Flashcards – Politique des personnes âgées</h1>
+<p class="subtitle">BTS ESF</p>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+<p class="counter" id="counter">Carte 1 / 9</p>
+<div class="card-wrap" id="card" onclick="flip()">
+  <div class="card-inner">
+    <div class="card-face card-front">
+      <span class="card-label">Notion</span>
+      <div class="card-text" id="front-text"></div>
+    </div>
+    <div class="card-face card-back">
+      <span class="card-label">Définition</span>
+      <div class="card-text" id="back-text"></div>
+    </div>
+  </div>
+</div>
+<p class="hint">Clique sur la carte pour révéler la définition</p>
+<div class="controls">
+  <button class="btn btn-prev" onclick="prev()">← Précédente</button>
+  <button class="btn btn-shuffle" onclick="shuffle()">🔀 Mélanger</button>
+  <button class="btn btn-next" onclick="next()">Suivante →</button>
+</div>
+<script>
+const cards = [
+  { term: "Grille AGGIR", def: "Autonomie Gérontologie Groupes Iso-Ressources : outil national d'évaluation de la dépendance. Classes de GIR 1 (très dépendant) à GIR 6 (autonome)." },
+  { term: "APA (Allocation Personnalisée d'Autonomie)", def: "Prestation versée par le Conseil Départemental pour aider les personnes âgées dépendantes (GIR 1 à 4) à financer leur prise en charge." },
+  { term: "Loi ASV (2015) – les 3A", def: "Anticipation (prévenir la perte d'autonomie), Adaptation (changer le regard sur la vieillesse), Accompagnement (maintien à domicile, rôle des aidants)." },
+  { term: "CLIC", def: "Centre Local d'Information et de Coordination : lieu d'accueil de proximité pour informer, conseiller et orienter les personnes âgées. Sous autorité du Conseil Départemental." },
+  { term: "CODERPA", def: "Comité Départemental des Retraités et des Personnes Âgées : instance consultative auprès du Conseil Départemental." },
+  { term: "Perte d'autonomie", def: "Incapacité pour une personne d'effectuer seule certains actes de la vie courante (s'habiller, se lever, s'alimenter, se déplacer...)." },
+  { term: "Dépendance", def: "Besoin de faire appel à un tiers pour effectuer les actes de la vie courante, soit à domicile soit en structures spécialisées." },
+  { term: "Vieillissement de la population", def: "Tendance à long terme due à la baisse de la natalité et à l'allongement de la durée de vie, entraînant une part croissante de personnes âgées." },
+  { term: "Schéma départemental en gérontologie", def: "Document élaboré par le Conseil Départemental pour 5 ans, organisant l'offre médico-sociale pour les personnes âgées sur le territoire." }
+];
+let deck=[...cards],idx=0;
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function show(){
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('front-text').textContent=deck[idx].term;
+  document.getElementById('back-text').textContent=deck[idx].def;
+  document.getElementById('counter').textContent='Carte '+(idx+1)+' / '+deck.length;
+  document.getElementById('prog').style.width=((idx+1)/deck.length*100)+'%';
+}
+function flip(){document.getElementById('card').classList.toggle('flipped');}
+function next(){idx=(idx+1)%deck.length;show();}
+function prev(){idx=(idx-1+deck.length)%deck.length;show();}
+function shuffle(){deck=shuffleArr(deck);idx=0;show();}
+show();
+</script>
+</body>
+</html>

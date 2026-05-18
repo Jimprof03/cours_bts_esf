@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards – Politique des familles</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  .counter{color:#8A9BB0;font-size:0.78rem;letter-spacing:1px;}
+  .card-wrap{perspective:1000px;width:100%;max-width:600px;height:260px;cursor:pointer;}
+  .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.5s;}
+  .card-wrap.flipped .card-inner{transform:rotateY(180deg);}
+  .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;}
+  .card-front{background:#0f2040;border:2px solid #F4A261;}
+  .card-back{background:#1A3A5C;border:2px solid #2A9D8F;transform:rotateY(180deg);}
+  .card-label{position:absolute;top:14px;left:18px;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;opacity:0.5;}
+  .card-text{font-size:1rem;line-height:1.6;font-weight:500;}
+  .card-back .card-text{font-size:0.9rem;color:#e8c87a;}
+  .hint{color:#8A9BB0;font-size:0.72rem;}
+  .controls{display:flex;gap:12px;}
+  .btn{padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-size:0.82rem;font-weight:700;letter-spacing:1px;}
+  .btn-prev{background:#1A3A5C;color:#f0eada;}
+  .btn-next{background:#F4A261;color:#0D1B2A;}
+  .btn-shuffle{background:#2A9D8F;color:#fff;}
+  .btn:hover{opacity:0.85;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:5px;width:100%;max-width:600px;}
+  .progress-fill{background:#F4A261;height:5px;border-radius:10px;transition:width 0.3s;}
+</style>
+</head>
+<body>
+<h1>Flashcards – Politique des familles</h1>
+<p class="subtitle">BTS ESF</p>
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+<p class="counter" id="counter">Carte 1 / 9</p>
+<div class="card-wrap" id="card" onclick="flip()">
+  <div class="card-inner">
+    <div class="card-face card-front">
+      <span class="card-label">Notion</span>
+      <div class="card-text" id="front-text"></div>
+    </div>
+    <div class="card-face card-back">
+      <span class="card-label">Définition</span>
+      <div class="card-text" id="back-text"></div>
+    </div>
+  </div>
+</div>
+<p class="hint">Clique sur la carte pour révéler la définition</p>
+<div class="controls">
+  <button class="btn btn-prev" onclick="prev()">← Précédente</button>
+  <button class="btn btn-shuffle" onclick="shuffle()">🔀 Mélanger</button>
+  <button class="btn btn-next" onclick="next()">Suivante →</button>
+</div>
+<script>
+const cards = [
+  { term: "Politique familiale", def: "Mesures prises par l'État, les CT et la Sécurité Sociale pour aider les familles à élever leurs enfants et faire face aux charges financières." },
+  { term: "CIDE (Convention de New-York)", def: "Convention Internationale des Droits de l'Enfant adoptée le 20 novembre 1989. Repose sur les 3 P : Protection, Prestation, Participation." },
+  { term: "Autorité parentale", def: "Ensemble des droits et devoirs des parents ayant pour finalité l'intérêt de l'enfant, jusqu'à sa majorité ou émancipation." },
+  { term: "PMI (Protection Maternelle Infantile)", def: "Service géré par le Conseil Départemental, concourant à la santé dans les domaines de la grossesse, parentalité et enfance." },
+  { term: "CNAF / CAF", def: "Caisse Nationale / d'Allocations Familiales : verse les prestations familiales et mène des actions sociales en faveur des familles." },
+  { term: "UNAF / UDAF", def: "Union Nationale / Départementale des Associations Familiales : représente les intérêts des familles au niveau national et départemental." },
+  { term: "Filiation", def: "Lien juridique (naturel ou adoptif) entre l'enfant et ses parents, entraînant l'autorité parentale." },
+  { term: "Schéma départemental des services aux familles", def: "Document stratégique visant à développer les services aux familles et réduire les inégalités territoriales d'accueil du jeune enfant." },
+  { term: "Loi du 5 mars 2007", def: "Réaffirme le rôle du Conseil Départemental dans la protection de l'enfance et vise à garantir les besoins fondamentaux des enfants." }
+];
+let deck=[...cards],idx=0;
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function show(){
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('front-text').textContent=deck[idx].term;
+  document.getElementById('back-text').textContent=deck[idx].def;
+  document.getElementById('counter').textContent='Carte '+(idx+1)+' / '+deck.length;
+  document.getElementById('prog').style.width=((idx+1)/deck.length*100)+'%';
+}
+function flip(){document.getElementById('card').classList.toggle('flipped');}
+function next(){idx=(idx+1)%deck.length;show();}
+function prev(){idx=(idx-1+deck.length)%deck.length;show();}
+function shuffle(){deck=shuffleArr(deck);idx=0;show();}
+show();
+</script>
+</body>
+</html>

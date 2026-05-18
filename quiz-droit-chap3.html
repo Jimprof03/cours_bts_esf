@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Politique des familles</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Politique des familles</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "Que sont les objectifs de la politique familiale ?", opts: ["Contrôler la natalité et réguler les flux migratoires sur l'ensemble du territoire national","Soutenir la natalité, maintenir le niveau de vie des familles et soutenir la parentalité","Financer les crèches et structures de garde pour permettre aux deux parents de travailler","Encadrer juridiquement les divorces et protéger les droits des enfants lors des séparations"], ans: 1, fb: "Les objectifs sont : soutien à la natalité, maintien du niveau de vie des familles, aide à la continuité dans le travail et soutien à la parentalité." },
+  { q: "Quelle est la source juridique nationale de la politique familiale ?", opts: ["Le Code civil napoléonien de 1804 et l'ensemble de ses nombreuses révisions successives sur le territoire","La Constitution de 1946 garantissant à l'individu et à la famille leurs conditions de développement","La loi de rénovation de l'action sociale et médico-sociale adoptée en janvier 2002","Le Code de l'action sociale et des familles mis en place au début des années 2000"], ans: 1, fb: "La source nationale est la Constitution de 1946 : 'la nation assure à l'individu et à la famille les conditions nécessaires à leur développement'." },
+  { q: "Quel est le rôle de la CAF dans la politique familiale ?", opts: ["Elle gère les dossiers de placement familial et toute la protection de l'enfance en danger","Elle verse les prestations familiales et mène des actions sociales en faveur des familles","Elle contrôle la qualité et les conditions d'accueil dans tous les établissements de petite enfance agréés","Elle définit la politique familiale nationale en lien direct avec le Parlement et le gouvernement"], ans: 1, fb: "La CAF verse les prestations familiales et mène des actions sociales. Elle est sous la tutelle de la CNAF (Caisse Nationale des Allocations Familiales)." },
+  { q: "Que signifient les 3 P de la CIDE ?", opts: ["Parentalité, Procédure judiciaire et Placement : les trois axes de protection légale de l'enfant","Protection, Prestation et Participation : les trois droits fondamentaux reconnus à l'enfant","Prévention, Protection sanitaire et Promotion des droits : les piliers de la politique de l'enfance","Parents, Professionnels sociaux et Pouvoirs publics : les trois acteurs de la politique familiale"], ans: 1, fb: "La CIDE (Convention de New-York, 1989) repose sur les 3 P : Protection (contre les abus), Prestation (droits aux services), Participation (droit d'expression de l'enfant)." },
+  { q: "Qu'est-ce que l'autorité parentale ?", opts: ["Un droit exclusivement réservé au père de famille pour représenter l'enfant devant la justice","L'ensemble des droits et devoirs des parents pour l'intérêt de l'enfant jusqu'à sa majorité","Une obligation légale faite aux parents de scolariser leur enfant jusqu'à l'âge de 16 ans","Un contrat formellement signé entre les deux parents et l'État pour garantir l'éducation"], ans: 1, fb: "L'autorité parentale est l'ensemble des droits et devoirs des parents ayant pour finalité l'intérêt de l'enfant, jusqu'à sa majorité ou son émancipation." },
+  { q: "Quel est le rôle de la PMI ?", opts: ["Elle gère le versement des allocations familiales et des aides au logement pour les familles","Elle concourt à la santé dans les domaines de la grossesse, de la parentalité et de l'enfance","Elle assure la scolarisation obligatoire des enfants handicapés dans le milieu ordinaire","Elle finance directement par des subventions toutes les structures d'accueil de la petite enfance"], ans: 1, fb: "La PMI (Protection Maternelle Infantile) est gérée par le Conseil Départemental. Elle concourt à la santé dans différents domaines : grossesse, parentalité, santé de l'enfant." },
+  { q: "Qu'est-ce que la filiation ?", opts: ["Un document administratif officiel qui établit le domicile légal déclaré de l'enfant","Le lien juridique naturel ou adoptif établi entre l'enfant et ses parents légaux","Un contrat formel signé entre les parents et l'État pour fixer les droits de l'enfant","Une procédure judiciaire permettant à un enfant majeur de changer officiellement de nom"], ans: 1, fb: "La filiation désigne le lien juridique (naturel ou adoptif) entre l'enfant et ses parents. Ces liens entraînent l'autorité parentale." },
+  { q: "Quel est le rôle des UNAF et UDAF ?", opts: ["Elles gèrent directement les placements d'enfants en danger au niveau national et départemental","Elles représentent les intérêts des familles au niveau national et départemental auprès des pouvoirs publics","Elles financent directement l'ensemble des structures d'accueil de la petite enfance sur le territoire","Elles contrôlent la qualité des établissements médico-sociaux qui accueillent des enfants en difficulté en France"], ans: 1, fb: "L'UNAF (nationale) et les UDAF (départementales) représentent les intérêts des familles auprès des pouvoirs publics." },
+  { q: "Que prévoit la loi du 5 mars 2007 sur la protection de l'enfance ?", opts: ["Elle crée la prestation de compensation spéciale du handicap pour les enfants concernés","Elle réaffirme le rôle central du Conseil Départemental et renforce la protection de l'enfance","Elle instaure le revenu de solidarité active pour les familles monoparentales en grande difficulté","Elle instaure le congé parental d'éducation rémunéré pour les deux parents salariés concernés"], ans: 1, fb: "La loi du 5 mars 2007 réaffirme le rôle du Conseil Départemental dans la protection de l'enfance et vise à garantir les besoins fondamentaux des enfants." },
+  { q: "Quel est l'objectif du schéma départemental des services aux familles ?", opts: ["Contrôler rigoureusement les dépenses des CAF et limiter strictement les abus de prestations","Développer les services aux familles et réduire les inégalités territoriales d'accueil du jeune enfant","Définir précisément les critères d'attribution des allocations familiales sur chaque territoire local en France","Organiser équitablement la répartition géographique des assistantes maternelles sur les communes"], ans: 1, fb: "Le schéma départemental des services aux familles a deux objectifs : développer des services aux familles et réduire les inégalités territoriales dans l'accueil du jeune enfant." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>

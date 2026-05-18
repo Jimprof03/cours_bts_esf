@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Politique de l'intégration</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Politique de l'intégration</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "Quelle est la différence entre un réfugié et un demandeur d'asile ?", opts: ["Le réfugié est en situation régulière tandis que le demandeur d'asile est en situation irrégulière","Le demandeur d'asile n'a pas encore obtenu le statut de réfugié que le réfugié a déjà obtenu","Le réfugié est forcément né dans le pays d'accueil contrairement au demandeur d'asile étranger","Le demandeur bénéficie d'une protection immédiate tandis que le réfugié est encore en attente"], ans: 1, fb: "Le réfugié a obtenu la reconnaissance internationale de son statut (Convention de Genève). Le demandeur d'asile a quitté son pays et demande ce statut sans l'avoir encore obtenu." },
+  { q: "Qu'est-ce que l'OFPRA ?", opts: ["L'Office Français de Protection contre tous les Risques liés à l'Apatridie sur le territoire","L'Office Français de Protection des Réfugiés et Apatrides chargé de reconnaître le statut de réfugié","L'Organisme Français de Prise en charge et de Réinsertion sociale des demandeurs d'Asile","L'Office Fédéral de gestion des Procédures de Régularisation des étrangers en demande d'Asile sur le territoire"], ans: 1, fb: "L'OFPRA (Office Français de Protection des Réfugiés et Apatrides) est chargé de reconnaître le statut de réfugié, d'apatride et d'accorder la protection subsidiaire." },
+  { q: "Que définit la Convention de Genève de 1951 ?", opts: ["Les règles communes d'entrée et de séjour des étrangers dans tout l'espace européen","Le statut international de réfugié et les conditions permettant de bénéficier de cette protection","Un accord bilatéral conclu entre la France et la Suisse sur la gestion de leurs frontières communes","La charte internationale des droits de tous les migrants adoptée par les Nations Unies à Genève"], ans: 1, fb: "La Convention de Genève du 28 juillet 1951 est la principale source internationale du droit des étrangers. Elle définit le statut de réfugié et les conditions pour l'obtenir." },
+  { q: "Qu'est-ce que l'OFII ?", opts: ["L'Office Français d'Insertion et d'Intégration des seuls immigrés en situation irrégulière","L'Office Français de l'Immigration et de l'Intégration qui accueille et accompagne les étrangers","L'Organisme Fédéral d'Identification des Immigrés gérant les procédures de naturalisation","L'Office Français d'Information et d'Intégration réservé aux seuls étrangers en situation régulière"], ans: 1, fb: "L'OFII accueille et accompagne les demandeurs d'asile, aide à l'installation en France et à l'intégration des étrangers en situation régulière." },
+  { q: "Que regroupe le CESEDA ?", opts: ["Le Comité Européen pour la Sécurité des Étrangers et la gestion du Droit d'Asile en Europe","Le Code de l'Entrée et du Séjour des Étrangers et du Droit d'Asile : tous les textes sur les étrangers en France","La Convention Européenne sur le Statut juridique des Étrangers et l'ensemble du Droit d'Asile","Le Comité national d'Évaluation du Statut des Étrangers et du Droit d'Asile en République française sur le territoire"], ans: 1, fb: "Le CESEDA (Code de l'Entrée et du Séjour des Étrangers et du Droit d'Asile) regroupe tous les textes législatifs et réglementaires relatifs aux étrangers en France (2004)." },
+  { q: "Qu'est-ce qu'une SPADA ?", opts: ["Une Structure de Prise en charge des Adultes en Difficulté Administrative sur le territoire","Une Structure de Premier Accueil des Demandeurs d'Asile, le plus souvent gérée par des associations","Un Service Public national d'Aide et de Défense des étrangers en situation irrégulière en Asile","Une Structure publique de Prévention et d'Aide pour les Demandeurs d'Asile définitivement déboutés en France"], ans: 1, fb: "Les SPADA (Structures de Premier Accueil des Demandeurs d'Asile) sont gérées par des associations pour assurer le premier accueil des demandeurs d'asile au niveau local." },
+  { q: "Quelle est la différence entre immigré et étranger ?", opts: ["Ce sont des termes strictement synonymes désignant toute personne d'origine étrangère vivant en France","L'immigré est né étranger à l'étranger et vit en France depuis plus d'un an ; l'étranger n'a pas la nationalité française","L'étranger est en situation irrégulière sur le territoire tandis que l'immigré est en situation régulière","L'immigré a déjà obtenu la nationalité française tandis que l'étranger est encore en cours de naturalisation sur le territoire"], ans: 1, fb: "L'immigré est né étranger à l'étranger et réside en France depuis plus d'un an. L'étranger est toute personne sans nationalité française résidant en France (peut y être né)." },
+  { q: "Quel est le rôle de la DGEF ?", opts: ["La direction chargée des expulsions et reconduites à la frontière des personnes étrangères","La Direction Générale des Étrangers en France : accueil des demandeurs d'asile et intégration des immigrés","La direction chargée de favoriser l'insertion professionnelle des étrangers en emploi en France","La Direction des échanges culturels et de la formation linguistique pour tous les nouveaux arrivants sur le territoire"], ans: 1, fb: "La DGEF (Direction Générale des Étrangers en France) accueille et examine la situation des demandeurs d'asile et assure l'intégration des immigrés en situation régulière." },
+  { q: "Que signifie 'politique de l'intégration' ?", opts: ["Un processus d'assimilation totale qui impose l'abandon complet des cultures d'origine des migrants","Un processus conduisant à devenir membre d'un groupe social en adoptant ses valeurs et normes","Un dispositif administratif d'expulsion des personnes étrangères en situation irrégulière","Un programme temporaire d'accueil des réfugiés en attente d'une décision définitive d'asile"], ans: 1, fb: "La politique de l'intégration est le processus conduisant à devenir membre d'un groupe social en adoptant ses valeurs. Elle a plusieurs dimensions : économique, culturelle, linguistique, résidentielle et sociale." },
+  { q: "Pourquoi la politique de l'intégration est-elle dite transversale ?", opts: ["Parce qu'elle est cogérée simultanément par l'État central, les régions et les communes locales","Parce qu'elle concerne différents publics et différents besoins tels que le logement, l'emploi ou la langue","Parce qu'elle implique nécessairement une coopération formelle entre la France et les pays d'origine","Parce qu'elle est cofinancée à la fois par l'État français et les fonds structurels européens de cohésion en France"], ans: 1, fb: "La politique de l'intégration est transversale car elle concerne différents publics (migrants, réfugiés, demandeurs d'asile) et différents besoins (logement, emploi, langue, droits...)." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>

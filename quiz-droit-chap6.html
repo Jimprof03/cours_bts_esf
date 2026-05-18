@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Politique des personnes âgées</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Politique des personnes âgées</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "À partir de quel âge l'OMS considère-t-elle une personne comme âgée ?", opts: ["À partir de 55 ans pour l'OMS et de 60 ans pour l'INSEE, selon leurs définitions respectives","À partir de 60 ans pour l'OMS et de 65 ans pour l'INSEE, selon leurs définitions respectives","À partir de 65 ans pour l'OMS et de 70 ans pour l'INSEE, selon leurs définitions respectives","À partir de 70 ans pour l'OMS et de 75 ans pour l'INSEE, selon leurs définitions respectives"], ans: 1, fb: "Selon l'OMS, une personne est âgée à partir de 60 ans. Selon l'INSEE, le seuil est fixé à 65 ans." },
+  { q: "Qu'est-ce que la grille AGGIR ?", opts: ["Un outil national d'évaluation des besoins en soins infirmiers dans les établissements médicalisés","Un outil national d'évaluation du degré de dépendance des personnes âgées classant de GIR 1 à 6","Un document administratif permettant d'accéder aux prestations de compensation de l'autonomie","Un protocole médical national pour évaluer précisément les troubles cognitifs liés à la maladie d'Alzheimer"], ans: 1, fb: "La grille AGGIR (Autonomie, Gérontologie, Groupe Iso-Ressources) est l'outil national d'évaluation de la dépendance. Elle classe de GIR 1 (très dépendant) à GIR 6 (autonome)." },
+  { q: "Qu'est-ce que l'APA ?", opts: ["Une aide personnalisée aux proches aidants pour soutenir les familles de personnes âgées dépendantes","L'Allocation Personnalisée d'Autonomie : prestation du CD pour financer la prise en charge des PA dépendantes","Une agence publique de prévention chargée d'informer et de sensibiliser les personnes âgées autonomes sur le territoire","Une aide à la participation des personnes âgées dans la vie sociale, associative et culturelle locale"], ans: 1, fb: "L'APA (Allocation Personnalisée d'Autonomie) est versée par le Conseil Départemental pour aider les personnes âgées dépendantes (GIR 1 à 4) à financer leur prise en charge." },
+  { q: "Que sont les 3A de la loi ASV de 2015 ?", opts: ["Accueil, Accompagnement et Accessibilité pour les personnes âgées en établissement spécialisé en France","Anticipation de la perte d'autonomie, Adaptation de la société au vieillissement et Accompagnement","Autonomie des personnes, Assistance financière et Aides diverses pour les PA dépendantes","Action de prévention, Aide aux aidants familiaux et Accompagnement à domicile des PA"], ans: 1, fb: "La loi ASV repose sur 3 piliers : Anticipation (prévenir la perte d'autonomie), Adaptation (changer le regard sur la vieillesse), Accompagnement (maintien à domicile, rôle des aidants)." },
+  { q: "Qu'est-ce que le CLIC ?", opts: ["Un centre de soins médicaux spécialisé pour les personnes âgées en perte d'autonomie avancée","Un Centre Local d'Information et de Coordination pour informer et orienter les personnes âgées","Un comité consultatif regroupant les retraités pour exprimer leur avis sur la politique du vieillissement","Un dispositif de coordination des services à domicile pour les personnes âgées très dépendantes"], ans: 1, fb: "Le CLIC (Centre Local d'Information et de Coordination) est un lieu d'accueil de proximité pluridisciplinaire qui informe, conseille et oriente les PA. Sous autorité du CD." },
+  { q: "Quelle est la différence entre perte d'autonomie et dépendance ?", opts: ["Ce sont deux termes parfaitement synonymes désignant l'incapacité totale à se déplacer seul","La perte d'autonomie est l'incapacité à faire seul certains actes ; la dépendance implique de faire appel à un tiers","La dépendance relève exclusivement du domaine médical tandis que la perte d'autonomie concerne la vie sociale","La perte d'autonomie est toujours temporaire et réversible alors que la dépendance est définitivement permanente en France"], ans: 1, fb: "La perte d'autonomie est l'incapacité à effectuer seule certains actes. La dépendance implique de faire appel à un tiers, à domicile ou en établissement spécialisé." },
+  { q: "Qu'est-ce que le CODERPA ?", opts: ["Un comité national chargé d'élaborer et de voter les lois relatives aux personnes âgées","Un Comité Départemental des Retraités et PA, instance consultative auprès du Conseil Départemental","Une association nationale représentant les directeurs et gestionnaires d'établissements EHPAD","Un organisme de contrôle externe des EHPAD garantissant la qualité des soins prodigués aux résidents"], ans: 1, fb: "Le CODERPA (Comité Départemental des Retraités et des PA) est une instance consultative placée auprès du Président du Conseil Départemental." },
+  { q: "Quelles sont les causes du vieillissement démographique ?", opts: ["L'augmentation massive de l'immigration et la réduction généralisée du temps de travail des actifs en France","La baisse de la natalité donc moins de jeunes, et la baisse de la mortalité allongeant la durée de vie","La réduction importante des dépenses de santé et la diminution des services médicaux disponibles","L'amélioration du niveau de vie constatée uniquement dans les pays occidentaux développés"], ans: 1, fb: "Le vieillissement de la population est dû à la baisse de la natalité (moins de jeunes) et à la baisse de la mortalité avec l'allongement de la durée de vie." },
+  { q: "Quel est le rôle de l'ARS dans la politique des personnes âgées ?", opts: ["Elle verse directement et personnellement l'APA à toutes les personnes âgées dépendantes à domicile","Elle coordonne au niveau régional les actions sanitaires et médico-sociales concernant les PA","Elle contrôle rigoureusement les dépenses des Conseils Départementaux en matière gérontologique","Elle gère personnellement les listes d'attente dans tous les EHPAD pour l'ensemble de la région"], ans: 1, fb: "L'ARS (Agence Régionale de la Santé) coordonne au niveau régional les actions sanitaires et médico-sociales, notamment pour la politique des personnes âgées." },
+  { q: "Que prévoit le schéma départemental en gérontologie ?", opts: ["Le montant précis des allocations qui seront versées aux PA dépendantes sur le département","L'organisation de l'offre médico-sociale pour les personnes âgées sur 5 ans, élaborée par le CD","La liste exhaustive de tous les établissements agréés pour accueillir les PA sur le territoire","Les protocoles médicaux précis à respecter dans les EHPAD pour les soins aux résidents dépendants"], ans: 1, fb: "Le schéma départemental en gérontologie (loi du 2 janvier 2002) est élaboré par le CD pour 5 ans. Il organise l'offre de services et d'établissements pour les personnes âgées." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>

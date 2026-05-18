@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Politique d'aménagement du territoire</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0D1B2A;color:#f0eada;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  h1{color:#F4A261;font-size:1.5rem;text-align:center;letter-spacing:1px;}
+  .subtitle{color:#8A9BB0;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;}
+  #quiz-area{width:100%;max-width:680px;}
+  .progress-bar{background:#1A3A5C;border-radius:10px;height:6px;margin-bottom:8px;}
+  .progress-fill{background:#F4A261;height:6px;border-radius:10px;transition:width 0.4s;}
+  .progress-label{font-size:0.7rem;color:#8A9BB0;margin-bottom:14px;letter-spacing:1px;}
+  .question-card{background:#0f2040;border:1px solid #1A3A5C;border-radius:14px;padding:24px;}
+  .question-num{font-size:0.7rem;color:#F4A261;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:1rem;font-weight:600;margin-bottom:20px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{background:#0a1628;border:1.5px solid #1A3A5C;color:#f0eada;padding:12px 16px;border-radius:10px;cursor:pointer;text-align:left;font-size:0.88rem;line-height:1.4;transition:all 0.2s;}
+  .option:hover{border-color:#F4A261;background:#1A3A5C;}
+  .option.correct{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .option.wrong{background:#4a1a1a;border-color:#e74c3c;color:#e74c3c;}
+  .option.reveal{background:#1a4a2e;border-color:#2ecc71;color:#2ecc71;}
+  .feedback{margin-top:16px;padding:12px;background:#1A3A5C;border-radius:8px;font-size:0.82rem;line-height:1.5;display:none;color:#e8c87a;}
+  #btn-next{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;font-size:0.82rem;letter-spacing:1px;cursor:pointer;width:100%;}
+  #btn-next:disabled{opacity:0.4;cursor:not-allowed;}
+  #score-panel{display:none;background:#0f2040;border:1px solid #F4A261;border-radius:14px;padding:24px;text-align:center;max-width:680px;width:100%;}
+  #score-panel h2{color:#F4A261;font-size:1.8rem;}
+  #score-panel p{color:#8A9BB0;margin-top:8px;font-size:0.85rem;}
+  #btn-restart{margin-top:16px;background:#F4A261;color:#0D1B2A;border:none;padding:10px 28px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.82rem;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<h1>Quiz – Politique d'aménagement du territoire</h1>
+<p class="subtitle">BTS ESF</p>
+<div id="quiz-area">
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Question 1 / 10</div>
+  <div id="question-container"></div>
+  <button id="btn-next" disabled onclick="next()">Question suivante →</button>
+</div>
+<div id="score-panel">
+  <h2 id="score-val"></h2>
+  <p id="score-mention"></p>
+  <button id="btn-restart" onclick="init()">Recommencer</button>
+</div>
+<script>
+const questions = [
+  { q: "Qu'est-ce que la politique d'aménagement du territoire et de la ville ?", opts: ["Des mesures spécifiques pour revitaliser les zones rurales dépeuplées en France en France","Des mesures pour réduire les inégalités dans les territoires urbains défavorisés","Un plan national de construction d'infrastructures routières et ferroviaires","Un dispositif d'aide aux communes rurales pour maintenir des services publics"], ans: 1, fb: "La politique d'aménagement du territoire et de la ville vise à réduire les inégalités dans les territoires urbains, notamment dans les quartiers les plus défavorisés." },
+  { q: "Que sont les QPV ?", opts: ["Les Quartiers de Prévention du Vandalisme identifiés par les préfets de département","Les Quartiers Prioritaires de la Ville, zones urbaines défavorisées ciblées par la politique de la ville","Les Quartiers à Potentiel Valorisable sélectionnés pour des projets de rénovation immobilière privée en France","Les Quartiers à Préserver et à Valoriser situés dans les centres historiques de grandes villes"], ans: 1, fb: "Les QPV (Quartiers Prioritaires de la Ville) sont les zones urbaines défavorisées ciblées par la politique de la ville, délimitées selon les revenus des habitants." },
+  { q: "Quel est le principal outil de la politique de la ville ?", opts: ["Le PLU élaboré par chaque commune pour organiser et planifier son territoire local en France","Le contrat de ville signé entre l'État et les communes pour agir dans les QPV ciblés","Le NPRU financé par l'ANRU pour rénover les logements des quartiers prioritaires","Le schéma régional d'aménagement du territoire élaboré par le Conseil Régional"], ans: 1, fb: "Le contrat de ville est le principal outil de la politique de la ville. Il formalise le partenariat État/communes pour mettre en œuvre des actions dans les QPV." },
+  { q: "Que prévoit la loi LAMY de 2014 ?", opts: ["Elle crée les EPCI pour gérer collectivement les quartiers prioritaires en intercommunalité","Elle intervient sur les QPV, crée le contrat de ville et favorise la co-construction avec les habitants","Elle instaure le PNRU pour financer la rénovation de toutes les banlieues françaises défavorisées sur le territoire","Elle définit précisément les critères d'attribution des logements sociaux dans les QPV ciblés"], ans: 1, fb: "La loi LAMY de février 2014 intervient sur les QPV, crée le contrat de ville et promeut la co-construction des politiques avec les habitants des quartiers." },
+  { q: "Qu'est-ce que l'ANRU ?", opts: ["L'Agence Nationale de Réduction des inégalités Urbaines évaluant les politiques locales","L'Agence Nationale de Rénovation Urbaine pilotant le NPRU pour rénover les QPV","L'Agence Nationale de Revitalisation Urbaine soutenant les centres-villes en déclin","L'Association Nationale pour la Réhabilitation Urbaine regroupant les bailleurs sociaux"], ans: 1, fb: "L'ANRU (Agence Nationale de Rénovation Urbaine) pilote le NPRU (Nouveau Programme de Rénovation Urbaine) pour financer la rénovation des quartiers prioritaires." },
+  { q: "Quels sont les trois domaines du contrat de ville de Moulins ?", opts: ["Santé, éducation et offre culturelle pour les habitants des quartiers prioritaires ciblés","Développement économique et emploi, cohésion sociale, et rénovation urbaine du territoire","Logement, transport en commun et environnement dans les quartiers prioritaires de la ville","Sécurité publique, prévention de la délinquance et réinsertion des jeunes en difficulté"], ans: 1, fb: "Le contrat de ville pour Moulins ('engagement quartiers 2030') comporte trois domaines : développement économique et emploi, cohésion sociale, et rénovation urbaine." },
+  { q: "Qu'est-ce que l'ONPV ?", opts: ["L'Office National de Prévention du Vandalisme dans les quartiers prioritaires urbains","L'Observatoire National de la Politique de la Ville qui évalue les effets des actions dans les QPV","L'Organisation Nationale pour la Promotion d'une Ville durable, solidaire et écologique sur le territoire","L'Office National de Planification et de Valorisation des quartiers urbains défavorisés"], ans: 1, fb: "L'ONPV (Observatoire National de la Politique de la Ville) observe et évalue les effets des politiques mises en œuvre dans les Quartiers Prioritaires de la Ville." },
+  { q: "Qui signe le contrat de ville avec l'État ?", opts: ["Le Conseil Régional et les départements concernés par des quartiers prioritaires","Les communes d'agglomération les plus concernées par les QPV, avec l'État","Les associations de quartier et les conseils citoyens élus dans les QPV concernés","Les organismes HLM et bailleurs sociaux présents dans les quartiers prioritaires ciblés"], ans: 1, fb: "Le contrat de ville est signé par les communes d'agglomération avec l'État pour mettre en œuvre la politique de la ville dans les quartiers prioritaires." },
+  { q: "Quel objectif central vise la politique d'aménagement du territoire ?", opts: ["Garantir un revenu minimum strictement identique pour tous les habitants des zones défavorisées sur le territoire","Assurer l'égalité d'accès aux droits, à l'éducation, aux services et aux équipements publics pour tous","Uniformiser le niveau des loyers dans tous les QPV pour réduire la ségrégation résidentielle","Augmenter le nombre de logements sociaux dans les quartiers résidentiels les plus aisés"], ans: 1, fb: "La politique d'aménagement du territoire vise l'égalité d'accès aux droits, à l'éducation, à la culture, aux services et aux équipements publics pour tous." },
+  { q: "Qu'est-ce que le NPRU ?", opts: ["Le Nouveau Plan de Réhabilitation Urbaine pour les centres-villes historiques en déclin","Le Nouveau Programme de Rénovation Urbaine pour financer la rénovation de l'habitat dans les QPV","Le Nouveau Protocole de Relogement pour les habitants déplacés lors des rénovations des QPV en France","Le Nouveau Programme de Revitalisation pour les communes rurales en difficulté économique"], ans: 1, fb: "Le NPRU (Nouveau Programme de Rénovation Urbaine) est un contrat entre la commune, l'État et Action Logement pour financer la rénovation de l'habitat dans les QPV." }
+];
+function shuffleArr(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleOpts(q){
+  const idx=q.opts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return{...q,opts:idx.map(i=>q.opts[i]),ans:idx.indexOf(q.ans)};
+}
+let shuffled,current,score,answered,currentQ;
+function init(){
+  shuffled=shuffleArr(questions);current=0;score=0;answered=false;currentQ=null;
+  document.getElementById('quiz-area').style.display='block';
+  document.getElementById('score-panel').style.display='none';
+  renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  document.getElementById('btn-next').disabled=true;
+  currentQ=shuffleOpts(shuffled[current]);
+  const q=currentQ;
+  document.getElementById('progress').style.width=(current/shuffled.length*100)+'%';
+  document.getElementById('progress-label').textContent='Question '+(current+1)+' / '+shuffled.length;
+  document.getElementById('question-container').innerHTML=
+    '<div class="question-card">'+
+    '<div class="question-num">Question '+(current+1)+'</div>'+
+    '<div class="question-text">'+q.q+'</div>'+
+    '<div class="options">'+q.opts.map((o,i)=>'<button class="option" onclick="answer('+i+')">'+o+'</button>').join('')+'</div>'+
+    '<div class="feedback" id="feedback"></div>'+
+    '</div>';
+}
+function answer(idx){
+  if(answered)return;answered=true;
+  const q=currentQ;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{
+    if(i===q.ans)b.classList.add('reveal');
+    else if(i===idx)b.classList.add('wrong');
+    b.onclick=null;
+  });
+  if(idx===q.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=q.fb;fb.style.display='block';
+  document.getElementById('btn-next').disabled=false;
+  document.getElementById('btn-next').textContent=current<shuffled.length-1?'Question suivante →':'Voir mon score';
+}
+function next(){
+  current++;
+  if(current>=shuffled.length){
+    document.getElementById('quiz-area').style.display='none';
+    document.getElementById('score-panel').style.display='block';
+    document.getElementById('score-val').textContent=score+' / '+shuffled.length;
+    const pct=Math.round(score/shuffled.length*100);
+    document.getElementById('score-mention').textContent=pct===100?'Parfait !':pct>=70?'Bien joué !':'Encore un effort !';
+  }else{renderQuestion();}
+}
+init();
+</script>
+</body>
+</html>
